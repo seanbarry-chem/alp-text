@@ -6,7 +6,7 @@ project:
 
 book:
   title: "Atomic Layer Processing"
-  subtitle: "An interactive textbook on atomic layer deposition and etching"
+  subtitle: "A free, interactive textbook for everyday use"
   author: "Seán Barry"
   date: last-modified
   site-url: https://atomiclayerprocessing.ca
