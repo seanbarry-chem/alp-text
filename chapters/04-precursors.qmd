@@ -205,7 +205,7 @@ The common decomposition pathways are:
 - **Redox reactions**, such as disproportionation of Cu(I) or Au(I).
 - **Surface-catalysed decomposition**: metals and reducible oxides lower decomposition barriers compared with the gas phase.
 
-Gold shows how far redesign can go. An early Au(I) guanidinate gave CVD at 150 °C with a growth rate of 39 nm min^−1^, useless for ALD. It decomposed by both carbodiimide deinsertion and β-H elimination. Switching to the iminopyrrolidinate tert-butyl-imino-2,2-dimethylpyrrolidinate, which blocks deinsertion and has no β-hydrogens, gave a gold(I) compound that was stable in the solid state up to 170 °C and decomposed in the gas phase only at about 300 °C in CVD experiments [@Coyle2013; @Barry2022]. The new ligand was too costly to make industrially, which illustrates another design rule: **keep it simple** [@Barry2022]. The same strategy for copper is described in @sec-ip-design.
+Gold shows how far redesign can go. An early Au(I) guanidinate gave CVD at 150 °C with a growth rate of 39 nm min^−1^, useless for ALD. It decomposed by both carbodiimide deinsertion and β-H elimination. Switching to the iminopyrrolidinate tert-butyl-imino-2,2-dimethylpyrrolidinate, which blocks deinsertion and has no β-hydrogens, gave a gold(I) compound that does not decompose below 275 °C, compared with 150 °C for the guanidinate; in CVD experiments, gas-phase decomposition was observed at about 300 °C [@Coyle2013; @Barry2022]. The new ligand was too costly to make industrially, which illustrates another design rule: **keep it simple** [@Barry2022]. The same strategy for copper is described in @sec-ip-design.
 
 ### Recognizing decomposition
 
