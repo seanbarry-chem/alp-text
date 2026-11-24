@@ -36,7 +36,7 @@ For a precursor to give ALD, it must be [@Barry2022]:
 4. Self-limiting
 5. Reactive towards the second precursor
 
-Each property can be optimized on its own; the art of precursor design is to improve one without sacrificing another. For industrial use, a precursor must also be easy to make, scalable, safe to handle and inexpensive [@Barry2022]. In practice these requirements map onto specific tests:
+Each property can be optimized on its own; the art of precursor design is to improve one without sacrificing another. For industrial use, a precursor must also be easy to make, scalable, safe to handle and inexpensive [@Barry2022]. These requirements differ from those for CVD, where the precursor is meant to keep decomposing: an ALD precursor must survive the deposition temperature and react only with surface groups and the co-reactant [@Leskela1999; @Leskela2003]. In practice these requirements map onto specific tests:
 
 | Requirement | Why it matters | How it is tested |
 |:---|:---|:---|
@@ -50,9 +50,9 @@ Each property can be optimized on its own; the art of precursor design is to imp
 
 : Precursor requirements and how they are tested. {#tbl-requirements}
 
-**Oxidation state.** Ideally, the metal's oxidation state is the same in the precursor and the film. Ta(NMe~2~)~5~ contains Ta(V) and gives insulating Ta~3~N~5~ by default; conductive TaN needs Ta(III), so a reduction step is required. Metal films are the extreme case, needing M^n+^ → M^0^.
+**Oxidation state.** Ideally, the metal's oxidation state is the same in the precursor and the film. Ta(NMe~2~)~5~ contains Ta(V) and gives insulating Ta~3~N~5~ by default; conductive TaN needs Ta(III), so a reduction step is required. Metal films are the extreme case, needing M^n+^ → M^0^. For electropositive first-row transition metals this requires strong reducing co-reactants and remains one of the hardest problems in ALD precursor chemistry [@Knisley2013; @Emslie2013].
 
-**How stable is stable enough?** One industrial specification asks for less than about 2 % decomposition by weight after a week at about 10 °C above the source temperature (see Simulation 3.4 for what this means in terms of rate constants).
+**How stable is stable enough?** One patent for Group 11 precursors specifies less than about 2 % decomposition by weight (preferably less than 1 %) after one week at about 10 °C above the ALD source temperature [@Barry2016patent]. Simulation 3.4 shows what this means in terms of rate constants. Industrial suppliers screen new precursors in the same spirit, using TGA and NMR after extended heating to decide whether a compound is safe to use in production equipment [@Rushworth2007].
 
 ## How precursors react
 
@@ -85,7 +85,7 @@ $$
 2\,\text{Ru(CpEt)}_2 + 39\,\text{O}_2 \rightarrow 2\,\text{RuO}_2 + 28\,\text{CO}_2 + 18\,\text{H}_2\text{O}
 $$ {#eq-ru-combustion}
 
-Nearly 20 O~2~ molecules are needed for each Ru atom, so combustion is often incomplete, giving CO and partly oxidized fragments. The water produced can also hydroxylate the surface and help the next cycle nucleate [@Barry2022].
+Nearly 20 O~2~ molecules are needed for each Ru atom, so combustion is often incomplete, giving CO and partly oxidized fragments. The water produced can also hydroxylate the surface and help the next cycle nucleate [@Barry2022]. In situ mass spectrometry of Ru and Pt ALD shows that the oxygen pulse leaves a layer of adsorbed oxygen, which then burns the ligands of the incoming precursor to CO~2~ and H~2~O [@Aaltonen2003]. Ozone combusts ligands too: with TMA, oxygen inserts into the Al–CH~3~ bonds to give surface methoxy and formate species before CO~2~ is released [@Goldstein2008].
 
 ## Making precursors
 
@@ -205,7 +205,7 @@ The common decomposition pathways are:
 - **Redox reactions**, such as disproportionation of Cu(I) or Au(I).
 - **Surface-catalysed decomposition**: metals and reducible oxides lower decomposition barriers compared with the gas phase.
 
-Gold shows how far redesign can go. An early Au(I) guanidinate gave CVD at 150 °C with a growth rate of 39 nm min^−1^, useless for ALD. It decomposed by both carbodiimide deinsertion and β-H elimination. A pyrrole-based ligand that blocks deinsertion and has methyl groups at every β-position delayed decomposition to 275 °C (125 °C higher), and CVD only began at 350 °C, at 1 nm min^−1^ [@Barry2022]. The new ligand was too costly to make industrially, which illustrates another design rule: **keep it simple** [@Barry2022]. The same strategy for copper is described in @sec-ip-design.
+Gold shows how far redesign can go. An early Au(I) guanidinate gave CVD at 150 °C with a growth rate of 39 nm min^−1^, useless for ALD. It decomposed by both carbodiimide deinsertion and β-H elimination. Switching to the iminopyrrolidinate tert-butyl-imino-2,2-dimethylpyrrolidinate, which blocks deinsertion and has no β-hydrogens, gave a gold(I) compound that was stable in the solid state up to 170 °C and decomposed in the gas phase only at about 300 °C in CVD experiments [@Coyle2013; @Barry2022]. The new ligand was too costly to make industrially, which illustrates another design rule: **keep it simple** [@Barry2022]. The same strategy for copper is described in @sec-ip-design.
 
 ### Recognizing decomposition
 
@@ -215,13 +215,13 @@ When a precursor decomposes instead of reacting cleanly, growth gains a **CVD co
 - A thickness gradient along the gas-flow direction
 - Carbon or nitrogen in the film, or a large residue in TGA
 
-Decomposition can also happen in the **source**, long before the precursor reaches the substrate. A fast TGA ramp does not test days at source temperature: thermally stressing TTIP for a week produced decomposition products that changed its vapour pressure. Decomposition is not always unwanted, though. It can be used deliberately, for example by adsorbing a precursor self-limitingly at low temperature and then decomposing it in a separate heating step.
+Decomposition can also happen in the **source**, long before the precursor reaches the substrate, and a fast TGA ramp does not test days at source temperature. When TTIP was held in a sealed container at 120, 150 or 180 °C for 7 days, its decomposition products changed its vapour pressure and its TGA behaviour. TiO~2~ films grown from the stressed precursor had a different growth rate, poorer uniformity (after stress at 180 °C), more Ti^2+^ and higher leakage current [@Kim2022]. Decomposition is not always unwanted, though. It can be used deliberately, for example by adsorbing a precursor self-limitingly at low temperature and then decomposing it in a separate heating step.
 
 ## Melting point
 
 A low melting point is not essential, but a liquid source improves reproducibility [@Barry2022]. A liquid's surface area stays constant and surface impurities are mobile. A solid's surface area shrinks as its particles evaporate, and impurities collect on it, so the vapour delivered can fall over the life of the source. On the other hand, solids are safer to ship and easier to load. The ideal precursor melts **above** shipping and handling temperatures but **below** the source temperature [@Barry2022].
 
-Melting points can be tuned. Long, unbranched alkyl chains frustrate crystallization because they can adopt many conformations. W(CO)~6~ melts at 170 °C; replacing one CO with an isonitrile, CNR, gives W(CO)~5~(CNR), which melts below 100 °C. As R grows from C~3~ to C~5~, the melting point falls roughly linearly to below 0 °C, suggesting a butyl chain would give a solid at room temperature that melts in the source. There is no further gain at C~6~, and with C~8~ the melting point rises again to about 20 °C [@Barry2022].
+Melting points can be tuned. Long, unbranched alkyl chains frustrate crystallization because they can adopt many conformations. Tungsten hexacarbonyl shows why this matters: as a solid it is not a reproducible vapour source, because its surface area changes as it evaporates, and its vapour is toxic [@Gordon2000]. W(CO)~6~ melts at 170 °C; replacing one CO with an isonitrile, CNR, gives W(CO)~5~(CNR), which melts below 100 °C. As R grows from C~3~ to C~5~, the melting point falls roughly linearly to below 0 °C, suggesting a butyl chain would give a solid at room temperature that melts in the source. There is no further gain at C~6~, and with C~8~ the melting point rises again to about 20 °C [@Barry2022]. With suitable alkyl groups these compounds are low-viscosity liquids at room temperature, suitable for liquid delivery [@Gordon2000].
 
 ## Reactivity and heteroleptic design
 
@@ -247,12 +247,12 @@ The three common oxygen sources behave very differently:
 
 | | H~2~O | O~3~ | O~2~ plasma |
 |:---|:---|:---|:---|
-| Mechanism | Protonolysis; regenerates –OH | Combusts ligands; can oxidize the substrate | Radical combustion |
+| Mechanism | Protonolysis; regenerates –OH | Combusts ligands; can oxidize the substrate | Combustion by O radicals and ions |
 | Works with | Alkyls, amides, halides | Also β-diketonates and Cp, which react poorly with water | Most precursors |
 | Temperature | Moderate | Lower possible | Lowest |
 | Typical issues | Slow purges at low temperature; hygroscopic films | Carbonate and carbon impurities; substrate oxidation | Plasma damage; lower conformality |
 
-: Oxygen co-reactants compared. {#tbl-oxygen-sources}
+: Oxygen co-reactants compared [@Goldstein2008; @Profijt2011]. {#tbl-oxygen-sources}
 
 A weaker co-reactant can even **create selectivity**. O~2~ dissociates readily only on noble metals, so a metal oxide can be grown on Pt while not growing on SiO~2~ or Al~2~O~3~. Stronger oxidants such as O~3~ or an oxygen plasma react on any surface and remove that selectivity [@Singh2018].
 
@@ -315,4 +315,7 @@ The ligand whose conjugate acid has the highest pK~a~ is the strongest base and 
 - @Barry2022, Chapter 4: precursor design, volatility, thermal stability and reactivity, including the examples used here.
 - @Barry2021: the main organometallic precursor families and their surface mechanisms.
 - @Barry2013: a case study in designing a ligand against specific decomposition pathways.
+- @Leskela2003: a classic review of ALD chemistry and precursor selection.
+- @Knisley2013 and @Emslie2013: precursors and reducing chemistry for metal films, the hardest case.
+- @Profijt2011: plasma-assisted ALD and how plasma co-reactants differ from thermal ones.
 - @Singh2018: how a weak co-reactant can be used for area-selective deposition.
