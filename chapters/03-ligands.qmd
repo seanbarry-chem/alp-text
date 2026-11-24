@@ -274,6 +274,104 @@ Amidinates (including guanidinates and iminopyrrolidinates) are the most importa
 - **Heteroleptic precursors** let one ligand do the reacting. Al(^i^PrAMD)Et~2~ deposits Al~2~O~3~ with water down to 125 °C; solid-state NMR on the gallium analogue showed both ethyl groups are lost while the amidinate stays on the surface [@Barry2021].
 - **Decomposition kinetics matter more than onset temperature.** On an ultraclean Ni surface in ultrahigh vacuum, the copper amidinate dimer starts decomposing at about −73 °C. Yet it gives self-limiting Cu ALD up to 280 °C. The difference is time: decomposition on Ni was followed over more than an hour, while an ALD pulse lasts seconds. Decomposition proceeds by β-H abstraction from the alkyl groups; replacing those H atoms with methyls raised thermal stability by more than 200 °C [@Barry2021].
 
+### Designing against decomposition: from guanidinates to iminopyrrolidinates {#sec-ip-design}
+
+Amidinates and guanidinates have a low thermal threshold, and understanding why led directly to a better ligand [@Barry2013]. For Cu(I), Al(III) and Ga(III) compounds there are two main decomposition routes, and amidinates and guanidinates behave much the same way:
+
+- **Carbodiimide deinsertion.** The reverse of the reaction used to make the ligand: a carbodiimide RN=C=NR is expelled, leaving the metal bonded to the former R or NR~2~ group. It tends to be a low-temperature, solution-phase route.
+- **β-Hydrogen elimination.** A hydrogen on the carbon β to the metal (for example the methine H of an isopropyl group) is transferred, breaking up the ligand. It tends to be a higher-temperature, gas-phase route.
+
+DFT calculations on the copper guanidinate dimer [Cu{(N^i^Pr)~2~CNMe~2~}]~2~ showed that both routes start from the **same intermediate** [@Barry2013]. One nitrogen shifts its bonding so that an isopropyl methine hydrogen points at copper, at a cost of about 94 kJ mol^−1^ (22.5 kcal mol^−1^). From there, deinsertion is slightly downhill (about −3 kJ mol^−1^), while β-H elimination is uphill overall (about 138 kJ mol^−1^) and needs the lattice energy of forming Cu metal to drive it. This explains the pattern: a solvent can stabilize the intermediate and open the easy deinsertion path, while in the gas phase or at a surface both routes compete [@Barry2013].
+
+The redesign tackled each route in turn [@Barry2013]:
+
+1. **Block deinsertion with a ring.** In an **iminopyrrolidinate** (ip), one bonding nitrogen and the bridging carbon sit in a five-membered ring, which makes carbodiimide deinsertion much less favourable. The ligands are made from commercial 2-pyrrolidone, in up to 87 % overall yield.
+2. **Check what is left.** The Al(R-ip)Me~2~ family decomposed with half-lives of 1.8–24.8 days at 78 °C. The two fastest (R = ^i^Pr and ^s^Bu) still carry reactive β-hydrogens, so β-H elimination remained open.
+3. **Remove the β-hydrogens.** In **tert-butyl-imino-2,2-dimethylpyrrolidinate** (Me~2~-^t^Bu-ip), the ring β-hydrogens are replaced by methyl groups and the imine carries a tert-butyl group, which has no β-hydrogens.
+
+The copper compounds show the payoff:
+
+| Ligand on [CuL]~2~ | Half-life at 165 °C (days) |
+|:---|:---|
+| Guanidinate, (^i^PrN)~2~CNMe~2~ | 1.4 |
+| ^t^Bu-ip | 1.0 |
+| ^i^Pr-ip | 7.5 |
+| Me~2~-^t^Bu-ip | No measurable decomposition |
+
+: Thermal stability of copper(I) compounds at 165 °C [@Barry2013]. {#tbl-cu-halflife}
+
+On high-surface-area silica, [Cu(Me~2~-^t^Bu-ip)]~2~ chemisorbed as the dimer up to 275 °C, lost its tert-butyl group at 275 °C while remaining a stable monolayer, and only decomposed at 350 °C, leaving a diamine bound to copper [@Barry2013]. Compared with the guanidinate, which deposits copper metal by itself at 225 °C, the redesigned ligand raised the thermal limit by over 100 °C.
+
+The general lesson is to identify the decomposition mechanism first, then design the ligand to close it off. The same mechanisms can also be exploited: copper guanidinates make effective single-source CVD precursors for copper metal precisely because they decompose cleanly at low temperature [@Barry2013].
+
+The simulation below shows what these rate constants mean for a precursor held in a heated source. Assuming first-order decomposition, the fraction remaining after time t is exp(−kt).
+
+::: {.sim-box}
+[Simulation 3.3: How long does a precursor survive in a hot source?]{.sim-title}
+
+```{ojs}
+//| echo: false
+ipData = [
+  {set: "Cu(I) at 165 °C", name: "[Cu(guanidinate)]₂", k: 0.49},
+  {set: "Cu(I) at 165 °C", name: "[Cu(ᵗBu-ip)]₂", k: 0.71},
+  {set: "Cu(I) at 165 °C", name: "[Cu(ⁱPr-ip)]₂", k: 0.092},
+  {set: "Cu(I) at 165 °C", name: "[Cu(Me₂-ᵗBu-ip)]₂", k: 0},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ⁱPr", k: 0.382},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ⁿPr", k: 0.124},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ⁿBu", k: 0.028},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ⁱBu", k: 0.077},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ˢBu", k: 0.330},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ᵗBu", k: 0.067}
+]
+viewof ipSet = Inputs.radio(["Cu(I) at 165 °C", "Al(R-ip)Me₂ at 78 °C"], {value: "Cu(I) at 165 °C", label: "Compound series"})
+viewof ipDays = Inputs.range([1, 30], {value: 7, step: 1, label: "Time in the source (days)"})
+// "Remaining (%)" in the table is at this time
+```
+
+```{ojs}
+//| echo: false
+ipRows = ipData.filter(d => d.set === ipSet).map(d => ({
+  ...d,
+  left: 100 * Math.exp(-d.k * ipDays),
+  half: d.k > 0 ? Math.LN2 / d.k : Infinity,
+  t2: d.k > 0 ? -Math.log(0.98) / d.k : Infinity
+}))
+
+Plot.plot({
+  height: 330, marginLeft: 55, marginBottom: 50, marginTop: 20,
+  x: {label: "Time (days) →", domain: [0, 30]},
+  y: {label: "↑ Precursor remaining (%)", domain: [0, 100], grid: true},
+  color: {legend: true, range: ["#E91C24", "#000000", "#8C8C8C", "#4D4D4D", "#F4B6B8", "#B3B3B3"]},
+  marks: [
+    Plot.ruleY([98], {stroke: "#E91C24", strokeDasharray: "2,3"}),
+    Plot.ruleX([ipDays], {stroke: "#4D4D4D", strokeDasharray: "4,3"}),
+    Plot.line(ipRows.flatMap(d => d3.range(0, 30.01, 0.25).map(t => ({name: d.name, t, y: 100 * Math.exp(-d.k * t)}))),
+      {x: "t", y: "y", stroke: "name", strokeWidth: 2}),
+    Plot.dot(ipRows, {x: () => ipDays, y: "left", fill: "name", r: 5})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+Inputs.table(ipRows.map(d => ({
+  Compound: d.name,
+  "k (d⁻¹)": d.k,
+  "Half-life (d)": d.half,
+  "2 % loss (d)": d.t2,
+  "Remaining (%)": d.left
+})), {format: {
+  "Half-life (d)": x => isFinite(x) ? x.toFixed(1) : "—",
+  "2 % loss (d)": x => isFinite(x) ? x.toFixed(2) : "—",
+  "Remaining (%)": x => x.toFixed(1)
+}})
+```
+
+::: {.assumptions}
+**Assumptions.** First-order decomposition with the rate constants measured at a single temperature [@Barry2013]; "no measurable decomposition" is plotted as k = 0. The dotted line marks 2 % loss: one patent specification for Group 11 precursors asks for less than about 2 % decomposition after a week at about 10 °C above the source temperature. Real sources also see temperature gradients, repeated heating cycles and impurities, all of which can speed up decomposition.
+:::
+:::
+
 ### Alkoxides and β-diketonates
 
 Alkoxides have been used for about 30 years, mainly for oxides, because the strong M–O bonds tend to leave oxygen in the film. Much of their early development was done by Leskelä and Ritala at the University of Helsinki [@Barry2021]. They are particularly useful for mixed oxides such as perovskites. In one striking case, Te metal is deposited from Te(SiMe~3~)~2~ and Te(OEt)~4~: the oxophilic silicon pulls the ethoxide off as Me~3~SiOEt, leaving Te^0^ in both half-cycles [@Barry2021].
@@ -361,9 +459,23 @@ pK~a~ predicts which ligand is lost under equilibrium conditions. In ALD, produc
 :::
 :::
 
+::: {.quiz}
+The Al(R-ip)Me~2~ compounds with R = ^i^Pr and ^s^Bu decomposed fastest at 78 °C. What did this suggest, and how was the ligand redesigned in response?
+
+- [ ] Carbodiimide deinsertion was still active, so the ring was enlarged.
+- [x] β-Hydrogen elimination was still possible, so the ring β-hydrogens were replaced with methyl groups and a tert-butyl group was put on the imine.
+- [ ] The Al–Me bonds were too weak, so the methyls were replaced with chlorides.
+- [ ] The compounds were oligomerizing, so bulkier R groups were used throughout.
+
+::: {.explanation}
+The iminopyrrolidinate ring already blocks deinsertion. The fastest-decomposing compounds were the ones with reactive β-hydrogens, which pointed to β-H elimination. Removing those hydrogens gave [Cu(Me~2~-^t^Bu-ip)]~2~, with no measurable decomposition at 165 °C [@Barry2013].
+:::
+:::
+
 ## Further reading
 
 - @Barry2022, Chapter 3: ligand bonding for ALD, including the examples used in this chapter.
 - @Barry2021: a survey of the main organometallic ligand families in ALD and their surface mechanisms, with tables of representative precursors.
+- @Barry2013: how understanding amidinate and guanidinate decomposition led to the iminopyrrolidinate ligands.
 - @Lim2003: the paper that established amidinates as a general route to volatile, thermally stable precursors for transition metals.
 - @Kurek2014: a review of guanidinate ligands in CVD and ALD.
