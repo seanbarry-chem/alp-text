@@ -63,3 +63,16 @@ $headings-font-weight: 600;
 .map-card-where { color: $cu-grey-dark; font-size: 0.95rem; margin-bottom: 0.35rem; }
 .map-card ul { margin: 0; padding-left: 1.2rem; }
 .map-ref { color: $cu-grey-dark; font-size: 0.9em; }
+
+/* ALD cycle diagram */
+.cycle-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.25rem 0 0.5rem; }
+.cycle-controls button {
+  font: inherit; font-size: 0.95rem; padding: 0.3rem 0.9rem; border-radius: 4px;
+  border: 1px solid $cu-black; background: $white; color: $cu-black; cursor: pointer;
+}
+.cycle-controls button[data-a="play"] { background: $cu-red; border-color: $cu-red; color: $white; }
+.cycle-controls button:hover { filter: brightness(0.92); }
+.ring-step:hover path { filter: brightness(0.92); }
+@keyframes ald-drift { from { transform: translate(0, 0); } to { transform: translate(6px, -5px); } }
+.drift { animation: ald-drift 1.6s ease-in-out infinite alternate; }
+@media (prefers-reduced-motion: reduce) { .drift { animation: none; } }
