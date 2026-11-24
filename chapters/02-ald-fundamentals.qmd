@@ -58,7 +58,7 @@ $$ {#eq-langmuir}
 The simulation below evaluates @eq-flux and @eq-langmuir for TMA (M = 72.09 g mol^−1^) and scales the GPC by the coverage.
 
 ::: {.sim-box}
-[Simulation 1.1: Saturation of a half-reaction]{.sim-title}
+[Simulation 2.1: Saturation of a half-reaction]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -134,7 +134,7 @@ GPC is commonly plotted against temperature, and the range over which it is appr
 | High *T*, low GPC | ↓ | Desorption of chemisorbed species, or loss of reactive sites (e.g. dehydroxylation) |
 
 ::: {.sim-box}
-[Simulation 1.2: A qualitative ALD window]{.sim-title}
+[Simulation 2.2: A qualitative ALD window]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -206,7 +206,7 @@ d(N) &= \mathrm{GPC}_\infty\left[N + (r-1)\,n_0\left(1-e^{-N/n_0}\right)\right]
 $$ {#eq-nucleation}
 
 ::: {.sim-box}
-[Simulation 1.3: Thickness versus cycles with a nucleation transient]{.sim-title}
+[Simulation 2.3: Thickness versus cycles with a nucleation transient]{.sim-title}
 
 ```{ojs}
 //| echo: false

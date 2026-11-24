@@ -57,7 +57,7 @@ Because the two lineages developed in isolation, the early literature is scatter
 The map below shows where the events in this chapter happened. Use the slider to move through time, and switch views to zoom in on Europe or the Helsinki area, where much of the early work was concentrated.
 
 ::: {.sim-box}
-[Interactive 2.1: Where ALD came from]{.sim-title}
+[Interactive 1.1: Where ALD came from]{.sim-title}
 
 ```{ojs}
 //| echo: false
