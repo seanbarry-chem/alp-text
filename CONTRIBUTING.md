@@ -21,7 +21,12 @@ Thanks for helping build *Atomic Layer Processing*. Seán Barry is the editor; a
 
 - **Original work only.** Do not copy text, figures or data plots from papers, books or slides, even with a citation. Redraw figures and write text in your own words. If you need to reuse a published figure, get written permission and note it in the caption.
 - Licence: by contributing you agree your contribution is released under the site licence (CC BY-NC-SA 4.0).
-- Contributors are credited on the Welcome page. Add yourself in your pull request.
+
+## Credit
+
+- **Invited authors receive equal credit.** All invited authors, including the editor, are listed as co-authors of the book in alphabetical order by surname. The order does not reflect the size of anyone's contribution.
+- **Other contributors** (people who submit fixes or suggestions without an invitation) are thanked by name in the Acknowledgements on the Welcome page. Add yourself in your pull request.
+- Becoming an invited author is at the editor's discretion.
 
 ## File layout
 
