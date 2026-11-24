@@ -1,0 +1,38 @@
+<script>
+// Self-check quizzes. Author them in markdown as:
+//
+// ::: {.quiz}
+// Question text
+//
+// - [ ] wrong option
+// - [x] right option
+//
+// ::: {.explanation}
+// Why.
+// :::
+// :::
+//
+// Ungraded and client-side only: the answer is visible in the page source.
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".quiz").forEach((quiz) => {
+    const label = document.createElement("div");
+    label.className = "quiz-label";
+    label.textContent = "Check your understanding";
+    quiz.prepend(label);
+    const options = quiz.querySelectorAll("li");
+    options.forEach((li) => {
+      const box = li.querySelector('input[type="checkbox"]');
+      if (!box) return;
+      li.classList.add("quiz-option");
+      li.dataset.correct = box.checked ? "1" : "0";
+      box.checked = false;
+      li.addEventListener("click", () => {
+        if (quiz.classList.contains("answered")) return;
+        quiz.classList.add("answered");
+        li.classList.add(li.dataset.correct === "1" ? "correct" : "incorrect");
+        options.forEach((o) => { if (o.dataset.correct === "1") o.classList.add("correct"); });
+      });
+    });
+  });
+});
+</script>

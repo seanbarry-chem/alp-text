@@ -1,0 +1,55 @@
+/*-- scss:defaults --*/
+// Carleton University palette: red #E91C24, black, white, neutral greys
+$cu-red: #E91C24;
+$cu-black: #000000;
+$cu-grey-dark: #4D4D4D;
+$cu-grey: #8C8C8C;
+$cu-grey-light: #EDEDED;
+$white: #FFFFFF;
+
+$primary: $cu-red;
+$secondary: $cu-grey-dark;
+$link-color: $cu-red;
+$body-color: #1A1A1A;
+$headings-color: $cu-black;
+$callout-color-note: $cu-grey-dark;
+$callout-color-tip: $cu-red;
+$callout-color-important: $cu-red;
+$callout-color-caution: $cu-grey-dark;
+$callout-color-warning: $cu-red;
+$font-family-sans-serif: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+$headings-font-weight: 600;
+
+/*-- scss:rules --*/
+.sim-box {
+  border: 1px solid #d0d0d0;
+  border-top: 4px solid $cu-black;
+  border-radius: 4px;
+  padding: 1rem 1.25rem 0.5rem;
+  margin: 1.5rem 0;
+  background: #F7F7F7;
+}
+.sim-box .sim-title {
+  font-weight: 600;
+  color: $cu-black;
+  margin-bottom: 0.25rem;
+}
+.sim-box form { margin-bottom: 0.25rem; }
+.assumptions { font-size: 0.9em; color: $cu-grey-dark; }
+
+/* Larger text in interactive examples */
+.sim-box { font-size: 1.05rem; }
+.sim-box .sim-title { font-size: 1.2rem; }
+.sim-box .cell-output-display form {
+  font-size: 1.05rem;
+  --label-width: 220px;
+  --input-width: 300px;
+}
+.sim-box .cell-output-display form input[type="number"] { font-size: 1rem; }
+.sim-box .cell-output-display svg[class^="plot"] { font-size: 15px; }
+.sim-box .cell-output-display p { font-size: 1.1rem; }
+.sim-box .assumptions { font-size: 0.95rem; }
+
+/* Slider accents */
+.sim-box input[type="range"] { accent-color: $cu-red; }
+.sim-box input[type="radio"] { accent-color: $cu-red; }

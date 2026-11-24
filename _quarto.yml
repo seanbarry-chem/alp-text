@@ -1,0 +1,42 @@
+project:
+  type: book
+  output-dir: _site
+  resources:
+    - CNAME
+
+book:
+  title: "Atomic Layer Processing"
+  subtitle: "An interactive textbook on atomic layer deposition and etching"
+  author: "Seán Barry"
+  date: last-modified
+  site-url: https://atomiclayerprocessing.ca
+  search: true
+  page-navigation: true
+  reader-mode: true
+  chapters:
+    - index.qmd
+    - part: "Atomic Layer Deposition"
+      chapters:
+        - chapters/01-ald-fundamentals.qmd
+    - references.qmd
+
+bibliography: references.bib
+# For ACS-style numbered refs: download american-chemical-society.csl from zotero.org/styles and add  csl: assets/acs.csl
+
+format:
+  html:
+    theme:
+      light: [cosmo, assets/theme.scss]
+    html-math-method:
+      method: mathjax
+      url: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg-full.js"
+    number-sections: true
+    crossref:
+      eq-prefix: Eq.
+    toc: true
+    toc-depth: 3
+    code-tools: false
+    css: assets/quiz.css
+    include-after-body:
+      - assets/quiz.html
+    license: "CC BY-NC-SA 4.0"   # edit if you choose another licence

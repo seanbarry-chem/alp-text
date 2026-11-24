@@ -1,0 +1,314 @@
+---
+title: "Fundamentals of Atomic Layer Deposition"
+---
+
+::: {.callout-tip appearance="simple"}
+## Learning outcomes
+After this chapter you should be able to:
+
+1. State the operational definition of ALD and design an experiment that tests it.
+2. Estimate the exposure needed to saturate a planar surface from kinetic gas theory.
+3. Interpret growth-per-cycle (GPC) versus temperature data critically, including where the "ALD window" idea breaks down.
+4. Recognize non-linear initial growth and correct thickness-based GPC estimates for it.
+:::
+
+## What makes a process ALD?
+
+Atomic layer deposition builds a film by exposing a surface to two (or more) reactants **one at a time**, with a purge or evacuation between them. Each exposure is a gas–surface reaction that stops by itself once the available surface sites are used up [@George2010; @Johnson2014].
+
+The defining property is **self-limitation**, not the cycle structure. Plenty of pulsed processes have an A–purge–B–purge sequence but are not ALD, because one of the steps keeps depositing material as the dose increases. The practical test is therefore experimental:
+
+> For each half-reaction, the growth per cycle (GPC) must reach a plateau as that reactant's dose increases, and must not depend on purge length once the purge is adequate.
+
+Any other characteristic (conformality, digital thickness control, low pinhole density) follows from this property. None of them can stand in for testing it.
+
+## The model system: TMA/H~2~O → Al~2~O~3~
+
+The trimethylaluminum (TMA)/water process is the most-studied ALD chemistry and is the usual reference point [@Puurunen2005]. In simplified form, the two half-reactions on a hydroxylated surface (asterisks denote surface species) are:
+
+$$
+\text{A:}\quad \|\!-\!\text{OH}^* + \text{Al(CH}_3)_3 \rightarrow \|\!-\!\text{O–Al(CH}_3)_2^* + \text{CH}_4
+$$ {#eq-tma}
+
+$$
+\text{B:}\quad \|\!-\!\text{Al–CH}_3^* + \text{H}_2\text{O} \rightarrow \|\!-\!\text{Al–OH}^* + \text{CH}_4
+$$ {#eq-water}
+
+Reaction A consumes hydroxyls and leaves a methyl-terminated surface that does not react further with TMA. Reaction B restores the hydroxyl termination. The overall reaction, 2 Al(CH~3~)~3~ + 3 H~2~O → Al~2~O~3~ + 6 CH~4~, is strongly exothermic, which partly explains why the process is so robust [@George2010].
+
+Two points are worth stating early, because students often get them wrong:
+
+- **GPC is a fraction of a monolayer.** For TMA/H~2~O, a typical GPC is about 1 Å, which is well below the thickness of one "layer" of Al~2~O~3~. The amount of metal adsorbed per cycle is limited by **steric hindrance** from the ligands that remain after chemisorption and by the **number of reactive sites**. Which of the two dominates depends on the chemistry and the temperature [@Puurunen2005].
+- **Eqs. [-@eq-tma]–[-@eq-water] are idealized.** In reality, TMA can react with one or two hydroxyls, and it can also dissociate onto Al–O bridges. The ratio between these pathways sets how many methyl groups survive into step B. This is why the hydroxyl density, and hence the temperature, controls the GPC.
+
+## Saturation and dose
+
+How much precursor is "enough"? For a planar surface, a first estimate comes from kinetic gas theory. The impingement flux of molecules of mass $m$ at pressure $p$ and temperature $T$ is the Hertz–Knudsen flux:
+
+$$
+\Phi = \frac{p}{\sqrt{2\pi m k_\mathrm{B} T}}
+$$ {#eq-flux}
+
+If each impinging molecule reacts with probability $s$ on a free site, and there are $n_0$ reactive sites per unit area, first-order (Langmuir) kinetics give the fractional coverage after a pulse of length $t$:
+
+$$
+\theta(t) = 1 - \exp\!\left(-\frac{s\,\Phi\,t}{n_0}\right)
+$$ {#eq-langmuir}
+
+The simulation below evaluates @eq-flux and @eq-langmuir for TMA (M = 72.09 g mol^−1^) and scales the GPC by the coverage.
+
+::: {.sim-box}
+[Simulation 1.1: Saturation of a half-reaction]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof P_mTorr = Inputs.range([0.5, 100], {value: 10, step: 0.5, label: "Partial pressure (mTorr)"})
+viewof T_C = Inputs.range([50, 350], {value: 200, step: 5, label: "Temperature (°C)"})
+viewof logS = Inputs.range([-5, -1], {value: -3, step: 0.1, label: "log₁₀ sticking probability, s"})
+viewof n0_e14 = Inputs.range([1, 10], {value: 4, step: 0.5, label: "Reactive sites (10¹⁴ cm⁻²)"})
+viewof gpcSat = Inputs.range([0.2, 2], {value: 1.1, step: 0.05, label: "Saturated GPC (Å)"})
+viewof tPulse = Inputs.range([0.001, 1], {value: 0.3, step: 0.001, label: "Pulse time (s)"})
+```
+
+```{ojs}
+//| echo: false
+satModel = {
+  const kB = 1.380649e-23, NA = 6.02214076e23, M = 72.09e-3;   // TMA
+  const p = P_mTorr * 0.133322;                                  // Pa
+  const m = M / NA;                                              // kg
+  const T = T_C + 273.15;
+  const flux = p / Math.sqrt(2 * Math.PI * m * kB * T) / 1e4;    // cm^-2 s^-1
+  const k = Math.pow(10, logS) * flux / (n0_e14 * 1e14);         // s^-1
+  const t99 = Math.log(100) / k;
+  const tMax = Math.max(3 * t99, 1.2 * tPulse);
+  const pts = d3.range(0, 201).map(i => {
+    const t = tMax * i / 200;
+    return {t, gpc: gpcSat * (1 - Math.exp(-k * t))};
+  });
+  const theta = 1 - Math.exp(-k * tPulse);
+  return {flux, k, t99, pts, theta, exposureL: P_mTorr * 1e-3 * tPulse / 1e-6,
+          exposure99L: P_mTorr * 1e-3 * t99 / 1e-6};
+}
+
+Plot.plot({
+  height: 340, marginLeft: 65, marginBottom: 50, marginTop: 30,
+  x: {label: "Pulse time (s) →"},
+  y: {label: "↑ GPC (Å)", domain: [0, gpcSat * 1.1], grid: true},
+  marks: [
+    Plot.ruleY([gpcSat], {stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+    Plot.line(satModel.pts, {x: "t", y: "gpc", stroke: "#000000", strokeWidth: 2}),
+    Plot.ruleX([satModel.t99], {stroke: "#4D4D4D", strokeDasharray: "2,3"}),
+    Plot.dot([{t: tPulse, gpc: gpcSat * satModel.theta}], {x: "t", y: "gpc", r: 6, fill: "#E91C24"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+md`Flux: **${satModel.flux.toExponential(2)} cm⁻² s⁻¹** · Coverage at this pulse: **${(100 * satModel.theta).toFixed(1)} %** · Exposure: **${satModel.exposureL.toFixed(0)} L**
+
+Pulse needed for 99 % coverage (dotted line): **${satModel.t99 < 1 ? (1000 * satModel.t99).toFixed(1) + " ms" : satModel.t99.toFixed(2) + " s"}** (≈ ${satModel.exposure99L.toExponential(1)} L)`
+```
+
+::: {.assumptions}
+**Assumptions:** planar substrate; ideal-gas flux at the substrate temperature; constant precursor partial pressure during the pulse; first-order Langmuir adsorption with constant $s$; GPC proportional to coverage of this half-reaction only (the other half-reaction is assumed saturated); no CVD or decomposition contribution. 1 L (Langmuir) = 10^−6^ Torr s.
+:::
+:::
+
+Things to try:
+
+- Change *s* by one decade and watch the saturation time change by a decade as well. Reported sticking probabilities vary over orders of magnitude, so a "saturating dose" taken from someone else's reactor is only a starting point.
+- Notice that the model contains **no** temperature dependence of *s*. In real systems *s* is often thermally activated, which couples dose requirements to the temperature window (next section).
+
+**High aspect ratio structures.** In a trench or pore, molecules must diffuse in, mostly in the Knudsen regime, while being consumed on the walls. The exposure needed for conformal coverage therefore grows steeply with aspect ratio: for large aspect ratios it scales roughly with the aspect ratio squared [@Gordon2003]. Doses that saturate a planar witness wafer can badly undercoat a high-aspect-ratio sample.
+
+## The ALD window and its limits
+
+GPC is commonly plotted against temperature, and the range over which it is approximately constant is called the **ALD window**. On either side, growth departs from the ideal for different reasons:
+
+| Region | GPC trend | Typical cause |
+|---|---|---|
+| Low *T*, high GPC | ↑ | Precursor or co-reactant condensation; physisorbed water not removed by the purge |
+| Low *T*, low GPC | ↓ | Insufficient thermal energy; the reaction is too slow to saturate in the pulse time |
+| High *T*, high GPC | ↑ | Precursor decomposition, which adds a CVD-like, non-self-limiting component |
+| High *T*, low GPC | ↓ | Desorption of chemisorbed species, or loss of reactive sites (e.g. dehydroxylation) |
+
+::: {.sim-box}
+[Simulation 1.2: A qualitative ALD window]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof Tlow = Inputs.range([50, 250], {value: 140, step: 5, label: "Lower edge (°C)"})
+viewof Thigh = Inputs.range([150, 450], {value: 300, step: 5, label: "Upper edge (°C)"})
+viewof slope = Inputs.range([-0.4, 0.4], {value: 0, step: 0.02, label: "GPC slope inside window (Å per 100 °C)"})
+viewof lowMode = Inputs.radio(["Condensation", "Insufficient reactivity"], {value: "Insufficient reactivity", label: "Below the window"})
+viewof highMode = Inputs.radio(["Decomposition", "Desorption / site loss"], {value: "Decomposition", label: "Above the window"})
+```
+
+```{ojs}
+//| echo: false
+windowPts = {
+  const g0 = 1.0;
+  const hi = Math.max(Thigh, Tlow + 20);
+  const mid = (Tlow + hi) / 2;
+  const inside = T => g0 + slope * (T - mid) / 100;
+  const g = T => {
+    if (T < Tlow) {
+      const d = Tlow - T;
+      return lowMode === "Condensation" ? inside(Tlow) * (1 + 1.5 * (1 - Math.exp(-d / 40)))
+                                        : inside(Tlow) * Math.exp(-d / 35);
+    }
+    if (T > hi) {
+      const d = T - hi;
+      return highMode === "Decomposition" ? inside(hi) * Math.exp(d / 60)
+                                          : inside(hi) * Math.exp(-d / 70);
+    }
+    return inside(T);
+  };
+  return {hi, pts: d3.range(25, 501, 2).map(T => ({T, gpc: Math.max(0, g(T))}))};
+}
+
+Plot.plot({
+  height: 340, marginLeft: 65, marginBottom: 50, marginTop: 30,
+  x: {label: "Deposition temperature (°C) →", domain: [25, 500]},
+  y: {label: "↑ GPC (relative)", domain: [0, 3], grid: true},
+  marks: [
+    Plot.rectX([{x1: Tlow, x2: windowPts.hi}], {x1: "x1", x2: "x2", y1: 0, y2: 3, fill: "#8C8C8C", fillOpacity: 0.15}),
+    Plot.text([{x: (Tlow + windowPts.hi) / 2, y: 2.8, label: "\"window\""}], {x: "x", y: "y", text: "label", fill: "#4D4D4D"}),
+    Plot.line(windowPts.pts, {x: "T", y: "gpc", stroke: "#000000", strokeWidth: 2, clip: true})
+  ]
+})
+```
+
+::: {.assumptions}
+**This is a schematic, not a physical model.** The functional forms outside the window are chosen only to show the direction of each effect. Use it to reason about which mechanism could explain a data set, not to fit data.
+:::
+:::
+
+**A critical view of the window.** The flat plateau is a teaching idealization, and it causes two common errors:
+
+1. *Self-limiting is not the same as temperature-independent.* For TMA/H~2~O, the GPC falls steadily with temperature over the whole useful range because the surface hydroxyl density decreases [@Puurunen2005]. The process is still self-limiting at each temperature. Set the slope slider to a negative value to see what this looks like.
+2. *A plateau does not prove self-limitation.* An approximately constant GPC over some range can arise from competing effects, for example slow decomposition offset by site loss. Only dose and purge series at each temperature establish ALD behaviour.
+
+Film properties such as crystallinity, density and impurity content also change across the "window". Crystallization onset, for example, depends on the material and the temperature, so a constant GPC does not mean a constant film [@Miikkulainen2013].
+
+## Initial growth and nucleation
+
+The first cycles on a new substrate rarely look like the steady state. The substrate's own surface chemistry sets how many reactive sites are available at first. Puurunen and Vandervorst classified the behaviour as **linear**, **substrate-enhanced** or **substrate-inhibited** growth, and further divided substrate-inhibited growth into two types, the second of which involves island growth [@Puurunen2004].
+
+A simple way to capture the first three cases is a GPC that relaxes exponentially from an initial value $r\,\mathrm{GPC}_\infty$ to the steady-state value $\mathrm{GPC}_\infty$ over a characteristic number of cycles $n_0$:
+
+$$
+\begin{aligned}
+\mathrm{GPC}(n) &= \mathrm{GPC}_\infty\left[1 + (r-1)\,e^{-n/n_0}\right] \\
+d(N) &= \mathrm{GPC}_\infty\left[N + (r-1)\,n_0\left(1-e^{-N/n_0}\right)\right]
+\end{aligned}
+$$ {#eq-nucleation}
+
+::: {.sim-box}
+[Simulation 1.3: Thickness versus cycles with a nucleation transient]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof rInit = Inputs.range([0, 3], {value: 0.2, step: 0.05, label: "Initial GPC / steady-state GPC, r"})
+viewof nTrans = Inputs.range([1, 100], {value: 20, step: 1, label: "Transient length, n₀ (cycles)"})
+viewof gpcInf = Inputs.range([0.2, 2], {value: 1.0, step: 0.05, label: "Steady-state GPC (Å)"})
+viewof nCycles = Inputs.range([10, 500], {value: 100, step: 5, label: "Cycles deposited, N"})
+```
+
+```{ojs}
+//| echo: false
+nuc = {
+  const d = n => gpcInf * (n + (rInit - 1) * nTrans * (1 - Math.exp(-n / nTrans)));
+  const pts = d3.range(0, nCycles + 1).map(n => ({n, d: d(n)}));
+  const offset = (rInit - 1) * nTrans;          // asymptote: d = GPC∞ (n + offset)
+  const asym = [{n: Math.max(0, -offset), d: Math.max(0, gpcInf * offset)}, {n: nCycles, d: gpcInf * (nCycles + offset)}];
+  return {pts, asym, offset, dN: d(nCycles), apparent: d(nCycles) / nCycles};
+}
+
+Plot.plot({
+  height: 340, marginLeft: 65, marginBottom: 50, marginTop: 30,
+  x: {label: "Cycle number →"},
+  y: {label: "↑ Thickness (Å)", grid: true},
+  marks: [
+    Plot.line(nuc.asym, {x: "n", y: "d", stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+    Plot.line(nuc.pts.map(p => ({n: p.n, d: gpcInf * p.n})), {x: "n", y: "d", stroke: "#BFBFBF"}),
+    Plot.line(nuc.pts, {x: "n", y: "d", stroke: "#000000", strokeWidth: 2}),
+    Plot.dot([{n: nCycles, d: nuc.dN}], {x: "n", y: "d", r: 5, fill: "#E91C24"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+md`Thickness after ${nCycles} cycles: **${nuc.dN.toFixed(1)} Å** · Apparent GPC (d/N): **${nuc.apparent.toFixed(3)} Å** vs. true steady state **${gpcInf.toFixed(2)} Å** (${(100 * (nuc.apparent / gpcInf - 1)).toFixed(1)} % error)
+
+${nuc.offset < 0 ? `Extrapolated nucleation delay (dashed line intercept): **${(-nuc.offset).toFixed(1)} cycles**` : `Extrapolated thickness offset: **+${(gpcInf * nuc.offset).toFixed(1)} Å** (substrate-enhanced)`}`
+```
+
+::: {.assumptions}
+**Assumptions:** smooth, laterally uniform growth; a single exponential transient. This model does **not** reproduce the GPC overshoot of island growth (substrate-inhibited type 2), and it treats the film as continuous from the first cycle, which is false for strongly inhibited nucleation. Grey line: ideal linear growth. Dashed line: steady-state asymptote.
+:::
+:::
+
+The practical lesson is that **a single thickness divided by a single cycle count is a biased GPC estimate.** Measure several cycle numbers and take the slope of the linear part instead. The bias is largest for thin films, which are exactly the films where ALD is usually chosen.
+
+## Check your understanding
+
+::: {.quiz}
+Doubling the TMA pulse time raises film thickness by 30 %, with everything else unchanged. What is the most defensible conclusion?
+
+- [ ] The process is below the ALD window.
+- [x] The TMA step is not self-limiting under these conditions; either it is undersaturated or there is a non-self-limiting contribution, and a full dose series is needed to tell which.
+- [ ] The water half-reaction is undersaturated.
+- [ ] The process is ALD; a 30 % change is within normal reactor variability.
+
+::: {.explanation}
+One pair of points cannot tell undersaturation (the GPC will plateau at longer pulses) apart from a decomposition or CVD component (the GPC keeps rising). Nothing here tests the water step or the temperature.
+:::
+:::
+
+::: {.quiz}
+Why is the TMA/H~2~O growth per cycle well below one monolayer of Al~2~O~3~?
+
+- [ ] Purges are never complete, so some material is removed every cycle.
+- [ ] The water step partially etches the film.
+- [x] Steric hindrance from the remaining methyl ligands, and the limited number of reactive surface sites, cap how much Al can adsorb per cycle.
+- [ ] As-deposited ALD alumina is highly porous.
+
+::: {.explanation}
+The GPC is set by how many precursor molecules fit and react on the surface in one half-cycle. Ligand size (steric hindrance) and site density are the two limiting factors [@Puurunen2005].
+:::
+:::
+
+::: {.quiz}
+A colleague claims a process is "true ALD" because its GPC is constant between 150 and 250 °C. What is wrong with this argument?
+
+- [ ] Nothing; a flat window is the standard proof of ALD.
+- [x] A plateau in temperature neither proves nor is required for self-limitation; only dose and purge saturation tests establish it.
+- [ ] The window must span at least 200 °C.
+- [ ] GPC must increase with temperature in a true ALD process.
+
+::: {.explanation}
+Self-limiting processes can have temperature-dependent GPC (TMA/H~2~O is the standard example). A flat region can also arise from competing non-ideal effects. Saturation is tested in dose, not in temperature.
+:::
+:::
+
+::: {.quiz}
+A 50-cycle film is 3.0 nm thick. The steady-state GPC is known to be 1.0 Å. Assuming growth is linear after an abrupt nucleation delay, how long is the delay?
+
+- [ ] 10 cycles
+- [x] 20 cycles
+- [ ] 30 cycles
+- [ ] 50 cycles
+
+::: {.explanation}
+30 Å = 1.0 Å × (50 − n~delay~), so n~delay~ = 20 cycles. The apparent GPC from this single film (0.6 Å) would underestimate the true value by 40 %.
+:::
+:::
+
+## Further reading
+
+- @George2010: a broad overview of ALD chemistries and mechanisms.
+- @Puurunen2005: the definitive case study of TMA/H~2~O surface chemistry and of GPC-limiting factors.
+- @Johnson2014: a short, accessible review from fundamentals to applications.

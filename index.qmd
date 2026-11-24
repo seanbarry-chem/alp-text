@@ -1,0 +1,21 @@
+# Welcome {.unnumbered}
+
+This is an open, interactive textbook on **atomic layer processing**: atomic layer deposition (ALD) and, in later chapters, atomic layer etching (ALE). It is written for graduate students and researchers who already have a background in surface chemistry and want a working, quantitative understanding of these processes.
+
+## How to use this book {.unnumbered}
+
+- **Simulations.** Grey boxes contain small models that run in your browser. Move the sliders and see how the outputs change. Every simulation lists its assumptions underneath. Read them, because knowing where a model fails is as useful as knowing what it predicts.
+- **Self-checks.** Blue boxes are ungraded questions. Nothing is recorded.
+- **References.** Citations link to the bibliography. Primary literature is preferred over reviews wherever possible.
+
+## Status {.unnumbered}
+
+This book is in early development. Chapter 1 (ALD fundamentals) is a first draft. Corrections and suggestions are welcome; see the contributor guide in the source repository.
+
+## Contributors {.unnumbered}
+
+- Seán Barry (editor)
+
+::: {.callout-note appearance="minimal"}
+Text and original figures are licensed CC BY-NC-SA 4.0 unless noted otherwise.
+:::
