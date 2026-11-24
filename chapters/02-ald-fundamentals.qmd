@@ -111,27 +111,37 @@ cycleFigure = {
   const filmPx = Math.min(done, 12) * 5;               // drawn film thickness
   const surf = SUB_TOP - filmPx;                       // top of film
   const sites = [0, 1, 2, 3, 4, 5].map(i => 285 + i * 78);
-  const blocked = new Set([1, 4]);                     // -OH shielded by neighbouring methyls
+  // Adsorbed species after the TMA pulse. "di": TMA on one –OH (–O–Al(CH₃)₂);
+  // "mono": TMA bridging two –OH (–O)₂Al(CH₃); "oh": –OH shielded by neighbouring methyls.
+  const species = [
+    {type: "di", at: [0]}, {type: "mono", at: [1, 2]}, {type: "di", at: [3]},
+    {type: "oh", at: [4]}, {type: "di", at: [5]}
+  ];
 
   // surface state after the current step
-  const state = step === 0 || step === 1 ? "AlMe2" : step === 2 ? "AlOH2" : "OH";
+  const state = step === 0 || step === 1 ? "Me" : step === 2 ? "OH" : "bare";
+  const lig = (x, y) => state === "Me" ? methyl(x, y) : bond(x, y, x, y - 16) + atom(x, y - 16, "H") + atom(x, y, "O");
+  const tags = {di: "dimethyl", mono: "monomethyl", oh: "shielded –OH"};
   let surface = "";
-  sites.forEach((x, i) => {
-    const y0 = surf - 9;
-    if (state === "OH" || blocked.has(i)) {
-      surface += bond(x, y0, x, y0 - 16) + atom(x, y0 - 16, "H") + atom(x, y0, "O");
+  const y0 = surf - 9, yAl = y0 - 26;
+  species.forEach(sp => {
+    const xs = sp.at.map(i => sites[i]);
+    if (state === "bare" || sp.type === "oh") {
+      xs.forEach(x => { surface += bond(x, y0, x, y0 - 16) + atom(x, y0 - 16, "H") + atom(x, y0, "O"); });
+    } else if (sp.type === "di") {
+      const x = xs[0];
+      surface += bond(x, y0, x, yAl) + bond(x, yAl, x - 16, yAl - 18) + bond(x, yAl, x + 16, yAl - 18) +
+        lig(x - 16, yAl - 18) + lig(x + 16, yAl - 18) + atom(x, yAl, "Al") + atom(x, y0, "O");
     } else {
-      const yAl = y0 - 26;
-      const lig = state === "AlMe2"
-        ? bond(x, yAl, x - 16, yAl - 18) + bond(x, yAl, x + 16, yAl - 18) + methyl(x - 16, yAl - 18) + methyl(x + 16, yAl - 18)
-        : bond(x, yAl, x - 16, yAl - 18) + bond(x, yAl, x + 16, yAl - 18) +
-          bond(x - 16, yAl - 18, x - 16, yAl - 34) + bond(x + 16, yAl - 18, x + 16, yAl - 34) +
-          atom(x - 16, yAl - 34, "H") + atom(x + 16, yAl - 34, "H") + atom(x - 16, yAl - 18, "O") + atom(x + 16, yAl - 18, "O");
-      surface += bond(x, y0, x, yAl) + lig + atom(x, yAl, "Al") + atom(x, y0, "O");
+      const xm = (xs[0] + xs[1]) / 2;
+      surface += xs.map(x => bond(x, y0, xm, yAl)).join("") + bond(xm, yAl, xm, yAl - 20) +
+        lig(xm, yAl - 20) + atom(xm, yAl, "Al") + xs.map(x => atom(x, y0, "O")).join("");
+    }
+    if (step === 0 || step === 1) {
+      const xm = xs.reduce((u, v) => u + v, 0) / xs.length;
+      surface += `<text x="${xm}" y="${surf - (sp.type === "oh" ? 52 : 82)}" text-anchor="middle" font-size="12" fill="${dark}">${tags[sp.type]}</text>`;
     }
   });
-  if (step === 0 || step === 1)
-    surface += [1, 4].map(i => `<text x="${sites[i]}" y="${surf - 52}" text-anchor="middle" font-size="12" fill="${dark}">shielded</text>`).join("");
 
   // gas phase
   const P = [[300, 70], [395, 115], [480, 60], [560, 125], [650, 80], [345, 165], [610, 175], [520, 180]];
@@ -209,9 +219,9 @@ cycleFigure = {
   const step = cyc === 0 ? -1 : (cyc - 1) % 4;
   const text = [
     ["Starting surface", "A hydroxylated (–OH-terminated) substrate. Press <b>Next</b> or <b>Play</b>, or click a step in the ring."],
-    ["1. Pulse TMA", "Al(CH₃)₃ reacts with surface –OH groups: ‖–OH* + Al(CH₃)₃ → ‖–O–Al(CH₃)₂* + CH₄. Once the reachable –OH groups are used up, the methyl-terminated surface does not react with more TMA, so the half-reaction stops by itself. Some –OH groups stay unreacted because neighbouring methyl groups shield them (steric hindrance). Excess TMA and CH₄ remain in the gas."],
+    ["1. Pulse TMA", "Al(CH₃)₃ reacts with surface –OH groups in two ways. Reacting with one –OH gives a <b>dimethyl</b> species, ‖–OH* + Al(CH₃)₃ → ‖–O–Al(CH₃)₂* + CH₄. Reacting with two neighbouring –OH groups gives a <b>monomethyl</b> species, 2 ‖–OH* + Al(CH₃)₃ → (‖–O)₂–Al(CH₃)* + 2 CH₄. The balance between the two sets how many methyl groups go on to the water step. Once the reachable –OH groups are used up, the methyl-terminated surface does not react with more TMA, so the half-reaction stops by itself. Some –OH groups stay unreacted because neighbouring methyl groups shield them (steric hindrance). Excess TMA and CH₄ remain in the gas."],
     ["2. Purge", "Inert gas sweeps out unreacted TMA and the CH₄ by-product. If the purge is too short, TMA meets water in the gas phase in the next step and CVD growth adds to the film."],
-    ["3. Pulse H₂O", "Water converts the surface methyl groups to hydroxyls: ‖–Al–CH₃* + H₂O → ‖–Al–OH* + CH₄. The surface is hydroxylated again and ready for the next TMA pulse."],
+    ["3. Pulse H₂O", "Water converts every remaining surface methyl group, on both dimethyl and monomethyl species, to a hydroxyl: ‖–Al–CH₃* + H₂O → ‖–Al–OH* + CH₄. The surface is hydroxylated again and ready for the next TMA pulse."],
     ["4. Purge", "Water and CH₄ are removed. The cycle is complete, and the new Al–O material is now part of the film (pink). Each cycle adds about one GPC (≈ 1.1 Å), well below one monolayer of Al₂O₃."]
   ][step + 1];
   return html`<div class="map-card"><div class="map-card-title">${text[0]}</div><div>${html([text[1]])}</div></div>`;
@@ -219,7 +229,7 @@ cycleFigure = {
 ```
 
 ::: {.assumptions}
-**Assumptions.** Idealized chemistry: each reacting TMA binds to one –OH (the bifunctional and dissociative pathways are left out), and water removes every remaining methyl group. Which sites stay unreacted is chosen for illustration; in reality the fraction depends on temperature and –OH density. After each completed cycle the new material is drawn as a uniform film layer, and the thickness readout uses a fixed GPC of 1.1 Å. Pulse and purge times on the valve trace are schematic.
+**Assumptions.** Idealized chemistry: TMA binds to one –OH (dimethyl) or two –OH (monomethyl); dissociation onto Al–O bridges is left out, and water removes every remaining methyl group. The mix of dimethyl, monomethyl and unreacted sites is chosen for illustration; in reality it depends on temperature and –OH density. After each completed cycle the new material is drawn as a uniform film layer, and the thickness readout uses a fixed GPC of 1.1 Å. Pulse and purge times on the valve trace are schematic.
 :::
 :::
 
