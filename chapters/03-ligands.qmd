@@ -10,6 +10,7 @@ After this chapter you should be able to:
 2. Use electronegativity and bond enthalpy to make a first prediction of where a metal–ligand bond will break, and what impurity it may leave.
 3. Explain the enthalpic and entropic contributions to the chelate effect, and why chelation matters at ALD temperatures.
 4. Compare the main ALD ligand families in terms of volatility, thermal stability and reactivity.
+5. Describe how each ligand family typically reacts at a surface, and explain why the pK~a~ of a ligand's conjugate acid is only a first guess at which ligand leaves.
 :::
 
 ## What a ligand has to do
@@ -197,7 +198,7 @@ md`At **${T_K} K** (${(T_K - 273.15).toFixed(0)} °C): ΔG(2 NH₃) = **${chel.n
 
 Because chelating ligands are less likely to dissociate, they can also protect the payload atom once it is on the surface. A chelate that stays attached after chemisorption adds steric bulk that blocks further adsorption, which helps the half-reaction self-limit (@sec-steric). The metal–ligand bond then has to be tuned so the ligand stays on during the precursor pulse but is removed completely in the next one. Ligands that are retained are a major source of film impurities, so the identity of the atom bonded to the metal deserves careful thought [@Barry2022].
 
-## Tunable ligand families
+## Tunable ligand families {#sec-tunable-families}
 
 Ligands are often chosen for how easily their frameworks can be modified. A good example is the family of β-diketonates, β-ketoiminates and β-diiminates [@Barry2022]. All are deprotonated at the central carbon of the bridge, and the negative charge is delocalized over the two donor atoms E (O or N). The β-diketonate is made by condensing a ketone with an acid chloride, and stepwise reaction with primary amines replaces O donors with N [@Barry2022]. Each R group comes from a different reagent, so the symmetry and bulk of the ligand are easy to change.
 
@@ -216,28 +217,95 @@ Both AlCl~3~ and AlMe~3~ are dimers under standard conditions, Al~2~Cl~6~ and Al
 
 In the gas phase, both precursors are in equilibrium between monomer and dimer, and the surface reaction generally proceeds through the monomer [@Barry2022]. Methyl is also smaller than chloride, so methyl fragments can pack more densely on the surface, giving a higher GPC [@Barry2022]. This is the steric-crowding argument of @sec-steric applied to ligand choice.
 
-## A tour of ligand families
+## A tour of ligand families {#sec-ligand-tour}
 
-The table summarizes the main families used in ALD precursors. Families towards the top tend to be simpler and more robust; those towards the bottom were designed to tune volatility, stability and reactivity together.
+The table summarizes the main families used in ALD precursors. Families towards the top tend to be simpler and more robust; those towards the bottom were designed to tune volatility, stability and reactivity together. The sections that follow look at how each family reacts at the surface, using representative precursors from the AtomicLimits ALD Database as collected by @Barry2021.
 
 | Family | Bonds through | Examples | Strengths | Weaknesses |
 |:---|:---|:---|:---|:---|
 | Halides | M–X (X = F, Cl, Br, I) | TiCl~4~, HfCl~4~, WF~6~ | Thermally robust; no carbon; cheap | Halide impurities at low temperature; corrosive HX by-products; often solids |
-| Alkyls | M–C | AlMe~3~, ZnEt~2~ | Very reactive; wide ALD windows | Often pyrophoric; transition-metal alkyls tend to decompose by β-H elimination |
-| Alkylamides | M–N | Ti(NMe~2~)~4~, Hf(NEtMe)~4~ | No halides; reactive at low temperature | Limited thermal stability; volatile mainly for high oxidation states (≥ 4) |
-| Alkoxides | M–O | Ti(O^i^Pr)~4~, Ta(OEt)~5~ | Thermally robust M–O bonds | Oligomerize unless bulky; can self-decompose; bring O into the film |
-| β-Diketonates | M–O (chelate) | M(acac)~n~, M(thd)~n~ | Robust; available for lanthanides, alkaline earths, noble metals | Low reactivity to water, usually need O~3~ or O~2~ |
-| Cyclopentadienyls | M–C (π) | MeCpPtMe~3~, RuCp~2~ | Strong M–Cp bonding; substitution tunes volatility and melting point | Can still decompose at source temperatures |
-| Amidinates, guanidinates | M–N (chelate) | [Cu(^i^Pr-amd)]~2~ | Volatile, thermally stable compounds for many low-valent metals | Can fragment by ligand-centred routes, e.g. carbodiimide de-insertion for guanidinates |
+| Alkyls and hydrides | M–C, M–H | AlMe~3~, ZnEt~2~, GeH~2~Et~2~ | Very reactive; wide ALD windows | Often pyrophoric; transition-metal alkyls tend to decompose by β-H elimination |
+| Cyclopentadienyls | M–C (π) | RuCp~2~, ZrCp~2~Me~2~, InCp | Strong M–Cp bonding; substitution tunes volatility and melting point | Can still decompose at source temperatures; may stay on the surface |
+| Amides, silylamides and imides | M–N | Ti(NMe~2~)~4~, Zn[N(SiMe~3~)~2~]~2~, W(N^t^Bu)~2~(NMe~2~)~2~ | No halides; reactive at low temperature | Limited thermal stability; silylamides leave Si; volatile mainly for high oxidation states |
+| N,N-chelates | M–N (chelate) | [Cu(^i^PrAMD)]~2~, La(^i^PrAMD)~3~ | Volatile, thermally stable compounds for many low-valent metals | Surface decomposition at higher temperatures; ligand-centred fragmentation |
+| Alkoxides | M–O | Ti(O^i^Pr)~4~, Ta(OEt)~5~ | Thermally robust M–O bonds | Oligomerize unless bulky; can self-decompose; oxides only |
+| β-Diketonates | M–O (chelate) | M(acac)~n~, M(thd)~n~, M(hfac)~n~ | Robust; available for lanthanides, alkaline earths, noble metals | Low reactivity to water, usually need O~3~ or O~2~ |
+| Neutral donors (L) | M–CO, M–P, M–C (carbene) | W(CO)~6~, Au(PMe~3~)Me~3~, Cu(NHC)(N(SiMe~3~)~2~) | Stabilize low-valent metals; CO leaves cleanly | Carbonyls have low thermal stability; L-ligand loss complicates gas-phase chemistry |
 
-: The main ALD ligand families. {#tbl-ligand-families tbl-colwidths="[15,13,17,25,30]"}
+: The main ALD ligand families [@Barry2021; @Barry2022]. {#tbl-ligand-families tbl-colwidths="[15,13,20,24,28]"}
 
 Two patterns are worth drawing out:
 
 - **Stability versus reactivity.** The move from halides to alkylamides for high-k dielectrics removed chloride contamination and corrosive by-products and lowered deposition temperatures, but gave up thermal stability. The trade-off between halides and alkylamides is a clean case study of the tension described at the start of this chapter.
 - **Filling the low-oxidation-state gap.** Homoleptic dialkylamides of low-valent metals tend to oligomerize and decompose before they can be vaporized. Bidentate amidinates solved this, giving volatile, thermally stable compounds for many transition metals and lanthanum [@Lim2003]. Guanidinates extend the idea with an extra amino group on the central carbon [@Kurek2014].
 
-Many modern precursors are **heteroleptic**: they combine different ligands so that one supplies stability and another supplies reactivity. Precursor families, synthesis and thermal behaviour will be covered in a later chapter.
+Many modern precursors are **heteroleptic**: they combine different ligands so that one supplies stability and another supplies reactivity.
+
+### Alkyls and hydrides
+
+Alkyl precursors are the most studied class. They are straightforward to make and modify, and TMA/H~2~O is the prototypical ALD reaction [@Barry2021]. Representative alkyls span four decades: GaMe~3~ and AlMe~3~ with AsH~3~ for GaAs and AlAs (1985), SnMe~4~ for SnO~2~ (1994), ZnEt~2~ for Al-doped ZnO (1994), Pt(CpMe)Me~3~ with O~2~ for Pt (2003), and Au(PMe~3~)Me~3~ for Au (2016) [@Barry2021].
+
+- **Chemisorption.** TMA reacts readily because Al is highly electropositive and has no accessible redox chemistry. The likely path is donation of the –OH lone pair into the empty p orbital on Al, followed by proton transfer to a methyl group, which leaves as CH~4~. TMA can bind to one –OH or to two neighbouring –OH groups (Simulation 2.1) [@Barry2021].
+- **Oxidizing co-reactants.** With water, the surface methyls are simply protonated off. With ozone or an oxygen plasma, oxygen inserts into the Al–C bonds to give surface methoxy groups, which burn to bicarbonate and formate, release CO~2~, and leave –OH. Ethene is also observed [@Barry2021].
+- **Metal surfaces.** On metals, the chemistry can differ. Au(PMe~3~)Me~3~ first loses its phosphine, and both fragments bind to the gold surface. RuCp(CO)~2~Et with O~2~ releases H~2~ as well as CO~2~ and H~2~O, and leaves a partial carbon layer that the next oxygen pulse removes [@Barry2021].
+- **Hydrides.** Ge films from GeH~2~Et~2~ form by losing both hydrides on chemisorption, leaving an ethyl-terminated surface that is cleared by a temperature step. A mass-27 signal attributed to an ethyl radical (29 amu) is more plausibly ethene formed by β-H elimination [@Barry2021].
+
+### Cyclopentadienyls
+
+Cp precursors were introduced in 1991, with much of the early development in Lauri Niinistö's group in Helsinki. Examples include MgCp~2~, ScCp~3~, YCp~3~, LaCp~3~ and Er(CpMe)~3~ with water for oxides, and RuCp~2~ and OsCp~2~ with O~2~ for metals [@Barry2021].
+
+- **Combustion.** Ru from RuCp~2~ was first described as complete combustion of the ligands to CO~2~ and H~2~O; H~2~ was later found as a by-product too [@Barry2021].
+- **Ligands left behind.** Metallocenes nucleate poorly on H-terminated silicon. In hydrogen, Cp can couple to dihydrofulvalene or be hydrogenated, which helps keep carbon out of Co films. NiCp~2~ with water, however, gives carbon-rich NiO, showing that some Cp can remain after chemisorption [@Barry2021].
+- **Not every precursor loses a ligand on adsorption.** Mn(CpEt)~2~ appears to adsorb intact on a fluoride surface and only releases its Cp ligands during the HF-pyridine pulse [@Barry2021].
+- **Half-sandwiches.** InCp is a coordination polymer in the solid but volatilizes as a monomer. It either reacts with –OH, eliminating CpH, or binds to surface oxygen while keeping its Cp ligand [@Barry2021].
+
+### Amides, silylamides and imides
+
+The first amide precursor in ALD was Zn[N(SiMe~3~)~2~]~2~, used with H~2~Se for ZnSe in 1992 [@Barry2021]. Amides generally follow the same Brønsted acid–base chemistry as alkyls, releasing an amine on reaction with surface –OH or –NH~x~ groups.
+
+- **Silylamides** (–N(SiMe~3~)~2~) are used across the periodic table, from Li and Zn to the lanthanides. With an oxygen source, the oxophilic silicon is scavenged into the film, giving a silicate [@Barry2021].
+- **TiN from Ti(NR~2~)~4~ and NH~3~** involves a reduction from Ti(IV) to Ti(III). The often-quoted mechanism, which releases N~2~, has stoichiometric problems. A better explanation is β-H elimination to a surface imine, giving a formal Ti(II) that comproportionates with neighbouring Ti(IV) [@Barry2021]. With water, Ti stays at +4 and the film is TiO~2~.
+- **Imido–amides**, M(NR)~x~(NR′~2~)~4−x~, are common for the refractory metals Nb, Mo, Ta and W. The strong M=N imido bond usually leads to nitride films [@Barry2021].
+
+### N,N-chelates
+
+Amidinates (including guanidinates and iminopyrrolidinates) are the most important N,N-chelates. Their use traces back to one paper: in 2003, Gordon's group reported ALD of seven metals and oxides from amidinates [@Lim2003; @Barry2021]. Newer N,N-chelates include diazabutadienes, β-diketiminates (@sec-tunable-families) and triazenides [@Barry2021].
+
+- **Heteroleptic precursors** let one ligand do the reacting. Al(^i^PrAMD)Et~2~ deposits Al~2~O~3~ with water down to 125 °C; solid-state NMR on the gallium analogue showed both ethyl groups are lost while the amidinate stays on the surface [@Barry2021].
+- **Decomposition kinetics matter more than onset temperature.** On an ultraclean Ni surface in ultrahigh vacuum, the copper amidinate dimer starts decomposing at about −73 °C. Yet it gives self-limiting Cu ALD up to 280 °C. The difference is time: decomposition on Ni was followed over more than an hour, while an ALD pulse lasts seconds. Decomposition proceeds by β-H abstraction from the alkyl groups; replacing those H atoms with methyls raised thermal stability by more than 200 °C [@Barry2021].
+
+### Alkoxides and β-diketonates
+
+Alkoxides have been used for about 30 years, mainly for oxides, because the strong M–O bonds tend to leave oxygen in the film. Much of their early development was done by Leskelä and Ritala at the University of Helsinki [@Barry2021]. They are particularly useful for mixed oxides such as perovskites. In one striking case, Te metal is deposited from Te(SiMe~3~)~2~ and Te(OEt)~4~: the oxophilic silicon pulls the ethoxide off as Me~3~SiOEt, leaving Te^0^ in both half-cycles [@Barry2021].
+
+β-Diketonates (acac, thd, hfac and others) often **chemisorb as the ligand** rather than leaving as the free diketone, possibly because their conjugate acids are much more acidic than those of other ligands [@Barry2021]. The surface-bound ligand can then be combusted, which allows metal films of Pt, Cu, Ir and Rh. Fluorinated hfac rarely leaves fluorine in the film, but it has also been used deliberately as a fluorine source: CaF~2~ was grown from Ca(thd)~2~ and O~3~ alternated with H(hfac) [@Barry2021].
+
+### Neutral donor ligands
+
+L ligands are less common in ALD, but they appear in several important precursors [@Barry2021]:
+
+- **Carbonyls** are rare and mostly found in heteroleptic compounds. Their main weakness is low thermal stability: CoCp(CO)~2~ is far more volatile than CoCp~2~, but it loses CO in the gas phase, which suits CVD rather than ALD. W(CO)~6~ with NH~3~ gives WN~x~ by CO loss with < 1 % carbon. On hydroxylated oxides, Mo(CO)~6~ shows complex redox chemistry that depends on the –OH density.
+- **Phosphines** stabilize low-valent and noble-metal precursors, as in Au(PMe~3~)Me~3~ above.
+- **N-heterocyclic carbenes** (NHCs) are strong σ-donors, used for example in Cu(^i^Pr~2~-NHC)(N(SiMe~3~)~2~) for Cu films.
+
+### Which ligand leaves first?
+
+For a heteroleptic precursor, a first guess is that the ligand with the **least acidic conjugate acid** is the most basic, and so is protonated and lost first at a surface –OH. Approximate pK~a~ values of some conjugate acids are:
+
+| Ligand | Conjugate acid | Approximate pK~a~ |
+|:---|:---|:---|
+| Methyl | CH~4~ | ~50 |
+| Dialkylamide | HNR~2~ | ~35–40 |
+| Alkoxide | ROH | ~16–18 |
+| Cyclopentadienyl | C~5~H~6~ | ~16 |
+| β-Diketonate | β-diketone | ~9 |
+| Chloride | HCl | ~ −7 |
+
+: Approximate pK~a~ values of ligand conjugate acids. {#tbl-pka}
+
+On this basis, ZrCp~2~Me~2~ should lose its methyl groups and keep its Cp ligands. Mass spectrometry shows that it loses both, with methyl loss dominant but CpH also released [@Barry2021]. The reason is that ALD surface reactions are **not at equilibrium**: the leaving ligand is swept away by the gas flow, so less favourable pathways can compete. Tying the two Cp rings together (an *ansa*-zirconocene) brings in the chelate effect, and then only the methyls are lost [@Barry2021]. pK~a~ is a useful first guess, not a prediction.
+
+Precursor synthesis and thermal behaviour will be covered in a later chapter.
 
 ## Check your understanding
 
@@ -280,8 +348,22 @@ Using the data in @tbl-chelate, what happens to the stability advantage of the c
 :::
 :::
 
+::: {.quiz}
+ZrCp~2~Me~2~ is pulsed onto a hydroxylated surface. Methane is the main by-product, but cyclopentadiene is also detected. Why is CpH released at all, given that CH~4~ (pK~a~ ~50) is far less acidic than CpH (pK~a~ ~16)?
+
+- [ ] The pK~a~ values are reversed at ALD temperatures.
+- [ ] Cp ligands are always lost first because they are larger.
+- [x] Surface reactions in ALD are not at equilibrium: the leaving ligand is swept away by the gas flow, so less favourable pathways can still contribute.
+- [ ] The Cp ligand is lost by thermal decomposition in the source.
+
+::: {.explanation}
+pK~a~ predicts which ligand is lost under equilibrium conditions. In ALD, products are removed as they form, so kinetically accessible but less favourable pathways compete. Linking the Cp rings into an *ansa*-zirconocene adds a chelate effect, and then only methyl is lost [@Barry2021].
+:::
+:::
+
 ## Further reading
 
 - @Barry2022, Chapter 3: ligand bonding for ALD, including the examples used in this chapter.
+- @Barry2021: a survey of the main organometallic ligand families in ALD and their surface mechanisms, with tables of representative precursors.
 - @Lim2003: the paper that established amidinates as a general route to volatile, thermally stable precursors for transition metals.
 - @Kurek2014: a review of guanidinate ligands in CVD and ALD.
