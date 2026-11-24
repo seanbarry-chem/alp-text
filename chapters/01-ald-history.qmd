@@ -44,7 +44,7 @@ In 1977 the team moved to Lohja Corporation, which built an electronics factory 
 
 The two lineages developed without collaboration, and very likely without knowledge of each other. Given how differently they were framed, that is not surprising: one was about the chemistry of a surface relative to the bulk, the other about the engineering of thin-film devices [@Barry2022].
 
-They did come close to meeting. In the late 1970s, Suntola defended his patent application in Moscow, and the patent was granted in the Soviet jurisdiction. The examiners did not raise molecular layering as prior art, and an early chance to join the two bodies of work was missed [@Barry2022]. The connection was eventually made decades later, largely through the historical work of Riikka Puurunen and the VPHA (see below) [@Barry2022; @Ahvenniemi2017].
+They did come close to meeting. In the late 1970s, Suntola defended his patent application in Moscow, and the patent was granted in the Soviet jurisdiction. The examiners did not raise molecular layering as prior art, and an early chance to join the two bodies of work was missed [@Barry2022]. A deliberate effort to bring the two histories together began only in 2004, and it led to the VPHA (see below) [@Barry2022; @Ahvenniemi2017]. Riikka Puurunen can be credited with bringing the early Russian contributions to the forefront [@Barry2022].
 
 | | Molecular layering | Atomic layer epitaxy |
 |---|---|---|
@@ -61,7 +61,7 @@ The way we draw ALD has changed with the field. Kol'tsov's 1971 thesis pictured 
 
 ### What's in a name
 
-The ZnS films were polycrystalline, so "epitaxy" was never strictly correct. As the materials list grew to amorphous oxides and nitrides, the name became a liability and was replaced by "atomic layer deposition". The same mismatch between name and physics applies to "atomic layer", since a cycle deposits a fraction of a monolayer (@sec-what-makes-ald).
+The ZnS films were polycrystalline, so "epitaxy" was never strictly correct. As the materials list grew to amorphous oxides and nitrides, the name became a liability. The term "atomic layer deposition" was first used around 1990 and became the common name in the mid-1990s. The same mismatch between name and physics applies to "atomic layer", since a cycle deposits a fraction of a monolayer (@sec-what-makes-ald).
 
 ## From displays to microchips
 
@@ -79,7 +79,7 @@ The first AVS conference on ALD was held in Monterey, California, in 2001, chair
 
 ## Recovering the history
 
-Because the two lineages developed in isolation, the early literature is scattered across languages and journals. The **Virtual Project on the History of ALD** (VPHA) was started in July 2013 as an open, volunteer effort to make that early work visible [@Ahvenniemi2017]. Participants read and discussed early publications from both lineages. The result was a recommended reading list, presented at the ALD 2016 conference in Dublin and published the following year with dozens of co-authors [@Ahvenniemi2017].
+Because the two lineages developed in isolation, the early literature is scattered across languages and journals. An effort to join the two histories began in 2004 [@Barry2022]. It led to the **Virtual Project on the History of ALD** (VPHA), launched in July 2013 as an open, volunteer effort to make the early work visible [@Ahvenniemi2017]. Participants read and discussed early publications from both lineages. The result was a recommended reading list, presented at the ALD 2016 conference in Dublin and published the following year with dozens of co-authors [@Ahvenniemi2017]. The VPHA has since closed, but the reading list remains the best entry point to the early literature.
 
 ## Mapping the history
 
@@ -135,7 +135,7 @@ places = [
     {year: 1982, when: "1982", text: "Lauri Niinistö starts ALD process research at the Helsinki University of Technology.", ref: ""},
     {year: 1984, when: "1984", text: "First symposium on atomic layer epitaxy, Espoo.", ref: ""},
     {year: 1990, when: "1990", text: "ALE-1, the first international ALE symposium, Espoo.", ref: ""},
-    {year: 2013, when: "2013", text: "The Virtual Project on the History of ALD (VPHA) starts as an open volunteer effort, coordinated from VTT.", ref: "Ahvenniemi et al. 2017"},
+    {year: 2013, when: "2013", text: "The Virtual Project on the History of ALD (VPHA) starts as an open volunteer effort, coordinated from VTT. It grew out of an effort begun in 2004 to join the two histories, and has since closed.", ref: "Ahvenniemi et al. 2017; Barry 2022"},
     {year: 2014, when: "2014", text: "40th anniversary of ALE; Puurunen publishes Suntola's account of the invention.", ref: "Puurunen 2014"}]},
   {id: "uh", name: "University of Helsinki, Kumpula", where: "Helsinki, Finland",
    lon: 24.962, lat: 60.205, label: "Univ. Helsinki, Kumpula", dx: 14, dy: -4, anchor: "start", lineage: "Atomic layer epitaxy", events: [
