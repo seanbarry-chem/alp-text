@@ -33,7 +33,3 @@ Thanks for helping build *Atomic Layer Processing*. Seán Barry is the editor; a
 - `chapters/NN-short-name.qmd`: one file per chapter; add new chapters to the list in `_quarto.yml`.
 - `assets/`: theme, quiz script and styles.
 - Quizzes: see the `::: {.quiz}` blocks in Chapter 2 (`chapters/02-ald-fundamentals.qmd`) for the format.
-
-## Sidebar section lists
-
-The collapsible section lists under each chapter in the left sidebar are generated automatically at render time by `scripts/sidebar_sections.py` (needs Python 3, standard library only). Every level-2 heading (`##`) in a file under `chapters/` appears in the list; there is nothing to update by hand.

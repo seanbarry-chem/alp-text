@@ -1,8 +1,6 @@
 project:
   type: book
   output-dir: _site
-  post-render:
-    - scripts/sidebar_sections.py
   resources:
     - CNAME
 
@@ -45,4 +43,3 @@ format:
     css: assets/quiz.css
     include-after-body:
       - assets/quiz.html
-      - assets/sidebar-sections.html
