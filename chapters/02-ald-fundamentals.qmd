@@ -9,7 +9,8 @@ After this chapter you should be able to:
 1. State the operational definition of ALD and design an experiment that tests it.
 2. Estimate the exposure needed to saturate a planar surface from kinetic gas theory.
 3. Interpret growth-per-cycle (GPC) versus temperature data critically, including where the "ALD window" idea breaks down.
-4. Recognize non-linear initial growth and correct thickness-based GPC estimates for it.
+4. Explain why a saturated half-cycle deposits only a fraction of a monolayer, and convert a GPC into a coverage.
+5. Recognize non-linear initial growth and correct thickness-based GPC estimates for it.
 :::
 
 ## What makes a process ALD? {#sec-what-makes-ald}
@@ -243,8 +244,178 @@ cycleFigure = {
 
 Two points are worth stating early, because students often get them wrong:
 
-- **GPC is a fraction of a monolayer.** For TMA/H~2~O, a typical GPC is about 1 Å, which is well below the thickness of one "layer" of Al~2~O~3~. The amount of metal adsorbed per cycle is limited by **steric hindrance** from the ligands that remain after chemisorption and by the **number of reactive sites**. Which of the two dominates depends on the chemistry and the temperature [@Puurunen2005].
+- **GPC is a fraction of a monolayer.** For TMA/H~2~O, a typical GPC is about 1 Å, which is well below the thickness of one "layer" of Al~2~O~3~. The amount of metal adsorbed per cycle is limited by **steric hindrance** from the ligands that remain after chemisorption and by the **number of reactive sites**. Which of the two dominates depends on the chemistry and the temperature [@Puurunen2005] (see @sec-steric).
 - **Eqs. [-@eq-tma]–[-@eq-water] are idealized.** In reality, TMA can react with one or two hydroxyls, and it can also dissociate onto Al–O bridges. The ratio between these pathways sets how many methyl groups survive into step B. This is why the hydroxyl density, and hence the temperature, controls the GPC.
+
+## Steric crowding: why one cycle is not one monolayer {#sec-steric}
+
+A saturated TMA half-cycle does not deposit a monolayer of Al~2~O~3~. Each chemisorbed fragment keeps one or two methyl groups, and these take up much more room on the surface than a bare aluminum atom would [@Barry2022]. The methyls cover neighbouring –OH groups so that no further TMA molecule can reach them. The half-reaction saturates when every remaining –OH is either consumed or shielded. That point comes long before the surface holds a full layer of aluminum. In other words, a saturated layer of chemisorbed precursor is not a monolayer of the target film [@Barry2022; @Puurunen2005].
+
+There are two ways the coverage can be limited:
+
+- **Site-limited.** If –OH groups are sparse, TMA can reach all of them. The amount of Al per cycle is then set by the hydroxyl density.
+- **Sterically limited.** If –OH groups are dense, the ligands of the first fragments to land block the rest. The amount of Al per cycle is then set by the size of the fragments, not by the number of sites.
+
+Which regime applies depends on the precursor and the temperature, because the hydroxyl density falls as the surface dehydroxylates at higher temperature [@Puurunen2005].
+
+The simulation below drops TMA molecules at random onto a 10 nm × 10 nm patch of hydroxylated surface. Each molecule that lands on a free, unshielded –OH chemisorbs, either as a dimethyl species (one –OH) or, if a second free –OH is close by, as a monomethyl species (two –OH). Set the methyl diameter to zero to switch off steric hindrance and see the site-limited case.
+
+::: {.sim-box}
+[Simulation 2.2: Steric crowding during the TMA half-cycle]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof ohDens = Inputs.range([2, 12], {value: 8, step: 0.5, label: "–OH density (nm⁻²)"})
+viewof meD = Inputs.range([0, 4.5], {value: 3.5, step: 0.1, label: "Methyl group diameter (Å)"})
+viewof pBi = Inputs.range([0, 1], {value: 0.4, step: 0.05, label: "Probability of reacting with two –OH"})
+viewof expo = Inputs.range([0, 6], {value: 6, step: 0.05, label: "TMA exposure (arrivals per –OH)"})
+viewof reseed = Inputs.button("New random surface")
+```
+
+```{ojs}
+//| echo: false
+steric = {
+  reseed;                                            // re-run on button press
+  const L = 100;                                     // patch size, Å
+  let seed = (Math.random() * 2 ** 32) >>> 0;
+  const rnd = () => {                                // mulberry32
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const N = Math.round(ohDens * L * L / 100);
+  const sites = d3.range(N).map(() => ({x: rnd() * L, y: rnd() * L, used: false}));
+  const wrap = v => v - L * Math.round(v / L);
+  const dist = (a, b) => Math.hypot(wrap(a.x - b.x), wrap(a.y - b.y));
+  // neighbour lists for bifunctional reaction (second –OH within 3.5 Å)
+  const nb = sites.map((s, i) => sites.map((t, j) => j).filter(j => j !== i && dist(s, sites[j]) < 3.5));
+  const dDi = meD * Math.SQRT2, dMono = meD;         // footprint diameters
+  const frags = [];
+  const fits = (c, d) => frags.every(f => dist(c, f) >= (d + f.d) / 2);
+  const total = Math.round(6 * N), curve = [{e: 0, al: 0}];
+  for (let k = 1; k <= total; k++) {
+    const i = Math.floor(rnd() * N), s = sites[i];
+    if (!s.used) {
+      let placed = false;
+      if (rnd() < pBi) {
+        const free = nb[i].filter(j => !sites[j].used);
+        if (free.length) {
+          const j = free.reduce((a, b) => dist(s, sites[a]) < dist(s, sites[b]) ? a : b);
+          const t = sites[j];
+          const c = {x: (s.x + wrap(t.x - s.x) / 2 + L) % L, y: (s.y + wrap(t.y - s.y) / 2 + L) % L};
+          if (fits(c, dMono)) {
+            s.used = t.used = true;
+            frags.push({...c, d: dMono, me: 1, k, a: s, b: t});
+            placed = true;
+          }
+        }
+      }
+      if (!placed && fits(s, dDi)) { s.used = true; frags.push({x: s.x, y: s.y, d: dDi, me: 2, k, a: s}); }
+    }
+    if (k % Math.max(1, Math.round(N / 20)) === 0) curve.push({e: k / N, al: frags.length});
+  }
+  return {L, N, sites, frags, curve};
+}
+```
+
+```{ojs}
+//| echo: false
+stericNow = {
+  const kMax = expo * steric.N;
+  const frags = steric.frags.filter(f => f.k <= kMax);
+  const used = new Set(frags.flatMap(f => f.me === 1 ? [f.a, f.b] : [f.a]));
+  const area = steric.L * steric.L / 100;            // nm²
+  const al = frags.length / area;                    // Al nm⁻²
+  const me = frags.reduce((s, f) => s + f.me, 0) / area;
+  const vAl = 101.96 / (2 * 3.0 * 6.02214e23) * 1e24;// Å³ per Al at 3.0 g cm⁻³
+  const gpc = al / 100 * vAl;                        // Å
+  const ml = Math.cbrt(vAl);                         // Å, one "layer" of Al2O3
+  return {frags, used, al, me, gpc, ml, ohUsed: used.size / steric.N,
+          nMono: frags.filter(f => f.me === 1).length, nDi: frags.filter(f => f.me === 2).length};
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const S = width < 640 ? Math.min(width - 10, 400) : 320, sc = S / steric.L;
+  const wrapDraw = (f, draw) => {                    // draw periodic images near edges
+    let out = "";
+    for (const dx of [-steric.L, 0, steric.L]) for (const dy of [-steric.L, 0, steric.L]) {
+      const x = f.x + dx, y = f.y + dy;
+      if (x > -6 && x < steric.L + 6 && y > -6 && y < steric.L + 6) out += draw(x, y);
+    }
+    return out;
+  };
+  let svg = `<rect width="${S}" height="${S}" fill="#FFFFFF" stroke="#8C8C8C"/>`;
+  for (const f of stericNow.frags) {
+    svg += wrapDraw(f, (x, y) => {
+      const r = Math.max(f.d / 2, 0.9) * sc;
+      const fill = f.me === 2 ? "#4D4D4D" : "#B3B3B3";
+      return `<circle cx="${x * sc}" cy="${y * sc}" r="${r}" fill="${fill}" fill-opacity="0.55" stroke="#000" stroke-width="0.6"/>`;
+    });
+  }
+  for (const s of steric.sites) {
+    const used = stericNow.used.has(s);
+    svg += `<circle cx="${s.x * sc}" cy="${s.y * sc}" r="${used ? 1.6 : 2.2}" fill="${used ? "#000" : "#E91C24"}"/>`;
+  }
+  const map = `<svg viewBox="0 0 ${S} ${S}" width="${S}" height="${S}" style="max-width:100%" role="img" aria-label="Top view of the surface after the TMA pulse">${svg}</svg>`;
+  const legend = `<div class="map-legend" style="margin-top:0.4rem">
+      <span><i style="background:#E91C24;border-color:#E91C24"></i>free –OH</span>
+      <span><i style="background:#000"></i>reacted –OH</span>
+      <span><i style="background:#4D4D4D;opacity:0.6"></i>dimethyl footprint</span>
+      <span><i style="background:#B3B3B3"></i>monomethyl footprint</span></div>`;
+  const curve = Plot.plot({
+    width: width < 640 ? Math.min(width - 10, 400) : 300, height: 320, marginLeft: 50, marginBottom: 45,
+    x: {label: "TMA exposure (arrivals per –OH) →", domain: [0, 6]},
+    y: {label: "↑ Al adsorbed (nm⁻²)", domain: [0, Math.max(ohDens, 4) * 1.05], grid: true},
+    marks: [
+      Plot.ruleY([ohDens], {stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+      Plot.text([{x: 6, y: ohDens}], {x: "x", y: "y", text: () => "every –OH reacted", textAnchor: "end", dy: -7, fill: "#4D4D4D"}),
+      Plot.line(steric.curve, {x: "e", y: d => d.al / (steric.L * steric.L / 100), stroke: "#000", strokeWidth: 2}),
+      Plot.dot([{x: expo, y: stericNow.al}], {x: "x", y: "y", r: 6, fill: "#E91C24"})
+    ]
+  });
+  const box = html`<div><div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start">
+    <div>${html([map])}</div><div>${curve}</div></div>${html([legend])}</div>`;
+  return box;
+}
+```
+
+```{ojs}
+//| echo: false
+md`Al adsorbed: **${stericNow.al.toFixed(2)} nm⁻²** (${stericNow.nDi} dimethyl, ${stericNow.nMono} monomethyl) · –OH consumed: **${(100 * stericNow.ohUsed).toFixed(0)} %** · CH₃ left for the water step: **${stericNow.me.toFixed(2)} nm⁻²**
+
+Implied GPC: **${stericNow.gpc.toFixed(2)} Å**, which is **${(100 * stericNow.gpc / stericNow.ml).toFixed(0)} %** of one Al₂O₃ layer (${stericNow.ml.toFixed(1)} Å). Measured TMA/H₂O processes typically give about 1.1 Å.`
+```
+
+::: {.assumptions}
+**Assumptions.** Random sequential adsorption: TMA arrives at random –OH sites, sticks irreversibly where it lands, and never moves. Each fragment's footprint is a disc: a dimethyl species covers the area of two methyl groups, a monomethyl species the area of one. A molecule chemisorbs only if its footprint does not overlap an existing one. A monomethyl species forms only when a second free –OH lies within 3.5 Å. –OH groups are placed at random, and edges wrap around. TMA reaction with Al–O bridges is left out. The GPC conversion assumes each adsorbed Al ends up in Al~2~O~3~ of density 3.0 g cm^−3^.
+
+**Where it fails.** With realistic settings the model gives 0.6–0.9 Å, below the measured ~1.1 Å. Random, irreversible adsorption is the least efficient way to pack a surface, real fragments can rearrange, and the omitted reaction with Al–O bridges adds Al without consuming –OH. Use the model for trends (how coverage responds to –OH density and ligand size), not for absolute numbers.
+:::
+:::
+
+### What is "typical" coverage for TMA/H~2~O?
+
+A useful way to express coverage is to compare the GPC with the thickness of one "layer" of the film. For Al~2~O~3~ with a density of about 3.0 g cm^−3^, the volume per Al atom is
+
+$$
+V_\text{Al} = \frac{M_{\text{Al}_2\text{O}_3}}{2\,\rho\,N_\text{A}} = \frac{101.96\ \text{g mol}^{-1}}{2 \times 3.0\ \text{g cm}^{-3} \times 6.022\times10^{23}\ \text{mol}^{-1}} \approx 28\ \text{Å}^3
+$$ {#eq-val}
+
+The cube root of this volume, about 3 Å, is a reasonable estimate of the thickness of one layer; @Barry2022 quotes about 2.9 Å. A typical TMA/H~2~O GPC of 1.1 Å therefore corresponds to:
+
+- **About 30–40 % of a monolayer** of Al~2~O~3~ per cycle, depending on temperature and nucleation-site density [@Barry2022].
+- **About 4 Al atoms per nm^2^ per cycle** (1.1 Å ÷ 28 Å^3^ ≈ 0.039 Å^−2^), compared with roughly 11 nm^−2^ for a complete layer.
+
+So it takes about three cycles to deposit the equivalent of one layer of aluminum oxide. After the TMA pulse, the surface is a mixture of fragments that have lost one methyl group and fragments that have lost two [@Barry2022]. Their ratio sets how many methyls go on to the water step, and both the ratio and the –OH density shift with temperature. This is why the GPC of TMA/H~2~O changes with deposition temperature even though each half-reaction is self-limiting [@Puurunen2005].
+
+::: {.callout-important appearance="simple"}
+## Saturation is not a monolayer
+"Saturated" means the surface will take up no more precursor. It does not mean the surface is covered with a full layer of metal atoms. For almost every ALD process, a saturated half-cycle deposits a fraction of a monolayer of the final film.
+:::
 
 ## Saturation and dose
 
@@ -263,7 +434,7 @@ $$ {#eq-langmuir}
 The simulation below evaluates @eq-flux and @eq-langmuir for TMA (M = 72.09 g mol^−1^) and scales the GPC by the coverage.
 
 ::: {.sim-box}
-[Simulation 2.2: Saturation of a half-reaction]{.sim-title}
+[Simulation 2.3: Saturation of a half-reaction]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -339,7 +510,7 @@ GPC is commonly plotted against temperature, and the range over which it is appr
 | High *T*, low GPC | ↓ | Desorption of chemisorbed species, or loss of reactive sites (e.g. dehydroxylation) |
 
 ::: {.sim-box}
-[Simulation 2.3: A qualitative ALD window]{.sim-title}
+[Simulation 2.4: A qualitative ALD window]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -411,7 +582,7 @@ d(N) &= \mathrm{GPC}_\infty\left[N + (r-1)\,n_0\left(1-e^{-N/n_0}\right)\right]
 $$ {#eq-nucleation}
 
 ::: {.sim-box}
-[Simulation 2.4: Thickness versus cycles with a nucleation transient]{.sim-title}
+[Simulation 2.5: Thickness versus cycles with a nucleation transient]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -509,6 +680,19 @@ A 50-cycle film is 3.0 nm thick. The steady-state GPC is known to be 1.0 Å. Ass
 
 ::: {.explanation}
 30 Å = 1.0 Å × (50 − n~delay~), so n~delay~ = 20 cycles. The apparent GPC from this single film (0.6 Å) would underestimate the true value by 40 %.
+:::
+:::
+
+::: {.quiz}
+A TMA/H~2~O process has a GPC of 1.1 Å, and one layer of Al~2~O~3~ is about 2.9 Å thick. A student concludes that the TMA half-reaction is undersaturated, because a saturated half-reaction should give a full monolayer. What is wrong with this reasoning?
+
+- [ ] Nothing; the TMA dose should be increased until the GPC reaches 2.9 Å.
+- [ ] The water half-reaction must be undersaturated instead.
+- [x] Saturation means no further uptake, not full coverage. Steric crowding by the remaining methyl groups and the finite –OH density cap a saturated cycle at roughly 30–40 % of a monolayer.
+- [ ] GPC is measured in Å/cycle, so it cannot be compared with a layer thickness.
+
+::: {.explanation}
+A saturated half-cycle stops when every remaining –OH is consumed or shielded by ligands, which happens well before a full layer of Al is adsorbed [@Barry2022; @Puurunen2005]. Increasing the dose beyond saturation does not raise the GPC.
 :::
 :::
 
