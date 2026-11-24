@@ -1,0 +1,61 @@
+<script>
+// Collapsible section lists under each chapter in the sidebar.
+// Data comes from sections.json, written by scripts/sidebar_sections.py at render time.
+document.addEventListener("DOMContentLoaded", async () => {
+  const offset = document.querySelector('meta[name="quarto:offset"]')?.content ?? "./";
+  const root = new URL(offset, window.location.href);
+  let data;
+  try {
+    const r = await fetch(new URL("sections.json", root));
+    if (!r.ok) return;
+    data = await r.json();
+  } catch (e) { return; }
+
+  document.querySelectorAll("#quarto-sidebar a.sidebar-link").forEach((a) => {
+    const url = new URL(a.href, window.location.href);
+    const rel = decodeURIComponent(url.pathname.slice(root.pathname.length));
+    const secs = data[rel];
+    if (!secs || !secs.length) return;
+    const li = a.closest("li.sidebar-item");
+    const container = a.closest(".sidebar-item-container");
+    if (!li || !container || li.querySelector(".sec-list")) return;
+    const open = a.classList.contains("active");
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "sec-toggle";
+    btn.setAttribute("aria-expanded", String(open));
+    btn.setAttribute("aria-label", "Show sections");
+    btn.innerHTML = '<i class="bi bi-chevron-right" aria-hidden="true"></i>';
+    container.appendChild(btn);
+    container.classList.add("has-sec-toggle");
+
+    const ul = document.createElement("ul");
+    ul.className = "sec-list";
+    ul.hidden = !open;
+    const base = a.getAttribute("href").split("#")[0];
+    secs.forEach((s) => {
+      const item = document.createElement("li");
+      const link = document.createElement("a");
+      link.href = base + "#" + s.id;
+      if (s.num) {
+        const n = document.createElement("span");
+        n.className = "sec-num";
+        n.textContent = s.num;
+        link.appendChild(n);
+      }
+      link.appendChild(document.createTextNode(s.title));
+      item.appendChild(link);
+      ul.appendChild(item);
+    });
+    li.appendChild(ul);
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const show = ul.hidden;
+      ul.hidden = !show;
+      btn.setAttribute("aria-expanded", String(show));
+    });
+  });
+});
+</script>
