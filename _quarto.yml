@@ -39,4 +39,4 @@ format:
     css: assets/quiz.css
     include-after-body:
       - assets/quiz.html
-    license: "CC BY-NC-SA 4.0"   # edit if you choose another licence
+    license: "CC BY-NC-SA"

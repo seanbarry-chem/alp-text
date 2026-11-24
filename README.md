@@ -46,5 +46,4 @@ Check GitHub's current Pages docs for the IP addresses before setting DNS.
 
 - [ ] Verify every entry in `references.bib` (entered from memory; check DOIs/pages).
 - [ ] Check that no text or figure is copied or closely paraphrased from a copyrighted source.
-- [ ] Set licence in `_quarto.yml`.
 - [ ] Optional: ACS citation style (download `american-chemical-society.csl` from zotero.org/styles into `assets/`, add `csl: assets/american-chemical-society.csl`).
