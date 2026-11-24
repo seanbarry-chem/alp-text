@@ -13,26 +13,55 @@ After this chapter you should be able to:
 
 ## Two inventions, one technique
 
-ALD was discovered independently at least twice, under different names [@Ahvenniemi2017; @Puurunen2014]:
+ALD was discovered independently at least twice, under different names [@Ahvenniemi2017; @Puurunen2014; @Barry2022]:
 
-- **Molecular layering (ML)**, developed in Leningrad in the 1960s by S. I. Kol'tsov and V. B. Aleskovskii [@Malygin2015].
+- **Molecular layering (ML)**, developed in Leningrad from the 1960s by V. B. Aleskovskii and his student S. I. Kol'tsov [@Malygin2015; @Barry2022].
 - **Atomic layer epitaxy (ALE)**, developed in Finland from 1974 by Tuomo Suntola and co-workers [@Puurunen2014].
 
-Both rest on the principle from @sec-what-makes-ald: repeated, separate, saturating gas–solid reactions. They came at it from opposite directions, though. Molecular layering grew out of the surface chemistry of solids. ALE was an engineering answer to a device problem. That difference still shows in how the two communities wrote about their work, and it is one reason the Soviet work went largely unnoticed outside the USSR for decades.
+Both rest on the principle from @sec-what-makes-ald: repeated, separate, saturating gas–solid reactions. They reached it from opposite directions, though, and each lineage left its mark on how ALD is thought about today.
 
-## Molecular layering in Leningrad
+### Molecular layering: a chemical question
 
-In his 1952 doctoral thesis at the Leningrad Technological Institute, Aleskovskii proposed a "framework" hypothesis: that a solid could be built up by chemical assembly on the surface of an existing solid framework [@Malygin2015]. In the 1960s, Kol'tsov and Aleskovskii turned the idea into a method. They exposed a solid surface to reactants one at a time, so that each step reacted only with the surface groups left by the step before [@Malygin2015].
+The Leningrad work started from a question about solids, not films. In his 1952 doctoral thesis at the Leningrad Technological Institute, Aleskovskii proposed what he called the "matrix" or "framework" hypothesis [@Malygin2015; @Barry2022]. A solid framework carries a stoichiometric number of reactive surface sites relative to its bulk atoms. If those sites are reacted with a suitable chemical, the result is a new surface that again carries a stoichiometric number of sites. The cyclical logic of ALD is already present in this idea: each reaction regenerates the conditions for the next [@Barry2022].
 
-This work was published mainly in Russian, which limited its reach. A detailed English-language account of Aleskovskii and Kol'tsov's contributions only appeared in 2015 [@Malygin2015].
+The method followed over the next two decades [@Barry2022]:
 
-## Atomic layer epitaxy in Finland
+- **1963:** first report of molecular layering, in the Russian literature.
+- **1965:** first full paper, by Aleskovskii in *J. Appl. Chem. USSR*.
+- **1971:** Kol'tsov's doctoral dissertation, which contains much of what would now be called the chemical conceptualization of ALD. In the same year, Kol'tsov and Aleskovskii applied for a patent titled "The Principles of Synthesis of Solids". It was declined.
 
-In 1974, the Finnish medical-technology company Instrumentarium asked Suntola, a young physicist, to lead a new R&D effort. He chose thin-film electroluminescent (EL) displays. These need very thin, uniform, pinhole-free films with high dielectric strength, over large areas. Suntola and Jorma Antson filed the first ALE patent that year [@Puurunen2014]. The original target was high-quality **polycrystalline ZnS** for EL panels [@Puurunen2014].
+Throughout, molecular layering was framed as surface chemistry: how to change a material's surface by chemical means, producing different kinds of surfaces and different ratios of bulk atoms to surface sites [@Barry2022]. Because it was published mainly in Russian, it reached few readers outside the USSR. A detailed English-language account of Aleskovskii and Kol'tsov's work only appeared in 2015 [@Malygin2015].
 
-In 1977 the team moved to Lohja Corporation, which built an electronics factory in Espoo in 1984 to make ALE-grown ZnS:Mn displays. This was the first industrial use of the technique. Display modules from the line served in the departure hall of Helsinki-Vantaa airport for about two decades.
+### Atomic layer epitaxy: an engineering answer
 
-Note the name. The ZnS films were polycrystalline, so "epitaxy" was never strictly correct. As the materials list grew to amorphous oxides and nitrides, the name became a liability, and "atomic layer deposition" replaced it from the mid-1990s onward. The same mismatch between name and physics applies to "atomic layer", since a cycle deposits a fraction of a monolayer (@sec-what-makes-ald).
+In 1974, the Finnish medical-technology company Instrumentarium asked Suntola, a young physicist, to lead a new R&D effort. He chose thin-film electroluminescent (EL) displays. These need very thin, uniform, pinhole-free films with high dielectric strength, over large areas. The original target was high-quality **polycrystalline ZnS** for EL panels [@Puurunen2014].
+
+Suntola and Jorma Antson filed the patent "Method for Producing Compound Thin Films" in 1974 [@Puurunen2014; @Barry2022]. Where molecular layering asked a chemical question, ALE was engineered from the start as an industrial solution for making devices, and it focused on the physics and engineering of depositing and characterizing films [@Barry2022]. The patent shows this. It contains detailed technical drawings of a reactor, and the ALE work laid the technical foundations of concepts that are now active research areas in their own right, including area-selective ALD and spatial ALD [@Barry2022].
+
+In 1977 the team moved to Lohja Corporation, which built an electronics factory in Espoo in 1984 to make ALE-grown ZnS:Mn displays. This was the first industrial use of the technique. Display modules from the line served in the departure hall of Helsinki-Vantaa airport for about two decades. Suntola's display work also explains why early ALD concentrated on chalcogenides (sulfides and selenides); oxides and nitrides came to the fore in the 1990s [@Barry2022].
+
+### A missed connection
+
+The two lineages developed without collaboration, and very likely without knowledge of each other. Given how differently they were framed, that is not surprising: one was about the chemistry of a surface relative to the bulk, the other about the engineering of thin-film devices [@Barry2022].
+
+They did come close to meeting. In the late 1970s, Suntola defended his patent application in Moscow, and the patent was granted in the Soviet jurisdiction. The examiners did not raise molecular layering as prior art, and an early chance to join the two bodies of work was missed [@Barry2022]. The connection was eventually made decades later, largely through the historical work of Riikka Puurunen and the VPHA (see below) [@Barry2022; @Ahvenniemi2017].
+
+| | Molecular layering | Atomic layer epitaxy |
+|---|---|---|
+| Where | Leningrad Technological Institute, USSR | Instrumentarium, then Lohja, Finland |
+| Key people | V. B. Aleskovskii, S. I. Kol'tsov | T. Suntola, J. Antson |
+| Origin | 1952 "framework" hypothesis; first reports 1963–1965 | 1974 patent application |
+| Framing | Chemistry: modifying the surface of a solid | Engineering: depositing films for devices |
+| Patent | 1971 application declined | Granted, including in the USSR |
+| Reach | Published mainly in Russian | International patents and conferences |
+
+: The two origins of ALD compared [@Malygin2015; @Puurunen2014; @Barry2022]. {#tbl-origins}
+
+The way we draw ALD has changed with the field. Kol'tsov's 1971 thesis pictured the growing surface as a regular lattice of atomic points, one layer added per cycle. Modern depictions, such as Puurunen's, show bulky chemisorbed precursor fragments and the complexity of the surface reactions [@Barry2022]. Simulation 2.1 in the next chapter sits between the two: a cartoon, but one that shows steric shielding and more than one adsorbed species.
+
+### What's in a name
+
+The ZnS films were polycrystalline, so "epitaxy" was never strictly correct. As the materials list grew to amorphous oxides and nitrides, the name became a liability and was replaced by "atomic layer deposition". The same mismatch between name and physics applies to "atomic layer", since a cycle deposits a fraction of a monolayer (@sec-what-makes-ald).
 
 ## From displays to microchips
 
@@ -82,10 +111,15 @@ places = [
   {id: "lti", name: "Leningrad Technological Institute", where: "Leningrad (St Petersburg), USSR",
    lon: 30.318, lat: 59.917, lineage: "Molecular layering", events: [
     {year: 1952, when: "1952", text: "Aleskovskii's doctoral thesis proposes the \"framework\" hypothesis: building a solid by chemical assembly on an existing solid surface.", ref: "Malygin et al. 2015"},
-    {year: 1965, when: "1960s", text: "Kol'tsov and Aleskovskii develop molecular layering: sequential, saturating reactions of reactants with surface groups. Published mainly in Russian.", ref: "Malygin et al. 2015"}]},
+    {year: 1963, when: "1963", text: "First report of molecular layering, in the Russian literature.", ref: "Barry 2022"},
+    {year: 1965, when: "1965", text: "Aleskovskii's first full paper on molecular layering, in J. Appl. Chem. USSR.", ref: "Barry 2022"},
+    {year: 1971, when: "1971", text: "Kol'tsov's doctoral dissertation sets out much of the chemical picture of ALD. A patent application, \"The Principles of Synthesis of Solids\", is declined.", ref: "Barry 2022"}]},
+  {id: "moscow", name: "Soviet patent examination", where: "Moscow, USSR",
+   lon: 37.62, lat: 55.75, lineage: "Atomic layer epitaxy", events: [
+    {year: 1978, when: "Late 1970s", text: "Suntola defends the ALE patent application in Moscow and it is granted. Molecular layering is not raised as prior art, and an early chance to connect the two lineages is missed.", ref: "Barry 2022"}]},
   {id: "hel", name: "Helsinki", where: "Helsinki, Finland",
    lon: 24.94, lat: 60.17, label: "Helsinki (Instrumentarium)", dx: 14, dy: 6, anchor: "start", lineage: "Atomic layer epitaxy", events: [
-    {year: 1974, when: "1974", text: "At Instrumentarium, Suntola starts work on thin-film EL displays. Suntola and Antson file the first ALE patent, aimed at polycrystalline ZnS.", ref: "Puurunen 2014"},
+    {year: 1974, when: "1974", text: "At Instrumentarium, Suntola starts work on thin-film EL displays. Suntola and Antson file \"Method for Producing Compound Thin Films\", aimed at polycrystalline ZnS; the patent includes detailed reactor drawings.", ref: "Puurunen 2014; Barry 2022"},
     {year: 2018, when: "2018", text: "Suntola receives the Millennium Technology Prize for ALD.", ref: ""},
     {year: 2024, when: "2024", text: "The ALD/ALE 2024 conference in Helsinki marks 50 years since the first ALE patent.", ref: ""}]},
   {id: "espoo", name: "Lohja EL factory and Microchemistry", where: "Espoo, Finland",
@@ -222,7 +256,7 @@ P.plot({
 ```
 
 ::: {.assumptions}
-**Notes.** Markers are placed at the institution or city, not at exact building addresses. Dates given as decades ("1960s", "1980s") are plotted at a representative year. The 1960s molecular-layering work and much of the Finnish industrial history were reported in sources other than peer-reviewed journals; see Further reading for the primary historical accounts. Basemap: Natural Earth via world-atlas (public domain).
+**Notes.** Markers are placed at the institution or city, not at exact building addresses. Approximate dates ("late 1970s", "1980s") are plotted at a representative year. Much of the Finnish industrial history comes from company and press accounts rather than peer-reviewed sources; see Further reading for the main historical accounts. Basemap: Natural Earth via world-atlas (public domain).
 :::
 :::
 
@@ -269,6 +303,7 @@ Why is "atomic layer epitaxy" a misleading name, even for Suntola's original ZnS
 
 ## Further reading
 
+- @Barry2022, Chapter 1: an introduction to ALD chemistry, including the history of both lineages.
 - @Puurunen2014: the story of ALE as told by its inventor, written for the 40th anniversary. Open access.
 - @Malygin2015: the first detailed English-language account of molecular layering and of Aleskovskii and Kol'tsov.
 - @Ahvenniemi2017: the VPHA reading list of early publications from both lineages. Open access.
