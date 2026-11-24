@@ -20,6 +20,7 @@ book:
     - part: "Atomic Layer Deposition"
       chapters:
         - chapters/01-ald-fundamentals.qmd
+        - chapters/02-ald-history.qmd
     - references.qmd
 
 bibliography: references.bib

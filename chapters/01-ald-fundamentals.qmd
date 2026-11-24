@@ -12,7 +12,7 @@ After this chapter you should be able to:
 4. Recognize non-linear initial growth and correct thickness-based GPC estimates for it.
 :::
 
-## What makes a process ALD?
+## What makes a process ALD? {#sec-what-makes-ald}
 
 Atomic layer deposition builds a film by exposing a surface to two (or more) reactants **one at a time**, with a purge or evacuation between them. Each exposure is a gas–surface reaction that stops by itself once the available surface sites are used up [@George2010; @Johnson2014].
 

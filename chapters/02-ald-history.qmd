@@ -1,0 +1,275 @@
+---
+title: "A Short History of Atomic Layer Deposition"
+---
+
+::: {.callout-tip appearance="simple"}
+## Learning outcomes
+After this chapter you should be able to:
+
+1. Describe the two independent origins of ALD: molecular layering in the Soviet Union and atomic layer epitaxy in Finland.
+2. Explain why the technique's first industrial use was in displays, and what moved it into semiconductor manufacturing.
+3. Explain why some of the field's terminology ("epitaxy", "atomic layer") is historically rooted rather than physically accurate.
+:::
+
+## Two inventions, one technique
+
+ALD was discovered independently at least twice, under different names [@Ahvenniemi2017; @Puurunen2014]:
+
+- **Molecular layering (ML)**, developed in Leningrad in the 1960s by S. I. Kol'tsov and V. B. Aleskovskii [@Malygin2015].
+- **Atomic layer epitaxy (ALE)**, developed in Finland from 1974 by Tuomo Suntola and co-workers [@Puurunen2014].
+
+Both rest on the principle from @sec-what-makes-ald: repeated, separate, saturating gas–solid reactions. They came at it from opposite directions, though. Molecular layering grew out of the surface chemistry of solids. ALE was an engineering answer to a device problem. That difference still shows in how the two communities wrote about their work, and it is one reason the Soviet work went largely unnoticed outside the USSR for decades.
+
+## Molecular layering in Leningrad
+
+In his 1952 doctoral thesis at the Leningrad Technological Institute, Aleskovskii proposed a "framework" hypothesis: that a solid could be built up by chemical assembly on the surface of an existing solid framework [@Malygin2015]. In the 1960s, Kol'tsov and Aleskovskii turned the idea into a method. They exposed a solid surface to reactants one at a time, so that each step reacted only with the surface groups left by the step before [@Malygin2015].
+
+This work was published mainly in Russian, which limited its reach. A detailed English-language account of Aleskovskii and Kol'tsov's contributions only appeared in 2015 [@Malygin2015].
+
+## Atomic layer epitaxy in Finland
+
+In 1974, the Finnish medical-technology company Instrumentarium asked Suntola, a young physicist, to lead a new R&D effort. He chose thin-film electroluminescent (EL) displays. These need very thin, uniform, pinhole-free films with high dielectric strength, over large areas. Suntola and Jorma Antson filed the first ALE patent that year [@Puurunen2014]. The original target was high-quality **polycrystalline ZnS** for EL panels [@Puurunen2014].
+
+In 1977 the team moved to Lohja Corporation, which built an electronics factory in Espoo in 1984 to make ALE-grown ZnS:Mn displays. This was the first industrial use of the technique. Display modules from the line served in the departure hall of Helsinki-Vantaa airport for about two decades.
+
+Note the name. The ZnS films were polycrystalline, so "epitaxy" was never strictly correct. As the materials list grew to amorphous oxides and nitrides, the name became a liability, and "atomic layer deposition" replaced it from the mid-1990s onward. The same mismatch between name and physics applies to "atomic layer", since a cycle deposits a fraction of a monolayer (@sec-what-makes-ald).
+
+## From displays to microchips
+
+Finland stayed the centre of the field through the 1980s and 1990s:
+
+- Lauri Niinistö started ALD process research at the Helsinki University of Technology in 1982. Espoo hosted the first ALE symposium in 1984 and the first international ALE symposium in 1990.
+- Neste founded Microchemistry (Mikrokemia) in Espoo in 1987, with Suntola leading it, to apply ALD to catalysts and solar cells. Microchemistry also built some of the first commercial ALD reactors, the F120 series.
+- Markku Leskelä and Mikko Ritala's group at the University of Helsinki developed much of the precursor chemistry, in a decades-long partnership with the reactor makers.
+
+The turning point came in 1999, when ASM International (Netherlands) bought Microchemistry and refocused it on semiconductors. By then, the industry could see that the SiO~2~ gate dielectric would have to be replaced, and ALD could deposit the ultrathin high-k films needed. In 2007, Intel shipped 45 nm processors whose transistors used a hafnium-based high-k gate dielectric deposited by ALD, the first fundamental change to the CMOS transistor in four decades. ALD is now routine in logic, DRAM and 3D NAND manufacturing.
+
+## A field with a conference and a name
+
+The first AVS conference on ALD was held in Monterey, California, in 2001, chaired by Steven George; the second was held in Seoul in 2002 [@Parsons2013]. The annual meeting has since become the field's main venue, and since the mid-2010s it has been held jointly with the International Atomic Layer Etching Workshop. The 2024 meeting in Helsinki marked 50 years since the first ALE patent. Suntola received the Millennium Technology Prize for ALD in 2018.
+
+## Recovering the history
+
+Because the two lineages developed in isolation, the early literature is scattered across languages and journals. The **Virtual Project on the History of ALD** (VPHA) was started in July 2013 as an open, volunteer effort to make that early work visible [@Ahvenniemi2017]. Participants read and discussed early publications from both lineages. The result was a recommended reading list, presented at the ALD 2016 conference in Dublin and published the following year with dozens of co-authors [@Ahvenniemi2017].
+
+## Mapping the history
+
+The map below shows where the events in this chapter happened. Use the slider to move through time, and switch views to zoom in on Europe or the Helsinki area, where much of the early work was concentrated.
+
+::: {.sim-box}
+[Interactive 2.1: Where ALD came from]{.sim-title}
+
+```{ojs}
+//| echo: false
+P = import("https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/+esm")
+tj = import("https://cdn.jsdelivr.net/npm/topojson-client@3/+esm")
+land110 = d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json")
+  .then(t => tj.feature(t, t.objects.land))
+land50 = d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json")
+  .then(t => tj.feature(t, t.objects.land))
+// The detailed coastline (~3 MB) is only fetched if the Helsinki view is opened.
+land10 = view === "Helsinki area"
+  ? d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/land-10m.json").then(t => tj.feature(t, t.objects.land))
+  : null
+```
+
+```{ojs}
+//| echo: false
+lineages = ["Molecular layering", "Atomic layer epitaxy", "Industry", "Community"]
+lineageFill = ["#4D4D4D", "#E91C24", "#000000", "#FFFFFF"]
+
+places = [
+  {id: "lti", name: "Leningrad Technological Institute", where: "Leningrad (St Petersburg), USSR",
+   lon: 30.318, lat: 59.917, lineage: "Molecular layering", events: [
+    {year: 1952, when: "1952", text: "Aleskovskii's doctoral thesis proposes the \"framework\" hypothesis: building a solid by chemical assembly on an existing solid surface.", ref: "Malygin et al. 2015"},
+    {year: 1965, when: "1960s", text: "Kol'tsov and Aleskovskii develop molecular layering: sequential, saturating reactions of reactants with surface groups. Published mainly in Russian.", ref: "Malygin et al. 2015"}]},
+  {id: "hel", name: "Helsinki", where: "Helsinki, Finland",
+   lon: 24.94, lat: 60.17, label: "Helsinki (Instrumentarium)", dx: 14, dy: 6, anchor: "start", lineage: "Atomic layer epitaxy", events: [
+    {year: 1974, when: "1974", text: "At Instrumentarium, Suntola starts work on thin-film EL displays. Suntola and Antson file the first ALE patent, aimed at polycrystalline ZnS.", ref: "Puurunen 2014"},
+    {year: 2018, when: "2018", text: "Suntola receives the Millennium Technology Prize for ALD.", ref: ""},
+    {year: 2024, when: "2024", text: "The ALD/ALE 2024 conference in Helsinki marks 50 years since the first ALE patent.", ref: ""}]},
+  {id: "espoo", name: "Lohja EL factory and Microchemistry", where: "Espoo, Finland",
+   lon: 24.656, lat: 60.205, label: "Espoo (Lohja, Microchemistry)", dy: -16, lineage: "Industry", events: [
+    {year: 1977, when: "1977", text: "Suntola's team moves from Instrumentarium to Lohja Corporation.", ref: ""},
+    {year: 1984, when: "1984", text: "Lohja opens an Espoo factory making ALE-grown ZnS:Mn electroluminescent displays: the first industrial use of ALD.", ref: ""},
+    {year: 1987, when: "1987", text: "Neste founds Microchemistry (Mikrokemia), led by Suntola, to apply ALD to catalysts and solar cells. It develops early commercial reactors, including the F120 series.", ref: ""}]},
+  {id: "airport", name: "Helsinki-Vantaa airport", where: "Vantaa, Finland",
+   lon: 24.963, lat: 60.317, label: "Helsinki-Vantaa airport", dy: -16, lineage: "Industry", events: [
+    {year: 1985, when: "1980s", text: "ALE-made EL display modules go into the departure hall, where they run for about two decades.", ref: ""}]},
+  {id: "otaniemi", name: "Otaniemi campus (HUT, now Aalto University; VTT)", where: "Espoo, Finland",
+   lon: 24.828, lat: 60.186, label: "Otaniemi (HUT/Aalto, VTT)", dx: -16, dy: 4, anchor: "end", lineage: "Community", events: [
+    {year: 1982, when: "1982", text: "Lauri Niinistö starts ALD process research at the Helsinki University of Technology.", ref: ""},
+    {year: 1984, when: "1984", text: "First symposium on atomic layer epitaxy, Espoo.", ref: ""},
+    {year: 1990, when: "1990", text: "ALE-1, the first international ALE symposium, Espoo.", ref: ""},
+    {year: 2013, when: "2013", text: "The Virtual Project on the History of ALD (VPHA) starts as an open volunteer effort, coordinated from VTT.", ref: "Ahvenniemi et al. 2017"},
+    {year: 2014, when: "2014", text: "40th anniversary of ALE; Puurunen publishes Suntola's account of the invention.", ref: "Puurunen 2014"}]},
+  {id: "uh", name: "University of Helsinki, Kumpula", where: "Helsinki, Finland",
+   lon: 24.962, lat: 60.205, label: "Univ. Helsinki, Kumpula", dx: 14, dy: -4, anchor: "start", lineage: "Atomic layer epitaxy", events: [
+    {year: 1988, when: "Late 1980s on", text: "Leskelä and Ritala's group builds much of ALD precursor chemistry, in long-running partnership with Microchemistry and later ASM.", ref: ""}]},
+  {id: "asm", name: "ASM International", where: "Bilthoven, Netherlands",
+   lon: 5.20, lat: 52.13, lineage: "Industry", events: [
+    {year: 1999, when: "1999", text: "ASM buys Microchemistry (now ASM Microchemistry) and refocuses it on semiconductor gate stacks.", ref: ""}]},
+  {id: "monterey", name: "First AVS ALD conference", where: "Monterey, California, USA",
+   lon: -121.89, lat: 36.60, lineage: "Community", events: [
+    {year: 2001, when: "2001", text: "First AVS conference on ALD, chaired by Steven George.", ref: "Parsons et al. 2013"}]},
+  {id: "seoul", name: "Second AVS ALD conference", where: "Seoul, South Korea",
+   lon: 126.99, lat: 37.56, lineage: "Community", events: [
+    {year: 2002, when: "2002", text: "The ALD conference moves to Seoul (chair: Hyeongtag Jeon), signalling an international field.", ref: "Parsons et al. 2013"}]},
+  {id: "intel", name: "Intel", where: "Santa Clara, California, USA",
+   lon: -121.96, lat: 37.39, lineage: "Industry", events: [
+    {year: 2007, when: "2007", text: "45 nm processors ship with a hafnium-based high-k gate dielectric deposited by ALD.", ref: ""}]},
+  {id: "boulder", name: "University of Colorado", where: "Boulder, Colorado, USA",
+   lon: -105.27, lat: 40.01, lineage: "Community", events: [
+    {year: 2010, when: "2010", text: "Steven George's overview in Chem. Rev. becomes the most-cited ALD review.", ref: "George 2010"}]},
+  {id: "dublin", name: "ALD 2016", where: "Dublin, Ireland",
+   lon: -6.27, lat: 53.34, lineage: "Community", events: [
+    {year: 2016, when: "2016", text: "The VPHA reading list of early ALD papers from both lineages is presented; it is published in 2017.", ref: "Ahvenniemi et al. 2017"}]},
+  {id: "eindhoven", name: "AtomicLimits, TU Eindhoven", where: "Eindhoven, Netherlands",
+   lon: 5.49, lat: 51.45, lineage: "Community", events: [
+    {year: 2019, when: "2019", text: "AtomicLimits publishes an ALD history timeline; the group also hosts the crowdsourced ALD Database of reported processes.", ref: ""}]}
+]
+
+views = new Map([
+  ["World", null],
+  ["Europe", {center: [16, 56], radius: 16}],
+  ["Helsinki area", {center: [24.81, 60.235], radius: 0.13}]
+])
+```
+
+```{ojs}
+//| echo: false
+viewof view = Inputs.radio([...views.keys()], {value: "World", label: "View"})
+viewof year = Inputs.range([1950, 2026], {value: 2026, step: 1, label: "Show events up to"})
+```
+
+```{ojs}
+//| echo: false
+visible = places
+  .map(p => ({...p, shown: p.events.filter(e => e.year <= year)}))
+  .filter(p => p.shown.length > 0)
+
+viewof picked = {
+  const v = views.get(view);
+  const w = Math.min(width, 820);
+  const projection = v
+    ? {type: "azimuthal-equidistant", rotate: [-v.center[0], -v.center[1]],
+       domain: d3.geoCircle().center(v.center).radius(v.radius)()}
+    : {type: "equal-earth"};
+  return P.plot({
+    width: w,
+    height: v ? Math.round(w * 0.6) : Math.round(w * 0.5),
+    projection,
+    color: {domain: lineages, range: lineageFill},
+    r: {type: "identity"},
+    marks: [
+      P.sphere({fill: view === "Helsinki area" ? "#FFFFFF" : "#F7FBFF", stroke: "#8C8C8C"}),
+      P.graticule({stroke: "#E3E3E3"}),
+      view === "Helsinki area"
+        ? P.geo(land10, {fill: "none", stroke: "#8C8C8C", strokeWidth: 0.8})   // coastline only at this scale
+        : P.geo(v ? land50 : land110, {fill: "#EDEDED", stroke: "#8C8C8C", strokeWidth: 0.6}),
+      // Labels only at the Helsinki scale; one mark per place so each can have its own offset.
+      view === "Helsinki area"
+        ? visible.map(d => P.text([d], {x: "lon", y: "lat", text: "label", dx: d.dx ?? 0, dy: d.dy ?? -16,
+            textAnchor: d.anchor ?? "middle", fontSize: 13, stroke: "white", strokeWidth: 4, fill: "black"}))
+        : null,
+      P.dot(visible, {
+        x: "lon", y: "lat", fill: "lineage", stroke: "#000", strokeWidth: 1.2,
+        r: d => 6 + 1.5 * d.shown.length,
+        channels: {Place: "name", Location: "where", Events: d => d.shown.length},
+        tip: {format: {x: false, y: false, fill: false, r: false}}
+      }),
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+html`<div class="map-legend">${lineages.map((l, i) => html`<span><i style="background:${lineageFill[i]}"></i>${l}</span>`)}</div>`
+```
+
+```{ojs}
+//| echo: false
+{
+  if (!picked) return html`<div class="map-card map-card-empty">Hover over a place to identify it. Click to pin it and read what happened there; click again to unpin.</div>`;
+  return html`<div class="map-card">
+    <div class="map-card-title">${picked.name}</div>
+    <div class="map-card-where">${picked.where} · ${picked.lineage}</div>
+    <ul>${picked.shown.map(e => html`<li><b>${e.when}.</b> ${e.text}${e.ref ? html` <span class="map-ref">(${e.ref})</span>` : ""}</li>`)}</ul>
+  </div>`;
+}
+```
+
+```{ojs}
+//| echo: false
+P.plot({
+  width: Math.min(width, 820),
+  height: 170,
+  marginLeft: 165,
+  x: {domain: [1950, 2026], label: null, tickFormat: "d"},
+  y: {domain: lineages, label: null},
+  color: {domain: lineages, range: lineageFill},
+  marks: [
+    P.ruleX([year], {stroke: "#E91C24", strokeDasharray: "4,3"}),
+    P.dot(places.flatMap(p => p.events.map(e => ({...e, lineage: p.lineage, where: p.where}))), {
+      x: "year", y: "lineage", fill: "lineage", stroke: "#000",
+      r: 5, opacity: d => d.year <= year ? 1 : 0.15,
+      channels: {When: "when", Where: "where"},
+      tip: {format: {x: false, y: false, fill: false, opacity: false}}
+    })
+  ]
+})
+```
+
+::: {.assumptions}
+**Notes.** Markers are placed at the institution or city, not at exact building addresses. Dates given as decades ("1960s", "1980s") are plotted at a representative year. The 1960s molecular-layering work and much of the Finnish industrial history were reported in sources other than peer-reviewed journals; see Further reading for the primary historical accounts. Basemap: Natural Earth via world-atlas (public domain).
+:::
+:::
+
+## Check your understanding
+
+::: {.quiz}
+Why did molecular layering remain largely unknown outside the USSR until the 2010s?
+
+- [ ] It used chemistry that did not work outside a laboratory.
+- [x] It was published mainly in Russian and developed with little contact with Western thin-film researchers.
+- [ ] It was classified military research until 2013.
+- [ ] It was a later copy of atomic layer epitaxy.
+
+::: {.explanation}
+Molecular layering predates ALE, so it was not a copy. The main barrier was language and isolation, which is exactly what the VPHA set out to address [@Ahvenniemi2017; @Malygin2015].
+:::
+:::
+
+::: {.quiz}
+What was the first industrial application of ALD?
+
+- [ ] High-k gate dielectrics in microprocessors
+- [ ] Copper diffusion barriers
+- [x] ZnS-based thin-film electroluminescent displays
+- [ ] Catalyst supports
+
+::: {.explanation}
+ALE was invented to make the thin, uniform, high-breakdown-strength films that EL displays need, and Lohja began producing displays in Espoo in the 1980s. Semiconductor use came about two decades later [@Puurunen2014].
+:::
+:::
+
+::: {.quiz}
+Why is "atomic layer epitaxy" a misleading name, even for Suntola's original ZnS films?
+
+- [x] The films were polycrystalline, not epitaxial, and each cycle deposits less than one atomic layer.
+- [ ] The films were grown from liquid precursors.
+- [ ] ZnS cannot be grown epitaxially.
+- [ ] The process was plasma-enhanced.
+
+::: {.explanation}
+"Epitaxy" means growth with a crystallographic relationship to the substrate, which the polycrystalline ZnS films did not have [@Puurunen2014]. "Atomic layer" overstates what one cycle deposits (@sec-what-makes-ald). Both terms record the technique's history rather than its physics.
+:::
+:::
+
+## Further reading
+
+- @Puurunen2014: the story of ALE as told by its inventor, written for the 40th anniversary. Open access.
+- @Malygin2015: the first detailed English-language account of molecular layering and of Aleskovskii and Kol'tsov.
+- @Ahvenniemi2017: the VPHA reading list of early publications from both lineages. Open access.
+- @Parsons2013: how the ALD community and its conference grew within the AVS.
