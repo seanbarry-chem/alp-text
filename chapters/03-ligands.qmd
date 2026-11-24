@@ -39,6 +39,99 @@ Consider trimethylaluminum. Each methyl is an X ligand whose conjugate acid is m
 
 Carbon monoxide is the classic L ligand. It donates its lone pair to the metal and, at the same time, accepts electron density from filled metal d orbitals into its empty π\* orbitals. This **back-bonding** makes the M–CO bond stronger than a simple dative bond, at the cost of weakening the C≡O bond [@Barry2022]. Isonitriles (R–NC) behave similarly. Metal carbonyls are a mature area of organometallic chemistry but are still under-represented in ALD [@Barry2022].
 
+The diagram below compares the three bonding situations in this section. Choose a ligand type, and for CO, use the slider to change how much electron density the metal pushes back into the ligand.
+
+::: {.sim-box}
+[Simulation 3.1: σ donation and π back-bonding]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof bondMode = Inputs.radio(["L ligand (dative σ bond)", "X ligand (covalent σ bond)", "CO (σ donation + π back-bonding)"],
+  {value: "CO (σ donation + π back-bonding)", label: "Ligand"})
+viewof backDon = Inputs.range([0, 1], {value: 0.5, step: 0.05, label: "π back-donation (CO only)"})
+```
+
+```{ojs}
+//| echo: false
+{
+  const red = "#E91C24", dark = "#4D4D4D", grey = "#8C8C8C", light = "#EDEDED";
+  const isCO = bondMode.startsWith("CO"), isX = bondMode.startsWith("X");
+  const x = isCO ? backDon : 0;
+  const M = [220, 175], D = isCO ? [455, 175] : [470, 175], O = [555, 175];
+  const e = (cx, cy) => `<circle cx="${cx}" cy="${cy}" r="4.5" fill="#000"/>`;
+  const atom = ([cx, cy], lab, fill, r = 22) =>
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#000" stroke-width="1.2"/>
+     <text x="${cx}" y="${cy + 6}" text-anchor="middle" font-size="17" font-weight="600" fill="${fill === "#FFFFFF" ? "#000" : "#fff"}">${lab}</text>`;
+  const arrow = (d, col, w, lab, lx, ly) =>
+    `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" marker-end="url(#bbArr)" style="color:${col}"/>
+     <text x="${lx}" y="${ly}" text-anchor="middle" font-size="14" font-weight="600" fill="${col}">${lab}</text>`;
+  let g = "";
+
+  // π system for CO: metal d orbital (four lobes) and CO π* (large on C, small on O)
+  if (isCO) {
+    const op = 0.15 + 0.75 * x;
+    [[1, -1, dark], [-1, 1, dark], [1, 1, "#FFFFFF"], [-1, -1, "#FFFFFF"]].forEach(([sx, sy, f]) => {
+      g += `<ellipse cx="${M[0] + 30 * sx}" cy="${M[1] + 30 * sy}" rx="30" ry="13" transform="rotate(${sx * sy > 0 ? 45 : -45} ${M[0] + 30 * sx} ${M[1] + 30 * sy})" fill="${f}" fill-opacity="0.8" stroke="#000" stroke-width="0.8"/>`;
+    });
+    g += e(M[0] + 36, M[1] - 36) + e(M[0] + 26, M[1] - 26);
+    g += `<ellipse cx="${D[0]}" cy="${D[1] - 42}" rx="16" ry="32" fill="${red}" fill-opacity="${op}" stroke="${red}" stroke-width="1"/>
+          <ellipse cx="${D[0]}" cy="${D[1] + 42}" rx="16" ry="32" fill="#FFFFFF" stroke="${red}" stroke-width="1"/>
+          <ellipse cx="${O[0]}" cy="${O[1] - 30}" rx="11" ry="20" fill="#FFFFFF" stroke="${red}" stroke-width="1"/>
+          <ellipse cx="${O[0]}" cy="${O[1] + 30}" rx="11" ry="20" fill="${red}" fill-opacity="${op}" stroke="${red}" stroke-width="1"/>
+          <text x="${(D[0] + O[0]) / 2 + 4}" y="${D[1] - 82}" text-anchor="middle" font-size="13" fill="${red}">CO π* (empty)</text>
+          <text x="${M[0]}" y="${M[1] - 78}" text-anchor="middle" font-size="13" fill="${dark}">filled metal d orbital</text>`;
+    g += arrow(`M${M[0] + 50},${M[1] - 58} Q${(M[0] + D[0]) / 2},${M[1] - 120} ${D[0] - 20},${D[1] - 60}`, dark, 1.5 + 4 * x,
+      "π back-donation", (M[0] + D[0]) / 2, M[1] - 100);
+  }
+
+  // σ system: metal acceptor lobe and ligand donor lobe on the M–D axis
+  const metalLobe = `<ellipse cx="${M[0] + 62}" cy="${M[1]}" rx="40" ry="20" fill="${isX ? light : "#FFFFFF"}" stroke="#000" stroke-width="1" stroke-dasharray="${isX ? "" : "4,3"}"/>`;
+  const ligLobe = `<ellipse cx="${D[0] - 66}" cy="${D[1]}" rx="44" ry="22" fill="${red}" fill-opacity="0.35" stroke="${red}" stroke-width="1"/>`;
+  g += metalLobe + ligLobe;
+  if (isX) g += e(M[0] + 62, M[1]) + e(D[0] - 66, D[1]);
+  else g += e(D[0] - 74, D[1]) + e(D[0] - 58, D[1]);
+  const sigmaLab = isX ? "1 e⁻ from M + 1 e⁻ from X" : "σ donation: 2 e⁻ from ligand";
+  const ay = M[1] + (isCO ? 105 : 60);
+  if (isX) {
+    // shared pair: bracket, no arrow
+    g += `<path d="M${M[0] + 30},${ay - 12} V${ay} H${D[0] - 30} V${ay - 12}" fill="none" stroke="${red}" stroke-width="2"/>
+          <text x="${(M[0] + D[0]) / 2}" y="${ay + 22}" text-anchor="middle" font-size="14" font-weight="600" fill="${red}">${sigmaLab}</text>`;
+  } else {
+    g += arrow(`M${D[0] - 50},${ay} L${M[0] + 50},${ay}`, red, 2.5, sigmaLab, (M[0] + D[0]) / 2, ay + 23);
+  }
+
+  // bonds and atoms
+  const coOrder = 3 - x, mcOrder = 1 + x;
+  if (isCO) {
+    [-6, 0, 6].forEach((dy, i) => {
+      const op = i === 0 ? Math.max(0.12, 1 - x) : 1;
+      g += `<line x1="${D[0]}" y1="${D[1] + dy}" x2="${O[0]}" y2="${O[1] + dy}" stroke="#000" stroke-width="2" stroke-opacity="${op}"/>`;
+    });
+  }
+  g += atom(M, "M", dark);
+  g += atom(D, isCO ? "C" : isX ? "X" : "L", isCO ? "#000000" : red);
+  if (isCO) g += atom(O, "O", red, 19);
+
+  const svg = `<svg viewBox="${isCO ? "0 0 680 330" : "0 120 680 150"}" width="100%" style="max-width:720px" role="img" aria-label="Orbital diagram: ${bondMode}">
+    <defs><marker id="bbArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+    ${g}</svg>`;
+
+  const note = isCO
+    ? `<b>Formal bond orders:</b> M–C ≈ ${mcOrder.toFixed(2)}, C–O ≈ ${coOrder.toFixed(2)} · <b>Illustrative ν(CO):</b> ≈ ${(2143 - 400 * x).toFixed(0)} cm⁻¹ (free CO: 2143 cm⁻¹).<br>
+       More back-donation strengthens the metal–carbon bond and weakens C≡O, because the electrons go into an antibonding orbital of CO.`
+    : isX
+    ? `The metal and the ligand each supply one electron. Heterolytic cleavage gives X⁻ and a metal <b>cation</b>, which does not survive in the gas phase under reasonable conditions.`
+    : `The ligand supplies both electrons; the metal orbital is empty. Losing L leaves a <b>neutral</b> metal fragment that can survive in the gas phase, which is why L ligands can complicate precursor chemistry.`;
+  return html`<div>${html([svg])}<div class="map-card" style="margin-top:0.5rem">${html([note])}</div></div>`;
+}
+```
+
+::: {.assumptions}
+**Assumptions.** A cartoon, not a calculation: one metal d orbital and one of the two degenerate CO π\* orbitals are shown, and lobe sizes, the bond orders and the ν(CO) values are schematic. The formal bond orders assume one full π back-bond at the maximum setting. Filled lobes have one phase and open lobes the other. π back-donation needs a filled metal d orbital whose lobe has the same phase as the π\* lobe on carbon it overlaps.
+:::
+:::
+
+
 ## Bond polarity: where will the bond break?
 
 The metals of the first transition series (Sc to Zn) have Pauling electronegativities between about 1.36 and 1.91, while N is 3.04 and O is 3.44. Metal–N and metal–O bonds are therefore strongly polarized towards the ligand [@Barry2022]. Pauling related the ionic character of a bond to the electronegativity difference Δχ between the two atoms:
@@ -55,7 +148,7 @@ Combining ionicity with bond enthalpy gives a first prediction of precursor beha
 Use the explorer below to compare donor atoms for a chosen metal.
 
 ::: {.sim-box}
-[Simulation 3.1: Metal–ligand bond ionicity]{.sim-title}
+[Simulation 3.2: Metal–ligand bond ionicity]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -151,7 +244,7 @@ The effect is easiest to measure in solution. Replacing two waters on Cu(H~2~O)~
 Because the entropy term is multiplied by temperature in ΔG = ΔH − TΔS, the chelate advantage grows as the temperature rises, which is relevant to ALD reactors running at 400–600 K.
 
 ::: {.sim-box}
-[Simulation 3.2: The chelate effect and temperature]{.sim-title}
+[Simulation 3.3: The chelate effect and temperature]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -307,7 +400,7 @@ The general lesson is to identify the decomposition mechanism first, then design
 The simulation below shows what these rate constants mean for a precursor held in a heated source. Assuming first-order decomposition, the fraction remaining after time t is exp(−kt).
 
 ::: {.sim-box}
-[Simulation 3.3: How long does a precursor survive in a hot source?]{.sim-title}
+[Simulation 3.4: How long does a precursor survive in a hot source?]{.sim-title}
 
 ```{ojs}
 //| echo: false
