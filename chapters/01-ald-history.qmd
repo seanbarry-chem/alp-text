@@ -47,7 +47,7 @@ The two lineages developed without collaboration, and very likely without knowle
 They did come close to meeting. In the late 1970s, Suntola defended his patent application in Moscow, and the patent was granted in the Soviet jurisdiction. The examiners did not raise molecular layering as prior art, and an early chance to join the two bodies of work was missed [@Barry2022]. A deliberate effort to bring the two histories together began only in 2004, and it led to the VPHA (see below) [@Barry2022; @Ahvenniemi2017]. Riikka Puurunen can be credited with bringing the early Russian contributions to the forefront [@Barry2022].
 
 | | Molecular layering | Atomic layer epitaxy |
-|---|---|---|
+|:---|:---|:---|
 | Where | Leningrad Technological Institute, USSR | Instrumentarium, then Lohja, Finland |
 | Key people | V. B. Aleskovskii, S. I. Kol'tsov | T. Suntola, J. Antson |
 | Origin | 1952 "framework" hypothesis; first reports 1963–1965 | 1974 patent application |
