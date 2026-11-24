@@ -14,9 +14,9 @@ This book is in early development and should be considered a first draft. Correc
 
 ## Authors {.unnumbered}
 
-Invited authors share equal credit and are listed alphabetically by surname.
+Authors share equal credit and are listed alphabetically by surname.
 
-- Seán Barry (editor)
+- Seán Barry (sean_barry@carleton.ca)
 
 ## Acknowledgements {.unnumbered}
 
