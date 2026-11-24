@@ -17,5 +17,5 @@ This book is in early development. Chapter 1 (ALD fundamentals) is a first draft
 - Seán Barry (editor)
 
 ::: {.callout-note appearance="minimal"}
-Text and original figures are licensed CC BY-NC-SA 4.0 unless noted otherwise.
+Text and original figures are licensed [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) unless noted otherwise. For commercial uses, including reproducing figures in commercial journals, contact the editor for permission.
 :::

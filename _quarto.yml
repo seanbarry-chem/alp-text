@@ -13,6 +13,8 @@ book:
   search: true
   page-navigation: true
   reader-mode: true
+  page-footer:
+    center: "© 2026 Seán Barry and contributors · Licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)"
   chapters:
     - index.qmd
     - part: "Atomic Layer Deposition"
@@ -39,4 +41,3 @@ format:
     css: assets/quiz.css
     include-after-body:
       - assets/quiz.html
-    license: "CC BY-NC-SA"
