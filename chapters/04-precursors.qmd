@@ -1,0 +1,318 @@
+---
+title: "Precursors"
+---
+
+::: {.callout-tip appearance="simple"}
+## Learning outcomes
+After this chapter you should be able to:
+
+1. List the requirements of an ALD precursor and say how each is tested.
+2. Distinguish acid–base chemisorption, physisorption and combustion, and write a balanced equation for each.
+3. Describe the two workhorse reactions used to synthesize precursors, and explain what drives them to completion.
+4. Use the thermodynamics of evaporation to explain what makes a precursor volatile, and estimate a source temperature from ΔH and ΔS.
+5. Identify common decomposition pathways, and describe design strategies that raise thermal stability or lower the melting point.
+6. Choose a co-reactant for a target film, and explain how the choice affects impurities and selectivity.
+:::
+
+## What is a precursor?
+
+Strictly, every gas-phase reactant in an ALD process is a precursor, and every one should be shown to be self-limiting [@Barry2022]. By tradition, though, the compound that carries the metal (the **payload** atom, such as Al in Al~2~O~3~) is called "the precursor", and the other is called the "co-reactant" or named for its role: oxidant, reducing agent, nitrogen source. The co-reactant often decides the film and so defines the chemistry of the cycle [@Barry2022].
+
+Labels like "oxidant" can mislead. Ozone is a good example, because it reacts in at least three different ways [@Barry2022]:
+
+- **With Mo(CO)~6~**, molybdenum goes from 0 to +6. Here ozone really is an oxidant, and the CO ligands may be oxidized to CO~2~ as well.
+- **With AlCl~3~**, aluminum is +3 before and after. Ozone supplies oxygen but oxidizes nothing at the metal; the by-product is likely a reactive chlorine oxide.
+- **With a Au(III) precursor**, ozone combusts the ligands and the gold ends up as Au(0), a formal *reduction*. Ozone did not reduce the gold: gold, being noble, prefers the zero oxidation state and takes electrons during the combustion.
+
+Surface reactions can go down many pathways at once. This is one reason simple, small precursors with well-defined reactivity are preferred: one pathway is more likely to dominate [@Barry2022].
+
+## What a precursor needs
+
+For a precursor to give ALD, it must be [@Barry2022]:
+
+1. Volatile
+2. Thermally stable
+3. Reactive with the substrate and the growing film
+4. Self-limiting
+5. Reactive towards the second precursor
+
+Each property can be optimized on its own; the art of precursor design is to improve one without sacrificing another. For industrial use, a precursor must also be easy to make, scalable, safe to handle and inexpensive [@Barry2022]. In practice these requirements map onto specific tests:
+
+| Requirement | Why it matters | How it is tested |
+|:---|:---|:---|
+| Volatility | Enough vapour to saturate the surface in a short pulse | Thermogravimetric analysis (TGA), vapour pressure |
+| Thermal stability (source and reactor) | Decomposition breaks self-limitation and adds impurities | TGA residue, long-term ageing at source temperature, NMR after heating |
+| Self-limiting reactivity | The precursor must chemisorb, then stop | Saturation curves (@sec-what-makes-ald) |
+| Complete reaction with the co-reactant | Low impurity levels | Film composition (XPS, ERDA) |
+| Benign by-products | Volatile, non-etching, not re-adsorbed | Mass spectrometry of the exhaust |
+| Matching oxidation state | Avoids an extra redox step | Compare metal oxidation state in precursor and film |
+| Physical state | Liquids deliver vapour more steadily than solids | Melting point |
+
+: Precursor requirements and how they are tested. {#tbl-requirements}
+
+**Oxidation state.** Ideally, the metal's oxidation state is the same in the precursor and the film. Ta(NMe~2~)~5~ contains Ta(V) and gives insulating Ta~3~N~5~ by default; conductive TaN needs Ta(III), so a reduction step is required. Metal films are the extreme case, needing M^n+^ → M^0^.
+
+**How stable is stable enough?** One industrial specification asks for less than about 2 % decomposition by weight after a week at about 10 °C above the source temperature (see Simulation 3.4 for what this means in terms of rate constants).
+
+## How precursors react
+
+### Brønsted acid–base chemisorption
+
+Most metal precursors react rapidly with air and moisture. This is deliberate: the same reactivity that forms an extended solid in ALD also makes the compound air-sensitive [@Barry2022]. The most common surface reaction is a proton transfer from a surface site to a ligand:
+
+$$
+\text{MX}_n + \|\!-\!\text{EH} \rightarrow \|\!-\!\text{E–MX}_{n-1} + \text{HX}
+$$ {#eq-acidbase}
+
+Here ‖–EH is a nucleation site such as ‖–OH on an oxide or ‖–NH~2~ on a nitride, and the ligand X acts as a Brønsted base, leaving as its conjugate acid HX [@Barry2022]. This reaction is the usual starting point when designing a precursor, which is why halide and alkyl precursors dominate.
+
+**Halides.** Metal halides are thermally stable, simple to make from the metal or its oxide, and volatile enough to be purified by distillation or sublimation, even on a large scale [@Barry2022]. Their by-product, HX, is a strong acid that can corrode equipment and etch films.
+
+**Alkyls.** With an alkyl, the by-product is a very stable alkane. Carbon contamination is then more likely to come from alkyl groups left *on* the surface than from the one that leaves [@Barry2022]. The by-product can be remarkably benign. When Beneq installed a TMA/H~2~O process at a Helsinki jewellery shop in the early 2000s to stop silver from tarnishing, it showed the authorities that a typical run released less methane than a cow does in a day [@Barry2022]. The cost is that alkyls are much more reactive towards water and less thermally stable than halides: they allow lower process temperatures, but give messy, CVD-like growth at higher ones [@Barry2022].
+
+### Chemisorption versus physisorption
+
+AlCl~3~ shows the difference. In the gas phase it is in equilibrium between the Al~2~Cl~6~ dimer and the monomer; higher temperatures favour the monomer, which reacts faster, so the dimer can slow saturation slightly [@Barry2022]. At the surface:
+
+- **Chemisorption** by @eq-acidbase is strong and effectively permanent. Having lost an X ligand, the surface species cannot simply desorb, because it would have to leave as a cation.
+- **Physisorption** happens when the Lewis-acidic monomer accepts electron density from a surface oxygen through a weak dative bond. A physisorbed AlCl~3~ can easily return to the gas phase [@Barry2022].
+
+### Combustion
+
+Less commonly, the precursor reacts by oxidation, for example with O~2~ as the co-reactant. RuO~2~ can be grown from Ru(CpEt)~2~ and O~2~. Written as a complete combustion [@Barry2022]:
+
+$$
+2\,\text{Ru(CpEt)}_2 + 39\,\text{O}_2 \rightarrow 2\,\text{RuO}_2 + 28\,\text{CO}_2 + 18\,\text{H}_2\text{O}
+$$ {#eq-ru-combustion}
+
+Nearly 20 O~2~ molecules are needed for each Ru atom, so combustion is often incomplete, giving CO and partly oxidized fragments. The water produced can also hydroxylate the surface and help the next cycle nucleate [@Barry2022].
+
+## Making precursors
+
+Two reactions do most of the work in laboratory-scale precursor synthesis [@Barry2022].
+
+**Salt metathesis** exchanges ligands between a metal halide and a ligand salt, often a lithium reagent:
+
+$$
+\text{ZnCl}_2 + 2\,\text{LiEt} \rightarrow \text{ZnEt}_2 + 2\,\text{LiCl}
+$$ {#eq-metathesis}
+
+The reaction is run in a solvent in which LiCl is insoluble. The salt precipitates and leaves the solution, so the equilibrium keeps shifting towards products until the reaction is complete.
+
+**Elimination of a volatile product** works the same way. Diethylzinc reacts with acetic acid to give zinc acetate (a precursor for ZnS) and ethane gas, which bubbles out of the solution:
+
+$$
+\text{ZnEt}_2 + 2\,\text{CH}_3\text{COOH} \rightarrow \text{Zn(O}_2\text{CCH}_3)_2 + 2\,\text{C}_2\text{H}_6
+$$ {#eq-elimination}
+
+The leaving group does not have to be an alkane; any ligand whose protonated form is volatile will do. Both reactions are applications of Le Chatelier's principle: removing a product drives the equilibrium to completion [@Barry2022]. A third route, insertion of a carbodiimide into a metal–alkyl or metal–amide bond, makes the amidinates and guanidinates discussed in @sec-ip-design.
+
+## Volatility
+
+A precursor needs to vaporize at a low temperature, and fast enough to keep pulses short [@Barry2022].
+
+### The molecular-weight myth
+
+A common idea is that lighter molecules are more volatile. It comes from the Knudsen effusion equation, which relates the mass loss Δm through an orifice of area A~o~ in time Δt to the vapour pressure p~v~:
+
+$$
+p_\text{v} = \frac{\Delta m}{A_\text{o}\,\Delta t}\sqrt{\frac{2\pi RT}{M}}
+$$ {#eq-knudsen}
+
+The M^−1/2^ dependence describes how fast molecules escape once they are in the gas, assuming ideal, non-interacting molecules. That assumption is reasonable in a dilute gas but fails in the condensed phase, where intermolecular interactions decide whether a molecule can leave at all [@Barry2022]. Lighter molecules often have fewer ways to interact, so molecular weight correlates with volatility, but it is not the cause.
+
+### Thermodynamics of evaporation
+
+Evaporation and sublimation are always **endothermic** (ΔH~vap~ > 0), and always increase entropy (ΔS~vap~ > 0). From ΔG = ΔH − TΔS, vaporization becomes favourable once TΔS outweighs ΔH. A volatile precursor therefore needs a **small enthalpy of vaporization** and a **large entropy of vaporization** [@Barry2022]. The equilibrium vapour pressure follows the Clausius–Clapeyron form:
+
+$$
+\ln\frac{p}{p^\circ} = -\frac{\Delta H_\text{vap}}{RT} + \frac{\Delta S_\text{vap}}{R}
+$$ {#eq-cc}
+
+with p° = 1 bar. Use the simulation to see how ΔH~vap~ and ΔS~vap~ set the temperature needed to reach a useful vapour pressure.
+
+::: {.sim-box}
+[Simulation 4.1: Vapour pressure and source temperature]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof dHvap = Inputs.range([30, 160], {value: 70, step: 1, label: "ΔHᵥₐₚ (kJ mol⁻¹)"})
+viewof dSvap = Inputs.range([60, 250], {value: 150, step: 1, label: "ΔSᵥₐₚ (J K⁻¹ mol⁻¹)"})
+viewof pTarget = Inputs.select([0.1, 0.5, 1, 5], {value: 1, label: "Target vapour pressure (Torr)", format: x => `${x} Torr`})
+```
+
+```{ojs}
+//| echo: false
+vp = {
+  const R = 8.314, p0 = 750.06;                    // Torr per bar
+  const p = T => p0 * Math.exp(-dHvap * 1000 / (R * T) + dSvap / R);
+  const Tt = dHvap * 1000 / (dSvap - R * Math.log(pTarget / p0));   // K at target p
+  const Tb = dHvap * 1000 / dSvap;                                  // K at 1 bar
+  const pts = d3.range(250, 673.2, 2).map(T => ({T: T - 273.15, p: p(T)}));
+  return {Tt, Tb, pts, p25: p(298.15)};
+}
+
+Plot.plot({
+  height: 340, marginLeft: 70, marginBottom: 50, marginTop: 20,
+  x: {label: "Temperature (°C) →", domain: [-25, 400]},
+  y: {label: "↑ Vapour pressure (Torr)", type: "log", domain: [1e-4, 1e4], grid: true, tickFormat: "~g"},
+  marks: [
+    Plot.rectY([{}], {x1: -25, x2: 400, y1: 0.1, y2: 1, fill: "#E91C24", fillOpacity: 0.07}),
+    Plot.ruleY([pTarget], {stroke: "#E91C24", strokeDasharray: "4,3"}),
+    Plot.line(vp.pts.filter(d => d.p > 1e-4 && d.p < 1e4), {x: "T", y: "p", stroke: "#000", strokeWidth: 2, clip: true}),
+    Plot.dot([{T: vp.Tt - 273.15, p: pTarget}], {x: "T", y: "p", r: 6, fill: "#E91C24"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+md`Temperature for **${pTarget} Torr**: **${(vp.Tt - 273.15).toFixed(0)} °C** · Vapour pressure at 25 °C: **${vp.p25 < 0.01 ? vp.p25.toExponential(1) : vp.p25.toFixed(2)} Torr** · Normal boiling (or sublimation) point: **${(vp.Tb - 273.15).toFixed(0)} °C**`
+```
+
+::: {.assumptions}
+**Assumptions.** ΔH~vap~ and ΔS~vap~ are constant with temperature, and the vapour is ideal. The shaded band (0.1–1 Torr) is a common working range for ALD sources. For many liquids, ΔS~vap~ at the boiling point is close to Trouton's value of about 85–90 J K^−1^ mol^−1^; associated liquids and many solids (where ΔH includes the enthalpy of fusion) depart from it. The model does not account for decomposition: a compound may decompose before it reaches the temperature shown.
+:::
+:::
+
+### Controlling intermolecular interactions
+
+Lowering ΔH~vap~ means weakening the interactions between molecules: electrostatic, hydrogen bonding, dipole–dipole, ion–dipole and van der Waals [@Barry2022].
+
+- **Bond polarity.** Polar bonds strengthen intermolecular interactions. AlCl~3~ (Δχ(Al–Cl) = 1.55) is less volatile than TMA (Δχ(Al–C) = 0.94) [@Barry2022].
+- **Hydrocarbon shells.** Non-polar alkyl groups on the ligand periphery shield the polar core of the molecule.
+- **Fluorination.** Fluorine holds its electrons tightly and is hard to polarize, so replacing CH~3~ with CF~3~ weakens intermolecular interactions. In a series of β-diketonate dimethylgold(III) compounds sharing the same framework, volatility at 25 °C increases with each CF~3~ group, while the decomposition temperature stays the same [@Barry2022]. The trade-off is a greater risk of fluorine in the film.
+
+## Thermal stability
+
+Thermal stability comes down to the strength of the bonds between the payload atom and its ligands [@Barry2022]:
+
+- **Electropositive metals** (Al, Zn, Ti) form strong bonds to oxygen, so O-donor ligands give stable precursors. The price is oxygen in the film, and metal films of these elements are very hard to make.
+- **Electronegative, noble metals** (Au, Pt, Pd) form weak bonds to oxygen, so O-donor precursors tend to be unstable. Their oxides are also hard to make: with water, O~2~ or O~3~ as the co-reactant, these metals usually give metallic films.
+
+Design for stability follows two paths: use chelating ligands, and design out low-temperature decomposition pathways [@Barry2022].
+
+### Chelation
+
+TTIP, Ti(O^i^Pr)~4~, switches from ALD to CVD growth at 240 °C. In Ti(thd)~2~(O^i^Pr)~2~, all bonds to Ti(IV) are still to oxygen, but two of the ligands are chelating β-diketonates. Surface decomposition then starts at 380 °C, 140 °C higher [@Barry2022]. The thermodynamics of chelation are covered in Chapter 3.
+
+### Designing out decomposition pathways
+
+The common decomposition pathways are:
+
+- **β-Hydrogen elimination**, in which a hydrogen two bonds away from the metal is transferred to the metal, giving a metal hydride and an alkene (or an imine, for alkylamides). Ligands with β-hydrogens and coordinatively unsaturated metals are most at risk.
+- **Ligand fragmentation**, such as carbodiimide deinsertion from amidinates and guanidinates, or C–N, C–O and N–N bond cleavage.
+- **Redox reactions**, such as disproportionation of Cu(I) or Au(I).
+- **Surface-catalysed decomposition**: metals and reducible oxides lower decomposition barriers compared with the gas phase.
+
+Gold shows how far redesign can go. An early Au(I) guanidinate gave CVD at 150 °C with a growth rate of 39 nm min^−1^, useless for ALD. It decomposed by both carbodiimide deinsertion and β-H elimination. A pyrrole-based ligand that blocks deinsertion and has methyl groups at every β-position delayed decomposition to 275 °C (125 °C higher), and CVD only began at 350 °C, at 1 nm min^−1^ [@Barry2022]. The new ligand was too costly to make industrially, which illustrates another design rule: **keep it simple** [@Barry2022]. The same strategy for copper is described in @sec-ip-design.
+
+### Recognizing decomposition
+
+When a precursor decomposes instead of reacting cleanly, growth gains a **CVD component**. Signs include:
+
+- GPC that keeps rising with dose, or rises sharply with temperature above the ALD window
+- A thickness gradient along the gas-flow direction
+- Carbon or nitrogen in the film, or a large residue in TGA
+
+Decomposition can also happen in the **source**, long before the precursor reaches the substrate. A fast TGA ramp does not test days at source temperature: thermally stressing TTIP for a week produced decomposition products that changed its vapour pressure. Decomposition is not always unwanted, though. It can be used deliberately, for example by adsorbing a precursor self-limitingly at low temperature and then decomposing it in a separate heating step.
+
+## Melting point
+
+A low melting point is not essential, but a liquid source improves reproducibility [@Barry2022]. A liquid's surface area stays constant and surface impurities are mobile. A solid's surface area shrinks as its particles evaporate, and impurities collect on it, so the vapour delivered can fall over the life of the source. On the other hand, solids are safer to ship and easier to load. The ideal precursor melts **above** shipping and handling temperatures but **below** the source temperature [@Barry2022].
+
+Melting points can be tuned. Long, unbranched alkyl chains frustrate crystallization because they can adopt many conformations. W(CO)~6~ melts at 170 °C; replacing one CO with an isonitrile, CNR, gives W(CO)~5~(CNR), which melts below 100 °C. As R grows from C~3~ to C~5~, the melting point falls roughly linearly to below 0 °C, suggesting a butyl chain would give a solid at room temperature that melts in the source. There is no further gain at C~6~, and with C~8~ the melting point rises again to about 20 °C [@Barry2022].
+
+## Reactivity and heteroleptic design
+
+A precursor must react with the surface and the co-reactant (intermolecular reactivity) without reacting with itself (intramolecular reactivity) [@Barry2022]. Heteroleptic precursors split these jobs: one ligand anchors the precursor to the surface, and another stays on the metal and protects it.
+
+The pK~a~ of each ligand's conjugate acid is a first guide to which ligand will act as the anchor (@sec-ligand-tour): the most basic ligand, whose conjugate acid has the highest pK~a~, is the most likely to take a proton from the surface. In MeAlCl~2~, for example, the methyl group (pK~a~ of CH~4~ ≈ 50) reacts with a surface –OH, and the chlorides (pK~a~ of HCl ≈ −7) stay on the chemisorbed aluminum [@Barry2022]. Choosing which ligand reacts lets a chemist choose what is left on the surface for the next half-cycle.
+
+## Co-reactants
+
+The co-reactant sets the film's anion (or reduces the metal), removes the remaining ligands and regenerates reactive surface sites.
+
+| Film | Typical co-reactants |
+|:---|:---|
+| Metal oxide | H~2~O, O~3~, O~2~ (thermal or plasma) |
+| Metal nitride | NH~3~, hydrazines and amines, N~2~/H~2~ plasma |
+| Metal sulfide, selenide, telluride | H~2~S, H~2~Se, H~2~Te (toxic), or E(SiMe~3~)~2~ with metal chlorides |
+| Metal fluoride | HF–pyridine, TiF~4~, TaF~5~ |
+| Elemental metal | Reducing agents; O~2~ or O~3~ for noble metals only |
+
+: Co-reactants by film type. {#tbl-coreactants}
+
+The three common oxygen sources behave very differently:
+
+| | H~2~O | O~3~ | O~2~ plasma |
+|:---|:---|:---|:---|
+| Mechanism | Protonolysis; regenerates –OH | Combusts ligands; can oxidize the substrate | Radical combustion |
+| Works with | Alkyls, amides, halides | Also β-diketonates and Cp, which react poorly with water | Most precursors |
+| Temperature | Moderate | Lower possible | Lowest |
+| Typical issues | Slow purges at low temperature; hygroscopic films | Carbonate and carbon impurities; substrate oxidation | Plasma damage; lower conformality |
+
+: Oxygen co-reactants compared. {#tbl-oxygen-sources}
+
+A weaker co-reactant can even **create selectivity**. O~2~ dissociates readily only on noble metals, so a metal oxide can be grown on Pt while not growing on SiO~2~ or Al~2~O~3~. Stronger oxidants such as O~3~ or an oxygen plasma react on any surface and remove that selectivity [@Singh2018].
+
+## Check your understanding
+
+::: {.quiz}
+A gold film is deposited from a Au(III) precursor and ozone. Which statement best describes the role of ozone?
+
+- [ ] Ozone reduces Au(III) to Au(0).
+- [ ] Ozone oxidizes Au(III) to Au(V).
+- [x] Ozone combusts the ligands; gold, which prefers the zero oxidation state, takes up electrons during the combustion and ends up as Au(0).
+- [ ] Ozone is not involved; the precursor decomposes thermally.
+
+::: {.explanation}
+The gold is formally reduced, but it is not accurate to call ozone the reducing agent. Labels such as "oxidant" describe what is added, not necessarily what happens to the metal [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+Why does adding CF~3~ groups to a dimethylgold(III) β-diketonate increase its volatility?
+
+- [ ] It lowers the molecular weight.
+- [ ] It raises the enthalpy of vaporization.
+- [x] Fluorine is hard to polarize and holds its electrons tightly, which weakens intermolecular interactions and lowers the enthalpy of vaporization.
+- [ ] It makes the compound decompose at a lower temperature.
+
+::: {.explanation}
+CF~3~ is heavier than CH~3~, so molecular weight cannot be the explanation. Volatility is controlled by intermolecular interactions in the condensed phase [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+A precursor is a free-flowing powder at room temperature and is delivered from a solid source at 120 °C. Over many runs, the dose delivered by a fixed pulse slowly falls. What is the most likely cause?
+
+- [ ] The precursor's enthalpy of sublimation increases over time.
+- [x] The surface area of the solid shrinks as particles evaporate, and impurities collect on it, so the evaporation rate drops.
+- [ ] Solids always have lower vapour pressures than liquids.
+- [ ] The carrier gas becomes saturated.
+
+::: {.explanation}
+A liquid presents a constant surface and keeps impurities mobile; a solid does not. This is why a melting point between handling and source temperature is useful [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+In MeAlCl~2~, which ligand is expected to react with a surface hydroxyl, and why?
+
+- [x] The methyl group, because CH~4~ is a far weaker acid than HCl, so CH~3~^−^ is the stronger base.
+- [ ] A chloride, because Al–Cl bonds are more ionic.
+- [ ] Both equally, because they are on the same metal.
+- [ ] Neither; the compound physisorbs.
+
+::: {.explanation}
+The ligand whose conjugate acid has the highest pK~a~ is the strongest base and the most likely to accept a surface proton. The chlorides remain on the chemisorbed aluminum [@Barry2022].
+:::
+:::
+
+## Further reading
+
+- @Barry2022, Chapter 4: precursor design, volatility, thermal stability and reactivity, including the examples used here.
+- @Barry2021: the main organometallic precursor families and their surface mechanisms.
+- @Barry2013: a case study in designing a ligand against specific decomposition pathways.
+- @Singh2018: how a weak co-reactant can be used for area-selective deposition.

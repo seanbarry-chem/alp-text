@@ -22,6 +22,7 @@ book:
         - chapters/01-ald-history.qmd
         - chapters/02-ald-fundamentals.qmd
         - chapters/03-ligands.qmd
+        - chapters/04-precursors.qmd
     - references.qmd
 
 bibliography: references.bib
