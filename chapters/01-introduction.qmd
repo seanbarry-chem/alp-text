@@ -180,7 +180,7 @@ The method followed over the next two decades [@Barry2022]:
 - **1965:** first full paper, by Aleskovskii in *J. Appl. Chem. USSR*.
 - **1971:** Kol'tsov's doctoral dissertation, which contains much of what would now be called the chemical conceptualization of ALD. In the same year, Kol'tsov and Aleskovskii applied for a patent titled "The Principles of Synthesis of Solids". It was declined.
 
-Throughout, molecular layering was framed as surface chemistry: how to change a material's surface by chemical means, producing different kinds of surfaces and different ratios of bulk atoms to surface sites [@Barry2022]. Because it was published mainly in Russian, it reached few readers outside the USSR. A detailed English-language account of Aleskovskii and Kol'tsov's work only appeared in 2015 [@Malygin2015].
+Throughout, molecular layering was framed as surface chemistry: how to change a material's surface by chemical means, producing different kinds of surfaces and different ratios of bulk atoms to surface sites [@Barry2022]. It reached few readers outside the USSR. A detailed English-language account of Aleskovskii and Kol'tsov's work only appeared in 2015 [@Malygin2015].
 
 #### Atomic layer epitaxy: an engineering answer
 
