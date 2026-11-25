@@ -7,7 +7,7 @@ Source for **https://atomiclayerprocessing.ca**, built with [Quarto](https://qua
 ```
 _quarto.yml                   site/book config (chapter list lives here)
 index.qmd                     landing page
-chapters/01-ald-fundamentals.qmd
+chapters/                     one .qmd per chapter (01-introduction, 02-ald-fundamentals, ...)
 references.bib                BibTeX; cite with [@Key]
 assets/                       theme, quiz script and styles
 .github/workflows/publish.yml builds and deploys on every push to main
