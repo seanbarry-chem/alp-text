@@ -1,0 +1,683 @@
+---
+title: "Introduction to Atomic Layer Processing"
+---
+
+::: {.callout-tip appearance="simple"}
+## Learning outcomes
+After this chapter you should be able to:
+
+1. Name the four atomic layer processes covered in this book (ALD, MLD, ALE and ASD) and say what each one adds to or removes from a surface in one cycle.
+2. Use the core vocabulary of the field precisely: precursor, adsorption, surface vs. substrate, monolayer, self-limiting, and layer.
+3. Describe the two independent origins of ALD: molecular layering in the Soviet Union and atomic layer epitaxy in Finland.
+4. Explain why the technique's first industrial use was in displays, and what moved it into semiconductor manufacturing.
+5. Explain why some of the field's terminology ("epitaxy", "atomic layer") is historically rooted rather than physically accurate.
+6. Trace how MLD, ALE and ASD grew out of, or alongside, ALD, and how the four processes now work together.
+:::
+
+## What is atomic layer processing? {#sec-what-is-alp}
+
+*Atomic layer processing* is a family of thin-film methods that change a surface in small, repeatable steps. Every member of the family uses the same logic. The surface is exposed to one reactant at a time, with a purge or evacuation in between, and each exposure is a gas–surface reaction that stops by itself [@George2016; @Barry2022]. Repeating this cycle gives control over thickness at the scale of a fraction of a nanometre. The test for whether a given process really behaves this way is set out in @sec-what-makes-ald.
+
+This book covers four processes that apply that logic in different ways:
+
+| Process | What one cycle does | Typical per-cycle quantity | Main chapter |
+|:---|:---|:---|:---|
+| **Atomic layer deposition (ALD)** | Adds a fraction of a monolayer of an inorganic film | Growth per cycle (GPC), in Å | Chapters 2–4 |
+| **Molecular layer deposition (MLD)** | Adds a molecular fragment, giving an organic or hybrid film | GPC, in Å | (in preparation) |
+| **Atomic layer etching (ALE)** | Removes a thin, chemically modified layer | Etch per cycle (EPC), in Å | (in preparation) |
+| **Area-selective deposition (ASD)** | Adds film on one part of a patterned surface but not another | GPC on each surface, and selectivity | (in preparation) |
+
+: The four atomic layer processes covered in this book. {#tbl-four-processes}
+
+ALD is the oldest and best understood, so this book develops the shared fundamentals (saturation, ligands, precursors, thermolysis) in the ALD chapters. MLD, ALE and ASD are then treated as variations on the same chemistry.
+
+### ALD is not just slow CVD
+
+ALD is often described as a kind of chemical vapour deposition (CVD), and the hardware is similar: valves, a heated reactor, a substrate holder and a pump. The chemistry is different, though [@Barry2022]. In CVD, the reactants are present together. They can react in the gas phase, at the surface, or anywhere in between, and gas-phase reactions are often useful. In ideal ALD, the precursors never meet in the gas phase, and the film forms only through reactions at the surface. Two consequences follow. A single-source precursor, which carries every element of the film and decomposes to deposit it, cannot work in ALD, because nothing would stop the growth. And the precursors in a two-precursor cycle must be stoichiometrically balanced, so that all the ligands from both are removed by the end of the cycle [@Barry2022].
+
+The comparison below shows the four processes side by side. Step through one cycle to see how the same sequence of dose and purge steps can add, remove, or selectively add material.
+
+::: {.sim-box}
+[Interactive 1.1: One cycle of each atomic layer process]{.sim-title}
+
+```{ojs}
+//| echo: false
+alpStepNames = ["Start", "Step 1: first dose", "Step 2: purge", "Step 3: second dose", "Step 4: purge"]
+viewof alpStep = Inputs.radio([0, 1, 2, 3, 4], {value: 0, format: i => alpStepNames[i], label: "Step"})
+```
+
+```{ojs}
+//| echo: false
+alpPanel = {
+  // Built as plain SVG markup so it works with any version of the OJS standard library.
+  const W = 200, H = 160, red = "#E91C24", grey = "#B3B3B3", dark = "#4D4D4D", s = alpStep;
+  const xs = d3.range(14, 190, 18), half = W / 2;
+  const dot = (x, y, fill, r = 5) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="#000" stroke-width="0.6"/>`;
+  const rect = (x, y, w, h, fill) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`;
+  const gas = (n, fill, seed) => d3.range(n).map(i =>
+    dot(18 + ((i * 47 + seed * 31) % 165), 24 + ((i * 29 + seed * 13) % 40), fill, 4.5)).join("");
+  const frame = (title, body, note) => `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="font: 12px sans-serif; background: #fff; border: 1px solid #CFCFCF; border-radius: 6px; margin: 4px;">
+    <text x="8" y="15" font-weight="600">${title}</text>${body}
+    <text x="8" y="${H - 5}" font-size="10.5" fill="#4D4D4D">${note}</text></svg>`;
+  const adsorbed = s === 1 || s === 2;
+
+  // ALD: precursor saturates the surface, purge, second precursor converts it to film, purge.
+  const ald = frame("ALD",
+    rect(0, 112, W, 30, grey) +
+    (s >= 3 ? rect(0, 104, W, 8, "#000") : "") +
+    (adsorbed ? xs.map(x => dot(x, 106, red)).join("") : "") +
+    (s === 1 ? gas(6, red, 1) : "") + (s === 3 ? gas(6, "#FFFFFF", 2) : ""),
+    s >= 3 ? "Film grows by one GPC" : s >= 1 ? "Precursor saturates the surface" : "Starting surface");
+
+  // MLD: as ALD, but the adsorbed species and the added layer are molecular.
+  const mld = frame("MLD",
+    rect(0, 112, W, 30, grey) +
+    (s >= 3 ? rect(0, 94, W, 18, dark) : "") +
+    (adsorbed ? xs.map(x => `<line x1="${x}" y1="112" x2="${x}" y2="94" stroke="${red}" stroke-width="4" stroke-linecap="round"/>`).join("") : "") +
+    (s === 1 ? gas(6, red, 3) : "") + (s === 3 ? gas(6, "#FFFFFF", 4) : ""),
+    s >= 3 ? "A molecular layer is added" : s >= 1 ? "Organic molecules bind upright" : "Starting surface");
+
+  // ALE: modify the top of the film, purge, remove only the modified layer, purge.
+  const top = s >= 3 ? 94 : 88;
+  const ale = frame("ALE",
+    rect(0, 112, W, 30, grey) + rect(0, top, W, 112 - top, "#000") +
+    (adsorbed ? rect(0, 88, W, 6, red) : "") +
+    (s === 1 ? gas(6, red, 5) : "") + (s === 3 ? gas(5, "#FFFFFF", 6) + gas(3, red, 7) : ""),
+    s >= 3 ? "Film is thinner by one EPC" : s >= 1 ? "Top of the film is modified" : "Film to be etched");
+
+  // ASD: an inhibitor blocks the right-hand (non-growth) surface; growth occurs only on the left.
+  const asd = frame("ASD",
+    rect(0, 112, half, 30, grey) + rect(half, 112, half, 30, "#E3E3E3") +
+    xs.filter(x => x > half).map(x => `<line x1="${x}" y1="112" x2="${x}" y2="101" stroke="#000" stroke-width="1.2"/>` + dot(x, 98, "#FFFFFF", 3)).join("") +
+    (s >= 3 ? rect(0, 104, half, 8, "#000") : "") +
+    (adsorbed ? xs.filter(x => x < half).map(x => dot(x, 106, red)).join("") : "") +
+    (s === 1 ? gas(6, red, 8) : "") + (s === 3 ? gas(6, "#FFFFFF", 9) : ""),
+    s >= 3 ? "Film grows only where wanted" : s >= 1 ? "Inhibitor blocks the right side" : "Growth vs. non-growth surface");
+
+  const div = document.createElement("div");
+  div.style.cssText = "display: grid; grid-template-columns: repeat(2, auto); justify-content: center;";
+  div.innerHTML = ald + mld + ale + asd;
+  return div;
+}
+```
+
+```{ojs}
+//| echo: false
+alpWhat = [
+  ["Each surface as it starts the cycle.", "", "", ""],
+  ["A metal precursor (red) adsorbs until the surface is saturated; the excess stays in the gas.",
+   "A precursor binds, often a metal precursor or one end of a bifunctional organic molecule.",
+   "A modification reagent (red) converts the top of the film into a thin, reactive layer.",
+   "The precursor adsorbs on the growth surface only; the inhibitor blocks the non-growth surface."],
+  ["Unreacted precursor and by-products are pumped away.", "Unreacted precursor and by-products are pumped away.",
+   "Excess modification reagent is pumped away.", "Unreacted precursor is pumped away."],
+  ["A second precursor (white) reacts with the adsorbed layer, leaving a fraction of a monolayer of film.",
+   "A second precursor (often an organic linker) completes a molecular layer.",
+   "A removal step (white: ions, heat, or a ligand-exchange reagent) takes away only the modified layer as volatile products (red).",
+   "The second precursor reacts only where the first one adsorbed."],
+  ["By-products are pumped away and the surface is ready for the next cycle.", "Ready for the next cycle.",
+   "The fresh surface is ready for the next cycle.", "Ready for the next cycle, until the inhibitor fails or nuclei build up."]
+]
+html`<table class="table" style="font-size: 0.95rem;">
+  <thead><tr><th>ALD</th><th>MLD</th><th>ALE</th><th>ASD</th></tr></thead>
+  <tbody><tr>${alpWhat[alpStep].map((t, i) => html`<td>${alpStep === 0 && i > 0 ? "" : t}</td>`)}</tr></tbody>
+</table>`
+```
+
+::: {.assumptions}
+**Assumptions.** A cartoon, not a model. Each panel shows one cycle; sizes, coverages and per-cycle amounts are not to scale. Real ALD cycles deposit less than a monolayer (@sec-steric), real ALE often needs ion energy or temperature to be tuned for the removal step to be self-limiting, and real ASD loses selectivity as nuclei form on the non-growth surface.
+:::
+:::
+
+## Vocabulary {#sec-vocabulary}
+
+Many terms in this field are used loosely, and some have been borrowed from other disciplines. Using them precisely makes the chemistry easier to discuss [@Barry2022]. This book uses the following definitions.
+
+Precursor
+: Any volatile compound that takes part in the surface chemistry of the process. "Reactant" is chemically correct but too general. "Co-reactant" and "co-precursor" are avoided here, because the prefix *co-* implies that two compounds are dosed at the same time, which is exactly what an atomic layer process does not do. In a two-precursor process, this book refers to the *first* and *second* precursor [@Barry2022].
+
+Adsorption
+: The general term for a molecule binding to a surface. It covers **chemisorption**, which involves a change in bonding (for example, loss of a ligand as a volatile by-product) and is hard to reverse, and **physisorption**, a weak and easily reversed interaction that is often the first step towards chemisorption. "Adsorption" is the safe word to use until the mechanism is known [@Barry2022].
+
+Substrate and surface
+: The *substrate* is the material on which deposition starts, a term borrowed from microelectronics. Once the substrate is covered, the process continues on the growing film, which is the *surface*. The precursor and the surface together make up the thermodynamic system, so when the surface changes from substrate to film, the chemistry can change too [@Barry2022]. This is the root of the nucleation effects discussed in Chapter 2, and of area-selective deposition.
+
+Monolayer
+: A layer of adsorbed species after which the surface will not accept any more. It does not have to be densely packed: the size of the precursor, the number of reactive sites and the surface roughness all limit how full it is [@Barry2022].
+
+Self-limiting
+: The defining property of an atomic layer process. Once the monolayer forms, adsorption stops, and the layer stays in place until the next reaction. The monolayer need not be thermodynamically stable; it is enough that it is kinetically stable, i.e. that it lasts long enough for the next step [@Barry2022].
+
+Layer
+: Used in at least three senses: an adsorbed monolayer, the result of one half-reaction, and one full layer of the target material. Most ALD processes deposit less than one layer of the target material per cycle, so several cycles contribute to a single layer of film. Always say which kind of layer you mean [@Barry2022].
+
+Growth per cycle (GPC) and etch per cycle (EPC)
+: The thickness added (GPC) or removed (EPC) by one complete cycle. In this book both are reported in Å, never Å/cycle.
+
+Growth surface and non-growth surface
+: In area-selective deposition, the part of a patterned surface where film is wanted and the part where it is not [@Parsons2020].
+
+## History of atomic layer deposition {#sec-history-ald}
+
+ALD is the oldest of the four processes, and its history is the best documented. It is also unusual: the technique was invented twice, in two countries, by people who did not know of each other's work.
+
+### The dual history of atomic layer deposition
+
+ALD was discovered independently at least twice, under different names [@Ahvenniemi2017; @Puurunen2014; @Barry2022]:
+
+- **Molecular layering (ML)**, developed in Leningrad from the 1960s by V. B. Aleskovskii and his student S. I. Kol'tsov [@Malygin2015; @Barry2022].
+- **Atomic layer epitaxy (ALE)**, developed in Finland from 1974 by Tuomo Suntola and co-workers [@Puurunen2014].
+
+Both rest on the principle from @sec-what-makes-ald: repeated, separate, saturating gas–solid reactions. They reached it from opposite directions, though, and each lineage left its mark on how ALD is thought about today.
+
+#### Molecular layering: a chemical question
+
+The Leningrad work started from a question about solids, not films. In his 1952 doctoral thesis at the Leningrad Technological Institute, Aleskovskii proposed what he called the "matrix" or "framework" hypothesis [@Malygin2015; @Barry2022]. A solid framework carries a stoichiometric number of reactive surface sites relative to its bulk atoms. If those sites are reacted with a suitable chemical, the result is a new surface that again carries a stoichiometric number of sites. The cyclical logic of ALD is already present in this idea: each reaction regenerates the conditions for the next [@Barry2022].
+
+The method followed over the next two decades [@Barry2022]:
+
+- **1963:** first report of molecular layering, in the Russian literature.
+- **1965:** first full paper, by Aleskovskii in *J. Appl. Chem. USSR*.
+- **1971:** Kol'tsov's doctoral dissertation, which contains much of what would now be called the chemical conceptualization of ALD. In the same year, Kol'tsov and Aleskovskii applied for a patent titled "The Principles of Synthesis of Solids". It was declined.
+
+Throughout, molecular layering was framed as surface chemistry: how to change a material's surface by chemical means, producing different kinds of surfaces and different ratios of bulk atoms to surface sites [@Barry2022]. Because it was published mainly in Russian, it reached few readers outside the USSR. A detailed English-language account of Aleskovskii and Kol'tsov's work only appeared in 2015 [@Malygin2015].
+
+#### Atomic layer epitaxy: an engineering answer
+
+In 1974, the Finnish medical-technology company Instrumentarium asked Suntola, a young physicist, to lead a new R&D effort. He chose thin-film electroluminescent (EL) displays. These need very thin, uniform, pinhole-free films with high dielectric strength, over large areas. The original target was high-quality **polycrystalline ZnS** for EL panels [@Puurunen2014].
+
+Suntola and Jorma Antson filed the patent "Method for Producing Compound Thin Films" in 1974 [@Puurunen2014; @Barry2022]. Where molecular layering asked a chemical question, ALE was engineered from the start as an industrial solution for making devices, and it focused on the physics and engineering of depositing and characterizing films [@Barry2022]. The patent shows this. It contains detailed technical drawings of a reactor, and the ALE work laid the technical foundations of concepts that are now active research areas in their own right, including area-selective ALD and spatial ALD [@Barry2022].
+
+In 1977 the team moved to Lohja Corporation, which built an electronics factory in Espoo in 1984 to make ALE-grown ZnS:Mn displays. This was the first industrial use of the technique. Display modules from the line served in the departure hall of Helsinki-Vantaa airport for about two decades. Suntola's display work also explains why early ALD concentrated on chalcogenides (sulfides and selenides); oxides and nitrides came to the fore in the 1990s [@Barry2022].
+
+#### A missed connection
+
+The two lineages developed without collaboration, and very likely without knowledge of each other. Given how differently they were framed, that is not surprising: one was about the chemistry of a surface relative to the bulk, the other about the engineering of thin-film devices [@Barry2022].
+
+They did come close to meeting. In the late 1970s, Suntola defended his patent application in Moscow, and the patent was granted in the Soviet jurisdiction. The examiners did not raise molecular layering as prior art, and an early chance to join the two bodies of work was missed [@Barry2022]. A deliberate effort to bring the two histories together began only in 2004, and it led to the VPHA (see below) [@Barry2022; @Ahvenniemi2017]. Riikka Puurunen can be credited with bringing the early Russian contributions to the forefront [@Barry2022].
+
+| | Molecular layering | Atomic layer epitaxy |
+|:---|:---|:---|
+| Where | Leningrad Technological Institute, USSR | Instrumentarium, then Lohja, Finland |
+| Key people | V. B. Aleskovskii, S. I. Kol'tsov | T. Suntola, J. Antson |
+| Origin | 1952 "framework" hypothesis; first reports 1963–1965 | 1974 patent application |
+| Framing | Chemistry: modifying the surface of a solid | Engineering: depositing films for devices |
+| Patent | 1971 application declined | Granted, including in the USSR |
+| Reach | Published mainly in Russian | International patents and conferences |
+
+: The two origins of ALD compared [@Malygin2015; @Puurunen2014; @Barry2022]. {#tbl-origins}
+
+The way we draw ALD has changed with the field. Kol'tsov's 1971 thesis pictured the growing surface as a regular lattice of atomic points, one layer added per cycle. Modern depictions, such as Puurunen's, show bulky chemisorbed precursor fragments and the complexity of the surface reactions [@Barry2022]. Simulation 2.1 in the next chapter sits between the two: a cartoon, but one that shows steric shielding and more than one adsorbed species.
+
+#### What's in a name
+
+The ZnS films were polycrystalline, so "epitaxy" was never strictly correct. As the materials list grew to amorphous oxides and nitrides, the name became a liability. The term "atomic layer deposition" was first used around 1990 and became the common name in the mid-1990s. The same mismatch between name and physics applies to "atomic layer", since a cycle deposits a fraction of a monolayer (@sec-what-makes-ald).
+
+### From displays to microchips
+
+Finland stayed the centre of the field through the 1980s and 1990s:
+
+- Lauri Niinistö started ALD process research at the Helsinki University of Technology in 1982. Espoo hosted the first ALE symposium in 1984 and the first international ALE symposium in 1990.
+- Neste founded Microchemistry (Mikrokemia) in Espoo in 1987, with Suntola leading it, to apply ALD to catalysts and solar cells. Microchemistry also built some of the first commercial ALD reactors, the F120 series.
+- Markku Leskelä and Mikko Ritala's group at the University of Helsinki developed much of the precursor chemistry, in a decades-long partnership with the reactor makers.
+
+The turning point came in 1999, when ASM International (Netherlands) bought Microchemistry and refocused it on semiconductors. By then, the industry could see that the SiO~2~ gate dielectric would have to be replaced, and ALD could deposit the ultrathin high-k films needed. In 2007, Intel shipped 45 nm processors whose transistors used a hafnium-based high-k gate dielectric deposited by ALD, the first fundamental change to the CMOS transistor in four decades. ALD is now routine in logic, DRAM and 3D NAND manufacturing.
+
+### A field with a conference and a name
+
+The community first met in Finland: a symposium on atomic layer epitaxy was held in Espoo in 1984, followed by four international ALE symposia between 1990 and 1996, in Finland, the USA, Japan and Austria [@AtomicLimits2024]. The first AVS conference on ALD was held in Monterey, California, in 2001, chaired by Steven George; the second was held in Seoul in 2002 [@Parsons2013]. Since then the meeting has run every year, rotating between the United States, Europe and Asia, and since 2015 it has been held jointly with the International Atomic Layer Etching Workshop [@AtomicLimits2024]. The 2020 and 2021 meetings were virtual. The 2024 meeting in Helsinki marked 50 years since the first ALE patent, and the 2026 meeting in Tampa, Florida, was the 26th [@AtomicLimits2024; @AVS2026]. Suntola received the Millennium Technology Prize for ALD in 2018.
+
+The map below includes every in-person meeting in the series; choose the North America or East Asia view to separate the clusters.
+
+### Recovering the history
+
+Because the two lineages developed in isolation, the early literature is scattered across languages and journals. An effort to join the two histories began in 2004 [@Barry2022]. It led to the **Virtual Project on the History of ALD** (VPHA), launched in July 2013 as an open, volunteer effort to make the early work visible [@Ahvenniemi2017]. Participants read and discussed early publications from both lineages. The result was a recommended reading list, presented at the ALD 2016 conference in Dublin and published the following year with dozens of co-authors [@Ahvenniemi2017]. The VPHA has since closed, but the reading list remains the best entry point to the early literature.
+
+### Mapping the history
+
+The map below shows where the events in this chapter happened. Use the slider to move through time, and switch views to zoom in on Europe or the Helsinki area, where much of the early work was concentrated.
+
+::: {.sim-box}
+[Interactive 1.2: Where ALD came from]{.sim-title}
+
+```{ojs}
+//| echo: false
+P = import("https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/+esm")
+tj = import("https://cdn.jsdelivr.net/npm/topojson-client@3/+esm")
+land110 = d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json")
+  .then(t => tj.feature(t, t.objects.land))
+land50 = d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json")
+  .then(t => tj.feature(t, t.objects.land))
+// The detailed coastline (~3 MB) is only fetched if the Helsinki view is opened.
+land10 = view === "Helsinki area"
+  ? d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/land-10m.json").then(t => tj.feature(t, t.objects.land))
+  : null
+```
+
+```{ojs}
+//| echo: false
+lineages = ["Molecular layering", "Atomic layer epitaxy", "Industry", "Community", "Conferences"]
+lineageFill = ["#4D4D4D", "#E91C24", "#000000", "#FFFFFF", "#B3B3B3"]
+
+places = [
+  {id: "lti", name: "Leningrad Technological Institute", where: "Leningrad (St Petersburg), USSR",
+   lon: 30.318, lat: 59.917, lineage: "Molecular layering", events: [
+    {year: 1952, when: "1952", text: "Aleskovskii's doctoral thesis proposes the \"framework\" hypothesis: building a solid by chemical assembly on an existing solid surface.", ref: "Malygin et al. 2015"},
+    {year: 1963, when: "1963", text: "First report of molecular layering, in the Russian literature.", ref: "Barry 2022"},
+    {year: 1965, when: "1965", text: "Aleskovskii's first full paper on molecular layering, in J. Appl. Chem. USSR.", ref: "Barry 2022"},
+    {year: 1971, when: "1971", text: "Kol'tsov's doctoral dissertation sets out much of the chemical picture of ALD. A patent application, \"The Principles of Synthesis of Solids\", is declined.", ref: "Barry 2022"}]},
+  {id: "moscow", name: "Soviet patent examination", where: "Moscow, USSR",
+   lon: 37.62, lat: 55.75, lineage: "Atomic layer epitaxy", events: [
+    {year: 1978, when: "Late 1970s", text: "Suntola defends the ALE patent application in Moscow and it is granted. Molecular layering is not raised as prior art, and an early chance to connect the two lineages is missed.", ref: "Barry 2022"}]},
+  {id: "hel", name: "Helsinki", where: "Helsinki, Finland",
+   lon: 24.94, lat: 60.17, label: "Helsinki (Instrumentarium)", dx: 14, dy: 6, anchor: "start", lineage: "Atomic layer epitaxy", events: [
+    {year: 1974, when: "1974", text: "At Instrumentarium, Suntola starts work on thin-film EL displays. Suntola and Antson file \"Method for Producing Compound Thin Films\", aimed at polycrystalline ZnS; the patent includes detailed reactor drawings.", ref: "Puurunen 2014; Barry 2022"},
+    {year: 2004, when: "2004", text: "AVS ALD 2004, the first AVS ALD conference in Europe, chaired by Mikko Ritala.", ref: "AtomicLimits 2024"},
+    {year: 2018, when: "2018", text: "Suntola receives the Millennium Technology Prize for ALD.", ref: ""},
+    {year: 2024, when: "2024", text: "The ALD/ALE 2024 conference in Helsinki marks 50 years since the first ALE patent.", ref: ""}]},
+  {id: "espoo", name: "Lohja EL factory and Microchemistry", where: "Espoo, Finland",
+   lon: 24.656, lat: 60.205, label: "Espoo (Lohja, Microchemistry)", dy: -16, lineage: "Industry", events: [
+    {year: 1977, when: "1977", text: "Suntola's team moves from Instrumentarium to Lohja Corporation.", ref: ""},
+    {year: 1984, when: "1984", text: "Lohja opens an Espoo factory making ALE-grown ZnS:Mn electroluminescent displays: the first industrial use of ALD.", ref: ""},
+    {year: 1987, when: "1987", text: "Neste founds Microchemistry (Mikrokemia), led by Suntola, to apply ALD to catalysts and solar cells. It develops early commercial reactors, including the F120 series.", ref: ""}]},
+  {id: "airport", name: "Helsinki-Vantaa airport", where: "Vantaa, Finland",
+   lon: 24.963, lat: 60.317, label: "Helsinki-Vantaa airport", dy: -16, lineage: "Industry", events: [
+    {year: 1985, when: "1980s", text: "ALE-made EL display modules go into the departure hall, where they run for about two decades.", ref: ""}]},
+  {id: "otaniemi", name: "Otaniemi campus (HUT, now Aalto University; VTT)", where: "Espoo, Finland",
+   lon: 24.828, lat: 60.186, label: "Otaniemi (HUT/Aalto, VTT)", dx: -16, dy: 4, anchor: "end", lineage: "Community", events: [
+    {year: 1982, when: "1982", text: "Lauri Niinistö starts ALD process research at the Helsinki University of Technology.", ref: ""},
+    {year: 1984, when: "1984", text: "First symposium on atomic layer epitaxy, Espoo.", ref: ""},
+    {year: 1990, when: "1990", text: "ALE-1, the first international ALE symposium, Espoo.", ref: ""},
+    {year: 2013, when: "2013", text: "The Virtual Project on the History of ALD (VPHA) starts as an open volunteer effort, coordinated from VTT. It grew out of an effort begun in 2004 to join the two histories, and has since closed.", ref: "Ahvenniemi et al. 2017; Barry 2022"},
+    {year: 2014, when: "2014", text: "40th anniversary of ALE; Puurunen publishes Suntola's account of the invention.", ref: "Puurunen 2014"}]},
+  {id: "uh", name: "University of Helsinki, Kumpula", where: "Helsinki, Finland",
+   lon: 24.962, lat: 60.205, label: "Univ. Helsinki, Kumpula", dx: 14, dy: -4, anchor: "start", lineage: "Atomic layer epitaxy", events: [
+    {year: 1988, when: "Late 1980s on", text: "Leskelä and Ritala's group builds much of ALD precursor chemistry, in long-running partnership with Microchemistry and later ASM.", ref: ""}]},
+  {id: "asm", name: "ASM International", where: "Bilthoven, Netherlands",
+   lon: 5.20, lat: 52.13, lineage: "Industry", events: [
+    {year: 1999, when: "1999", text: "ASM buys Microchemistry (now ASM Microchemistry) and refocuses it on semiconductor gate stacks.", ref: ""}]},
+  {id: "intel", name: "Intel", where: "Santa Clara, California, USA",
+   lon: -121.96, lat: 37.39, lineage: "Industry", events: [
+    {year: 2007, when: "2007", text: "45 nm processors ship with a hafnium-based high-k gate dielectric deposited by ALD.", ref: ""}]},
+  {id: "boulder", name: "University of Colorado", where: "Boulder, Colorado, USA",
+   lon: -105.27, lat: 40.01, lineage: "Community", events: [
+    {year: 2010, when: "2010", text: "Steven George's overview in Chem. Rev. becomes the most-cited ALD review.", ref: "George 2010"}]},
+  {id: "dublin", name: "ALD/ALE 2016", where: "Dublin, Ireland",
+   lon: -6.27, lat: 53.34, lineage: "Conferences", events: [
+    {year: 2016, when: "2016", text: "ALD/ALE 2016. The VPHA reading list of early ALD papers from both lineages is presented here; it is published in 2017.", ref: "AtomicLimits 2024; Ahvenniemi et al. 2017"}]},
+  {id: "raleigh", name: "ALE-2 symposium", where: "Raleigh, North Carolina, USA",
+   lon: -78.64, lat: 35.78, lineage: "Conferences", events: [
+    {year: 1992, when: "1992", text: "Second International Symposium on Atomic Layer Epitaxy (ALE-2).", ref: "AtomicLimits 2024"}]},
+  {id: "sendai", name: "ALE-3 symposium", where: "Sendai, Japan",
+   lon: 140.87, lat: 38.27, lineage: "Conferences", events: [
+    {year: 1994, when: "1994", text: "ALE-3, chaired by Jun-ichi Nishizawa (Tohoku University).", ref: "AtomicLimits 2024"}]},
+  {id: "linz", name: "ALE-4 symposium", where: "Linz, Austria",
+   lon: 14.29, lat: 48.31, lineage: "Conferences", events: [
+    {year: 1996, when: "1996", text: "ALE-4, the last symposium in the atomic layer epitaxy series.", ref: "AtomicLimits 2024"}]},
+  {id: "monterey", name: "AVS ALD conferences", where: "Monterey, California, USA",
+   lon: -121.89, lat: 36.6, lineage: "Conferences", events: [
+    {year: 2001, when: "2001", text: "First AVS conference on ALD, chaired by Steven George.", ref: "Parsons et al. 2013"},
+    {year: 2009, when: "2009", text: "AVS ALD 2009.", ref: "AtomicLimits 2024"}]},
+  {id: "seoul", name: "AVS ALD conferences", where: "Seoul, South Korea",
+   lon: 126.99, lat: 37.56, lineage: "Conferences", events: [
+    {year: 2002, when: "2002", text: "The ALD conference moves to Seoul (chair: Hyeongtag Jeon), signalling an international field.", ref: "Parsons et al. 2013"},
+    {year: 2006, when: "2006", text: "AVS ALD 2006.", ref: "AtomicLimits 2024"},
+    {year: 2010, when: "2010", text: "AVS ALD 2010.", ref: "AtomicLimits 2024"}]},
+  {id: "sanjose", name: "AVS ALD conferences", where: "San Jose, California, USA",
+   lon: -121.89, lat: 37.34, lineage: "Conferences", events: [
+    {year: 2003, when: "2003", text: "AVS ALD 2003.", ref: "AtomicLimits 2024"},
+    {year: 2005, when: "2005", text: "AVS ALD 2005.", ref: "AtomicLimits 2024"}]},
+  {id: "sandiego", name: "AVS ALD conferences", where: "San Diego, California, USA",
+   lon: -117.16, lat: 32.72, lineage: "Conferences", events: [
+    {year: 2007, when: "2007", text: "AVS ALD 2007.", ref: "AtomicLimits 2024"},
+    {year: 2013, when: "2013", text: "AVS ALD 2013.", ref: "AtomicLimits 2024"}]},
+  {id: "bruges", name: "AVS ALD 2008", where: "Bruges, Belgium",
+   lon: 3.22, lat: 51.21, lineage: "Conferences", events: [
+    {year: 2008, when: "2008", text: "AVS ALD 2008, the first AVS ALD conference in continental Europe.", ref: "AtomicLimits 2024"}]},
+  {id: "boston", name: "AVS ALD 2011", where: "Boston, Massachusetts, USA",
+   lon: -71.06, lat: 42.36, lineage: "Conferences", events: [
+    {year: 2011, when: "2011", text: "AVS ALD 2011.", ref: "AtomicLimits 2024"}]},
+  {id: "dresden", name: "AVS ALD 2012", where: "Dresden, Germany",
+   lon: 13.74, lat: 51.05, lineage: "Conferences", events: [
+    {year: 2012, when: "2012", text: "AVS ALD 2012. The conference returns to Dresden in 2027.", ref: "AtomicLimits 2024; AVS"}]},
+  {id: "kyoto", name: "AVS ALD 2014", where: "Kyoto, Japan",
+   lon: 135.77, lat: 35.01, lineage: "Conferences", events: [
+    {year: 2014, when: "2014", text: "AVS ALD 2014.", ref: "AtomicLimits 2024"}]},
+  {id: "portland", name: "ALD/ALE 2015", where: "Portland, Oregon, USA",
+   lon: -122.68, lat: 45.52, lineage: "Conferences", events: [
+    {year: 2015, when: "2015", text: "The first joint ALD conference and Atomic Layer Etching Workshop.", ref: "AtomicLimits 2024"}]},
+  {id: "denver", name: "ALD/ALE 2017", where: "Denver, Colorado, USA",
+   lon: -104.99, lat: 39.74, lineage: "Conferences", events: [
+    {year: 2017, when: "2017", text: "ALD/ALE 2017.", ref: "AtomicLimits 2024"}]},
+  {id: "incheon", name: "ALD/ALE 2018", where: "Incheon, South Korea",
+   lon: 126.71, lat: 37.46, lineage: "Conferences", events: [
+    {year: 2018, when: "2018", text: "ALD/ALE 2018.", ref: "AtomicLimits 2024"}]},
+  {id: "bellevue", name: "ALD/ALE conferences", where: "Bellevue, Washington, USA",
+   lon: -122.2, lat: 47.61, lineage: "Conferences", events: [
+    {year: 2019, when: "2019", text: "ALD/ALE 2019.", ref: "AtomicLimits 2024"},
+    {year: 2023, when: "2023", text: "ALD/ALE 2023, co-chaired by Seán Barry (Carleton University).", ref: "AtomicLimits 2024"}]},
+  {id: "ghent", name: "ALD/ALE 2022", where: "Ghent, Belgium",
+   lon: 3.72, lat: 51.05, lineage: "Conferences", events: [
+    {year: 2022, when: "2022", text: "ALD/ALE 2022, the first in-person meeting after two virtual conferences in 2020 and 2021.", ref: "AtomicLimits 2024"}]},
+  {id: "jeju", name: "ALD/ALE 2025", where: "Jeju Island, South Korea",
+   lon: 126.53, lat: 33.5, lineage: "Conferences", events: [
+    {year: 2025, when: "2025", text: "The 25th International Conference on ALD, with the 12th ALE Workshop.", ref: "AVS"}]},
+  {id: "tampa", name: "ALD/ALE 2026", where: "Tampa, Florida, USA",
+   lon: -82.46, lat: 27.95, lineage: "Conferences", events: [
+    {year: 2026, when: "2026", text: "The 26th International Conference on ALD, with the 13th ALE Workshop.", ref: "AVS"}]},
+  {id: "eindhoven", name: "AtomicLimits, TU Eindhoven", where: "Eindhoven, Netherlands",
+   lon: 5.49, lat: 51.45, lineage: "Community", events: [
+    {year: 2019, when: "2019", text: "AtomicLimits publishes an ALD history timeline; the group also hosts the crowdsourced ALD Database of reported processes.", ref: ""}]}
+]
+
+views = new Map([
+  ["World", null],
+  ["Europe", {center: [16, 56], radius: 16}],
+  ["North America", {center: [-98, 39], radius: 24}],
+  ["East Asia", {center: [131, 36], radius: 9}],
+  ["Helsinki area", {center: [24.81, 60.235], radius: 0.13}]
+])
+```
+
+```{ojs}
+//| echo: false
+viewof view = Inputs.radio([...views.keys()], {value: "World", label: "View"})
+viewof year = Inputs.range([1950, 2026], {value: 2026, step: 1, label: "Show events up to"})
+```
+
+```{ojs}
+//| echo: false
+visible = places
+  .map(p => ({...p, shown: p.events.filter(e => e.year <= year)}))
+  .filter(p => p.shown.length > 0)
+
+viewof picked = {
+  const v = views.get(view);
+  const w = Math.min(width, 820);
+  const projection = v
+    ? {type: "azimuthal-equidistant", rotate: [-v.center[0], -v.center[1]],
+       domain: d3.geoCircle().center(v.center).radius(v.radius)()}
+    : {type: "equal-earth"};
+  return P.plot({
+    width: w,
+    height: v ? Math.round(w * 0.6) : Math.round(w * 0.5),
+    projection,
+    color: {domain: lineages, range: lineageFill},
+    r: {type: "identity"},
+    marks: [
+      P.sphere({fill: view === "Helsinki area" ? "#FFFFFF" : "#F7FBFF", stroke: "#8C8C8C"}),
+      P.graticule({stroke: "#E3E3E3"}),
+      view === "Helsinki area"
+        ? P.geo(land10, {fill: "none", stroke: "#8C8C8C", strokeWidth: 0.8})   // coastline only at this scale
+        : P.geo(v ? land50 : land110, {fill: "#EDEDED", stroke: "#8C8C8C", strokeWidth: 0.6}),
+      // Labels only at the Helsinki scale; one mark per place so each can have its own offset.
+      view === "Helsinki area"
+        ? visible.map(d => P.text([d], {x: "lon", y: "lat", text: "label", dx: d.dx ?? 0, dy: d.dy ?? -16,
+            textAnchor: d.anchor ?? "middle", fontSize: 13, stroke: "white", strokeWidth: 4, fill: "black"}))
+        : null,
+      P.dot(visible, {
+        x: "lon", y: "lat", fill: "lineage", stroke: "#000", strokeWidth: 1.2,
+        r: d => 6 + 1.5 * d.shown.length,
+        channels: {Place: "name", Location: "where", Events: d => d.shown.length},
+        tip: {format: {x: false, y: false, fill: false, r: false}}
+      }),
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+html`<div class="map-legend">${lineages.map((l, i) => html`<span><i style="background:${lineageFill[i]}"></i>${l}</span>`)}</div>`
+```
+
+```{ojs}
+//| echo: false
+{
+  if (!picked) return html`<div class="map-card map-card-empty">Hover over a place to identify it. Click to pin it and read what happened there; click again to unpin.</div>`;
+  return html`<div class="map-card">
+    <div class="map-card-title">${picked.name}</div>
+    <div class="map-card-where">${picked.where} · ${picked.lineage}</div>
+    <ul>${picked.shown.map(e => html`<li><b>${e.when}.</b> ${e.text}${e.ref ? html` <span class="map-ref">(${e.ref})</span>` : ""}</li>`)}</ul>
+  </div>`;
+}
+```
+
+```{ojs}
+//| echo: false
+P.plot({
+  width: Math.min(width, 820),
+  height: 170,
+  marginLeft: 165,
+  x: {domain: [1950, 2026], label: null, tickFormat: "d"},
+  y: {domain: lineages, label: null},
+  color: {domain: lineages, range: lineageFill},
+  marks: [
+    P.ruleX([year], {stroke: "#E91C24", strokeDasharray: "4,3"}),
+    P.dot(places.flatMap(p => p.events.map(e => ({...e, lineage: p.lineage, where: p.where}))), {
+      x: "year", y: "lineage", fill: "lineage", stroke: "#000",
+      r: 5, opacity: d => d.year <= year ? 1 : 0.15,
+      channels: {When: "when", Where: "where"},
+      tip: {format: {x: false, y: false, fill: false, opacity: false}}
+    })
+  ]
+})
+```
+
+::: {.assumptions}
+**Notes.** Markers are placed at the institution or city, not at exact building addresses. Approximate dates ("late 1970s", "1980s") are plotted at a representative year. Much of the Finnish industrial history comes from company and press accounts rather than peer-reviewed sources; see Further reading for the main historical accounts. Basemap: Natural Earth via world-atlas (public domain).
+:::
+:::
+
+## History of molecular layer deposition {#sec-history-mld}
+
+MLD applies the ALD cycle to organic molecules. Instead of adding a fraction of a monolayer of an inorganic solid, each cycle adds a molecular fragment, giving a purely organic or a hybrid organic–inorganic film [@Sundberg2014].
+
+### Organic polymers, one layer at a time
+
+The term "molecular layer deposition" and the first experiments with organic molecules came from Tetsuzo Yoshimura and co-workers at Fujitsu in 1991 [@Yoshimura1991; @Sundberg2014]. They wanted to build polymer films molecule by molecule, so that the chain structure could be controlled, and they made polyimide films by alternating exposures of pyromellitic dianhydride and an aromatic diamine. Each exposure saturated within about a minute and added roughly 5 Å, close to the size of one molecule, and fifteen exposures gave a film about 100 Å thick [@Yoshimura1991]. Through the 1990s and early 2000s, MLD remained a niche method for organic polymers such as polyimides and polyamides [@Sundberg2014].
+
+### The hybrid turn
+
+MLD became a partner to ALD when metal precursors were combined with organic linkers. In 2008, the George group at the University of Colorado reported "alucone" films grown from trimethylaluminum and ethylene glycol [@Dameron2008]. Alucones, and the related zincones, titanicones and other "metalcones", use the familiar ALD metal precursors with diols and other bifunctional organics as the second precursor. Because the chemistry is shared, ALD and MLD cycles can be mixed in one process to make nanolaminates and alloys with tunable properties [@Sundberg2014]. MLD processes are covered in Chapter 8 of @Barry2022.
+
+### A different failure mode
+
+MLD brought a problem with no simple ALD analogue. A bifunctional molecule can react with the surface at both ends, a "double reaction", which uses up two sites and leaves no functional group for the next step. This is a recurring theme in MLD process development [@Sundberg2014].
+
+## History of atomic layer etching {#sec-history-ale}
+
+ALE is the subtractive counterpart of ALD. A cycle has a *modification* step, which creates a thin reactive layer at the surface, and a *removal* step, which takes away only that layer [@Kanarik2015].
+
+### A patent, then a first wave
+
+As with ALD, the first report on ALE was a patent. Max Yoder of the US Office of Naval Research filed "Atomic layer etching" in 1987, and it was granted in 1988 [@Yoder1988; @Kanarik2015]. The patent described removing a single atomic layer from diamond: nitrogen dioxide was adsorbed on the surface and then exposed to pulses of ions from a noble-gas and hydrogen plasma, with purges in between. Work in Japan followed. In 1990, Yasuhiro Horiike described "digital" etching and deposition, in which each step of a process is separated in time so that it can be controlled at the atomic scale [@Horiike1990]. Silicon and gallium arsenide were etched using two-step cycles of chlorine adsorption and ion bombardment. This first wave of research ran through the 1990s [@Fischer2021].
+
+### A second wave, driven by device scaling
+
+Interest returned in the mid-2010s, when feature sizes below 10 nm made continuous plasma etching hard to control [@Fischer2021]. Kanarik and co-workers at Lam Research published an overview in 2015 that set out the definitions now in common use: a process is ALE if it is divided into separate steps and at least one step is as self-limiting as possible [@Kanarik2015]. The same year, the ALE community began meeting jointly with the ALD conference (@sec-history-ald).
+
+### Thermal ALE: ALD in reverse
+
+The early ALE processes used ions for the removal step, which makes them directional (anisotropic). In 2015, Younghee Lee and Steven George reported a purely thermal ALE of Al~2~O~3~ [@Lee2015]. Hydrogen fluoride converts the surface to AlF~3~, and tin(II) acetylacetonate then removes the fluoride through ligand exchange, producing volatile products. Because no ions are used, the etch is isotropic. George and Lee described thermal ALE as the reverse of ALD [@George2016], and its chemistry (ligand exchange, volatility, thermal stability of the products) is the same precursor chemistry that underlies ALD. Chapter 9 of @Barry2022 works through several of these mechanisms.
+
+::: {.callout-note appearance="simple"}
+## Two meanings of "ALE"
+In the older literature, "ALE" means atomic layer *epitaxy*, Suntola's original name for ALD (@sec-history-ald). From the 2010s, "ALE" almost always means atomic layer *etching*; "ALEt" is sometimes used to avoid confusion. Check the date and context when you meet the acronym in a paper.
+:::
+
+## History of area-selective deposition {#sec-history-asd}
+
+Area-selective deposition grows a film on one part of a patterned surface (the growth surface) but not on another (the non-growth surface). It is "bottom-up" patterning: the pattern on the substrate decides where the film goes, rather than lithography and etching [@Parsons2020].
+
+### Selectivity is older than ALD in the fab
+
+Selective deposition was used in semiconductor processing well before area-selective ALD. Selective epitaxy was already routine, and in the 1980s selective CVD of tungsten from WF~6~ and H~2~ was developed to fill contact holes: tungsten grows on silicon and metals, but nucleates slowly on SiO~2~ [@Gladfelter1993]. Selectivity was always eventually lost as stray nuclei formed on the oxide. In 1993, Wayne Gladfelter reviewed selective metal CVD and proposed a working definition of selectivity based on the relative rates of nucleation on the growth and non-growth surfaces [@Gladfelter1993], an idea that still underlies how selectivity is measured.
+
+### Blocking the surface
+
+Because ALD depends on reactive sites at the surface, it is a natural fit for selective deposition: remove the sites, and growth should not start. In 2004, Rong Chen, Stacey Bent and co-workers at Stanford showed that a self-assembled monolayer (SAM) of octadecyltrichlorosilane could block HfO~2~ ALD, so that the film grew only on the regions left uncovered [@Chen2004]. Using SAMs and, later, polymers and small-molecule inhibitors to deactivate the non-growth surface became one of the main strategies for ASD [@Mackus2019; @Parsons2020].
+
+### From a problem to a method
+
+For most of ALD's history, a delay in nucleation on some substrates was a nuisance to be overcome. For ASD, that same delay is the effect being exploited: a long nucleation delay on the non-growth surface and immediate growth on the growth surface give a window of selective growth [@Parsons2020]. The industrial pull came from patterning. As features shrink, aligning each new layer to the one below by lithography becomes harder, and a film that places itself by surface chemistry is "self-aligned" [@Mackus2019; @Parsons2020].
+
+### A community forms
+
+ASD gained its own meeting in 2016, when the first Area Selective Deposition workshop was held at imec in Leuven. The second followed in Eindhoven in 2017 and the third in Raleigh, North Carolina, in 2018 [@AtomicLimits2017]. Strategies have broadened since then: inhibitors dosed in the vapour phase as part of an ABC cycle, area *activation* rather than deactivation, and periodic etch-back steps that remove stray nuclei from the non-growth surface [@Mackus2019; @Parsons2020].
+
+## Atomic layer processing today {#sec-convergence}
+
+The four processes began separately but are now increasingly used together [@George2016; @Parsons2020]:
+
+- **ALD and ALE** share precursor chemistry, and thermal ALE is ALD in reverse. Since 2015 the two communities have met at the same conference.
+- **ALD and MLD** use the same metal precursors, and their cycles can be combined in one film.
+- **ASD and ALE** are combined in supercycles: a few ALD cycles build film selectively, then a short etch removes the stray nuclei that have formed on the non-growth surface, resetting the selectivity [@Mackus2019].
+
+The timeline below brings together the milestones from all four histories.
+
+::: {.sim-box}
+[Interactive 1.3: Four histories on one timeline]{.sim-title}
+
+```{ojs}
+//| echo: false
+alpProcs = ["ALD", "MLD", "ALE", "ASD"]
+alpFill = ["#E91C24", "#4D4D4D", "#000000", "#FFFFFF"]
+alpEvents = [
+  {proc: "ALD", year: 1952, text: "Aleskovskii proposes the \"framework\" hypothesis.", ref: "Malygin et al. 2015"},
+  {proc: "ALD", year: 1965, text: "First full paper on molecular layering.", ref: "Barry 2022"},
+  {proc: "ALD", year: 1974, text: "Suntola and Antson file the atomic layer epitaxy patent.", ref: "Puurunen 2014"},
+  {proc: "ALD", year: 1984, text: "Lohja's display factory: the first industrial use of ALD.", ref: ""},
+  {proc: "ALD", year: 2001, text: "First AVS conference on ALD.", ref: "Parsons et al. 2013"},
+  {proc: "ALD", year: 2007, text: "ALD high-k gate dielectrics in 45 nm processors.", ref: ""},
+  {proc: "MLD", year: 1991, text: "Yoshimura and co-workers: polyimide films by \"molecular layer deposition\".", ref: "Yoshimura et al. 1991"},
+  {proc: "MLD", year: 2008, text: "Alucone from trimethylaluminum and ethylene glycol: the start of hybrid MLD.", ref: "Dameron et al. 2008"},
+  {proc: "MLD", year: 2014, text: "Review of hybrid ALD/MLD materials.", ref: "Sundberg and Karppinen 2014"},
+  {proc: "ALE", year: 1988, text: "Yoder's \"Atomic layer etching\" patent is granted (filed 1987).", ref: "Yoder 1988"},
+  {proc: "ALE", year: 1990, text: "Horiike describes \"digital\" etching and deposition.", ref: "Horiike 1990"},
+  {proc: "ALE", year: 2015, text: "Kanarik et al. set out the definitions of ALE; thermal ALE of Al2O3 reported; ALE workshop joins the ALD conference.", ref: "Kanarik et al. 2015; Lee and George 2015"},
+  {proc: "ASD", year: 1985, text: "Selective CVD of tungsten is developed for contact fill (1980s).", ref: "Gladfelter 1993"},
+  {proc: "ASD", year: 1993, text: "Gladfelter defines selectivity through relative nucleation rates.", ref: "Gladfelter 1993"},
+  {proc: "ASD", year: 2004, text: "SAM-blocked area-selective ALD of HfO2.", ref: "Chen et al. 2004"},
+  {proc: "ASD", year: 2016, text: "First Area Selective Deposition workshop, imec, Leuven.", ref: "AtomicLimits 2017"},
+  {proc: "ASD", year: 2020, text: "Review of ASD fundamentals and applications.", ref: "Parsons and Clark 2020"}
+]
+viewof alpShow = Inputs.checkbox(alpProcs, {value: alpProcs, label: "Show"})
+```
+
+```{ojs}
+//| echo: false
+P.plot({
+  width: Math.min(width, 820),
+  height: 220,
+  marginLeft: 50,
+  x: {domain: [1950, 2026], label: null, tickFormat: "d"},
+  y: {domain: alpProcs, label: null},
+  color: {domain: alpProcs, range: alpFill},
+  marks: [
+    P.ruleY(alpProcs, {stroke: "#E3E3E3"}),
+    P.dot(alpEvents.filter(d => alpShow.includes(d.proc)), {
+      x: "year", y: "proc", fill: "proc", stroke: "#000", r: 7,
+      channels: {Event: "text", Source: "ref"},
+      tip: {format: {x: true, y: false, fill: false}}
+    })
+  ]
+})
+```
+
+::: {.assumptions}
+**Notes.** Hover over a point for details. "1980s" for selective tungsten CVD is plotted at 1985. Several 2015 ALE milestones share one point. Industrial dates come from company and press accounts rather than peer-reviewed sources.
+:::
+:::
+
+## Check your understanding
+
+::: {.quiz}
+Why did molecular layering remain largely unknown outside the USSR until the 2010s?
+
+- [ ] It used chemistry that did not work outside a laboratory.
+- [x] It was published mainly in Russian and developed with little contact with Western thin-film researchers.
+- [ ] It was classified military research until 2013.
+- [ ] It was a later copy of atomic layer epitaxy.
+
+::: {.explanation}
+Molecular layering predates ALE, so it was not a copy. The main barrier was language and isolation, which is exactly what the VPHA set out to address [@Ahvenniemi2017; @Malygin2015].
+:::
+:::
+
+::: {.quiz}
+What was the first industrial application of ALD?
+
+- [ ] High-k gate dielectrics in microprocessors
+- [ ] Copper diffusion barriers
+- [x] ZnS-based thin-film electroluminescent displays
+- [ ] Catalyst supports
+
+::: {.explanation}
+ALE was invented to make the thin, uniform, high-breakdown-strength films that EL displays need, and Lohja began producing displays in Espoo in the 1980s. Semiconductor use came about two decades later [@Puurunen2014].
+:::
+:::
+
+::: {.quiz}
+Why is "atomic layer epitaxy" a misleading name, even for Suntola's original ZnS films?
+
+- [x] The films were polycrystalline, not epitaxial, and each cycle deposits less than one atomic layer.
+- [ ] The films were grown from liquid precursors.
+- [ ] ZnS cannot be grown epitaxially.
+- [ ] The process was plasma-enhanced.
+
+::: {.explanation}
+"Epitaxy" means growth with a crystallographic relationship to the substrate, which the polycrystalline ZnS films did not have [@Puurunen2014]. "Atomic layer" overstates what one cycle deposits (@sec-what-makes-ald). Both terms record the technique's history rather than its physics.
+:::
+:::
+
+::: {.quiz}
+A colleague describes HfO~2~ as being deposited "using TDMAH and the co-reactant water". How would this book describe the same process?
+
+- [ ] TDMAH is the precursor and water is the reactant.
+- [x] TDMAH and water are the first and second precursors.
+- [ ] Water is the co-precursor, because it is dosed with TDMAH.
+- [ ] TDMAH is a single-source precursor.
+
+::: {.explanation}
+Any volatile compound that takes part in the surface chemistry is a precursor. The prefix *co-* implies simultaneous dosing, which is exactly what ALD avoids (@sec-vocabulary).
+:::
+:::
+
+::: {.quiz}
+What made thermal ALE a natural extension of ALD chemistry?
+
+- [ ] It uses the same ion sources as plasma ALD.
+- [x] Its removal step is a ligand-exchange reaction that forms volatile metal complexes, the same precursor chemistry that governs ALD.
+- [ ] It deposits and etches in the same cycle.
+- [ ] It works only on Al~2~O~3~ grown by ALD.
+
+::: {.explanation}
+In thermal ALE of Al~2~O~3~, HF fluorinates the surface and a metal precursor removes the fluoride by ligand exchange. Whether etching happens depends on whether the products are stable and volatile, which is a precursor-chemistry question [@Lee2015; @George2016].
+:::
+:::
+
+::: {.quiz}
+Why is a nucleation delay useful in area-selective deposition, when it is a problem in most ALD processes?
+
+- [ ] It increases the GPC on the growth surface.
+- [ ] It removes the need for a purge step.
+- [x] A long delay on the non-growth surface, with prompt growth on the growth surface, gives a window of cycles in which film forms only where it is wanted.
+- [ ] It makes the film epitaxial.
+
+::: {.explanation}
+ASD exploits the difference in nucleation between two surfaces. Selectivity is lost once nuclei build up on the non-growth surface, which is why etch-back steps are sometimes added [@Gladfelter1993; @Parsons2020].
+:::
+:::
+
+## Further reading
+
+- @Barry2022, Chapter 1: an introduction to ALD chemistry, including the history of both lineages.
+- @Puurunen2014: the story of ALE as told by its inventor, written for the 40th anniversary. Open access.
+- @Malygin2015: the first detailed English-language account of molecular layering and of Aleskovskii and Kol'tsov.
+- @Ahvenniemi2017: the VPHA reading list of early publications from both lineages. Open access.
+- @Parsons2013: how the ALD community and its conference grew within the AVS.
+- @Sundberg2014: a review of hybrid ALD/MLD materials, including the history of MLD. Open access.
+- @Kanarik2015: an overview of ALE in the semiconductor industry, with its history and definitions.
+- @Fischer2021: a review of thermal ALE.
+- @Parsons2020: the fundamentals and applications of area-selective deposition, including its history.
