@@ -16,7 +16,7 @@ This book is in early development and should be considered a first draft. Correc
 
 Authors share equal credit and are listed alphabetically by surname.
 
-- Seán T. Barry (sean_barry@carleton.ca)
+- Seán Barry (sean_barry@carleton.ca)
 
 ## Acknowledgements {.unnumbered}
 
