@@ -20,16 +20,10 @@ book:
     center: "© 2026 Seán Barry and contributors · Licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)"
   chapters:
     - index.qmd
-    - part: "Introduction"
-      chapters:
-        - chapters/01-introduction.qmd
-        - chapters/01b-fundamentals.qmd
-    - part: "Atomic Layer Deposition"
-      chapters:
-        - chapters/02-ald-fundamentals.qmd
-    - part: "Molecular Layer Deposition"
-      chapters:
-        - chapters/03-mld.qmd
+    - chapters/01-introduction.qmd
+    - chapters/01b-fundamentals.qmd
+    - chapters/02-ald-fundamentals.qmd
+    - chapters/03-mld.qmd
     - references.qmd
 
 bibliography: references.bib
