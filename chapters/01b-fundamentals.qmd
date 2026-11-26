@@ -1254,7 +1254,7 @@ $$
 \ln\frac{p}{p^\circ} = -\frac{\Delta H_\text{vap}}{RT} + \frac{\Delta S_\text{vap}}{R}
 $$ {#eq-cc}
 
-with p° = 1 bar. Simulation 2.12 in @sec-volatility-control uses this equation to find the source temperature for a given vapour pressure.
+with p° = 1 bar. Simulation 2.11 in @sec-volatility-control uses this equation to find the source temperature for a given vapour pressure.
 
 ##### Controlling intermolecular interactions
 
@@ -1387,7 +1387,7 @@ Thermogravimetric analysis (TGA) follows the mass of a sample on a microbalance 
 
 None of these is proof, but a trace with all three is encouraging [@Barry2022]. Three refinements turn the screening run into a better test:
 
-- **Change the ramp rate.** At a slower ramp, the sample spends longer at each temperature. A compound with a slow decomposition leaves more residue; one that does not decompose simply loses its mass at a lower apparent onset temperature and over a steeper step. This is one reason not to trust the "onset" of a TGA trace as a material property: it depends on ramp rate and sample mass [@Barry2022]. (Whether a slower ramp raises the residue also depends on how steeply decomposition speeds up with temperature compared with evaporation; Simulation 2.11 lets you explore this.)
+- **Change the ramp rate.** At a slower ramp, the sample spends longer at each temperature. A compound with a slow decomposition leaves more residue; one that does not decompose simply loses its mass at a lower apparent onset temperature and over a steeper step. This is one reason not to trust the "onset" of a TGA trace as a material property: it depends on ramp rate and sample mass [@Barry2022]. (Whether a slower ramp raises the residue also depends on how steeply decomposition speeds up with temperature compared with evaporation: if decomposition has the higher activation energy, a slower ramp lets the sample evaporate before it gets hot, and the residue falls.)
 - **Change the sample mass (the thermal stress test).** The evaporation rate is set by the pan area, not by the sample mass, so a larger sample is still in the pan at higher temperatures. Repeating the ramp at several masses exposes slow decomposition: in one example, the residue rose from 2 % for about 10 mg to 14 % for about 60 mg [@Barry2022]. A precursor like that would be a risk in a source held at moderate temperature for days or weeks.
 - **Run it isothermally.** An isothermal run gives the delivery rate at one temperature. Because the purge gas sweeps vapour away, evaporation never reaches equilibrium (Le Chatelier's principle again), so a TGA can overestimate the vapour pressure that would build up in a closed source. For ranking similar precursors, and as a model of a pulse that also removes vapour, it is still very useful [@Barry2022].
 
@@ -1398,81 +1398,6 @@ p_\text{vap} = \frac{1}{\alpha}\frac{\Delta m}{\Delta t}\sqrt{\frac{2\pi RT}{M}}
 $$ {#eq-langmuir-vp}
 
 where α corrects for non-ideal behaviour (α = 1 in vacuum). In practice, the whole prefactor k is calibrated against a standard of known vapour pressure [@Barry2022]. A plot of ln p~vap~ against 1/T then follows the Clausius–Clapeyron equation (@eq-cc): its slope gives ΔH~vap~, and reading off 1 Torr gives T~V~. If several related precursors give parallel lines, they share their volatilization thermodynamics; one that does not is worth a closer look [@Barry2022].
-
-::: {.sim-box}
-[Simulation 2.11: TGA curve reader]{.sim-title}
-
-```{ojs}
-//| echo: false
-viewof tgBeta = Inputs.range([1, 20], {value: 10, step: 0.5, label: "Ramp rate (°C min⁻¹)"})
-viewof tgMass = Inputs.range([5, 80], {value: 10, step: 1, label: "Sample mass (mg)"})
-viewof tgH = Inputs.range([40, 120], {value: 70, step: 1, label: "ΔH_vap (kJ mol⁻¹)"})
-viewof tgS = Inputs.range([90, 200], {value: 150, step: 1, label: "ΔS_vap (J K⁻¹ mol⁻¹)"})
-viewof tgM = Inputs.range([50, 600], {value: 250, step: 5, label: "Molar mass (g mol⁻¹)"})
-viewof tgTd = Inputs.range([60, 400], {value: 100, step: 5, label: "Decomposition: T at which t½ = 1 h (°C)"})
-viewof tgEa = Inputs.range([40, 220], {value: 60, step: 5, label: "Decomposition activation energy (kJ mol⁻¹)"})
-viewof tgRes = Inputs.range([0, 1], {value: 0.25, step: 0.05, label: "Non-volatile fraction of decomposed mass"})
-viewof tgStress = Inputs.toggle({label: "Thermal stress test: overlay 10, 30 and 60 mg", value: false})
-```
-
-```{ojs}
-//| echo: false
-tg = {
-  const R = 8.314, kEff = 0.1;                       // mg min⁻¹ Torr⁻¹ (g mol⁻¹ / K)^-½, see Assumptions
-  const pTorr = T => 750.06 * Math.exp(-tgH * 1000 / (R * T) + tgS / R);
-  const Ts = tgTd + 273.15;
-  const kdec = T => (Math.LN2 / 60) * Math.exp(-tgEa * 1000 / R * (1 / T - 1 / Ts));   // min⁻¹
-  const run = (m0) => {
-    let ml = m0, mr = 0, out = [], dT = 0.5, dt = dT / tgBeta;
-    for (let Tc = 25; Tc <= 450; Tc += dT) {
-      const T = Tc + 273.15;
-      const ev = Math.min(ml, kEff * pTorr(T) * Math.sqrt(tgM / T) * dt);
-      const dec = (ml - ev) * (1 - Math.exp(-kdec(T) * dt));
-      ml -= ev + dec; mr += tgRes * dec;
-      out.push({T: Tc, w: 100 * (ml + mr) / m0, m0});
-    }
-    for (let i = 1; i < out.length; i++) out[i].dtg = Math.max(0, (out[i - 1].w - out[i].w) / dT);
-    out[0].dtg = 0;
-    const at = f => (out.find(d => d.w <= 100 - f) || {T: NaN}).T;
-    return {pts: out, t1: at(1), t50: at(50), res: out[out.length - 1].w};
-  };
-  const main = run(tgMass);
-  const stress = tgStress ? [10, 30, 60].map(m => ({m, ...run(m)})) : [];
-  const Tv = tgH * 1000 / (tgS - R * Math.log(1 / 750.06)) - 273.15;
-  return {main, stress, Tv};
-}
-
-{
-  const dmax = d3.max(tg.main.pts, d => d.dtg) || 1;
-  const greys = {10: "#BFBFBF", 30: "#8C8C8C", 60: "#4D4D4D"};
-  return Plot.plot({
-    height: 360, marginLeft: 60, marginBottom: 50, marginTop: 20,
-    x: {label: "Temperature (°C) →", domain: [25, 450]},
-    y: {label: "↑ Mass (%)", domain: [0, 105], grid: true},
-    marks: [
-      Plot.ruleX([tg.Tv], {stroke: "#E91C24", strokeDasharray: "4,3"}),
-      Plot.text([{x: tg.Tv, y: 103}], {x: "x", y: "y", text: () => "T_V (1 Torr)", fill: "#E91C24", textAnchor: "start", dx: 4}),
-      ...tg.stress.map(s => Plot.line(s.pts, {x: "T", y: "w", stroke: greys[s.m], strokeWidth: 1.5})),
-      ...tg.stress.map(s => Plot.text([{x: 445, y: s.res}], {x: "x", y: "y", text: () => `${s.m} mg: ${s.res.toFixed(1)} %`, textAnchor: "end", dy: -6, fill: greys[s.m]})),
-      Plot.line(tg.main.pts, {x: "T", y: d => 100 * d.dtg / dmax, stroke: "#8C8C8C", strokeDasharray: "2,2"}),
-      Plot.line(tg.main.pts, {x: "T", y: "w", stroke: "#000", strokeWidth: 2.5})
-    ]
-  });
-}
-```
-
-```{ojs}
-//| echo: false
-md`1 % mass loss at **${tg.main.t1.toFixed(0)} °C** · 50 % at **${tg.main.t50.toFixed(0)} °C** · residual mass **${tg.main.res.toFixed(1)} %** · T_V (1 Torr, from ΔH and ΔS) **${tg.Tv.toFixed(0)} °C**
-${tg.stress.length ? `\nStress test residues: ${tg.stress.map(s => `${s.m} mg → **${s.res.toFixed(1)} %**`).join(" · ")}` : ""}`
-```
-
-::: {.assumptions}
-**Assumptions.** Black: mass; grey dashed: DTG (−d(mass)/dT), scaled to the same height. Evaporation follows @eq-langmuir-vp from a pan of fixed area, so its rate does not depend on sample mass; the vapour pressure follows @eq-cc with constant ΔH~vap~ and ΔS~vap~. The prefactor (0.1 mg min^−1^ at 1 Torr, scaled by √(M/T)) was chosen so that the traces resemble atmospheric-pressure TGA; it is not a property of any real instrument. Decomposition is first order in the remaining precursor with an Arrhenius rate constant, and a fixed fraction of the decomposed mass stays as residue. Melting, sublimation of solids, and gas-phase decomposition after evaporation are ignored.
-
-**Things to try.** The defaults describe a slow decomposition: the 10 mg trace looks clean, with under 2 % residue. Turn on the stress test and the residue grows with sample mass. Then raise the decomposition temperature until the three residues converge: that is what a thermally robust precursor looks like. Slowing the ramp from 10 to 2 °C min^−1^ also raises the residue here, but only because decomposition has a lower activation energy than evaporation; raise E~a~ above ΔH~vap~ and a slower ramp *lowers* the residue, because the sample evaporates before it gets hot. The stress test works either way. Notice, too, that the 1 % loss temperature is not T~V~.
-:::
-:::
 
 ### Differential scanning calorimetry
 
@@ -1519,7 +1444,7 @@ One ploy that works reliably is to **reduce the ability to bridge**. Group 13 co
 The two calculators below turn vapour-pressure data into the numbers a process needs.
 
 ::: {.sim-box}
-[Simulation 2.12: Vapour pressure and source temperature]{.sim-title}
+[Simulation 2.11: Vapour pressure and source temperature]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -1563,7 +1488,7 @@ md`Temperature for **${pTarget} Torr**: **${(vp.Tt - 273.15).toFixed(0)} °C** �
 :::
 
 ::: {.sim-box}
-[Simulation 2.13: Vapour pressure from a stepped isotherm]{.sim-title}
+[Simulation 2.12: Vapour pressure from a stepped isotherm]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -1780,7 +1705,7 @@ Adsorbed species do not have to stay where they land. Hopping between sites is t
 The simulation below puts these ideas together on two surfaces that differ only in their defect density. It is written so that the same model can describe a growth and a non-growth surface in area-selective deposition.
 
 ::: {.sim-box}
-[Simulation 2.14: Stochastic nucleation on clean and defect-rich surfaces]{.sim-title}
+[Simulation 2.13: Stochastic nucleation on clean and defect-rich surfaces]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -1903,7 +1828,7 @@ d(N) &= \mathrm{GPC}_\infty\left[N + (r-1)\,n_0\left(1-e^{-N/n_0}\right)\right]
 $$ {#eq-nucleation}
 
 ::: {.sim-box}
-[Simulation 2.15: Thickness versus cycles with a nucleation transient]{.sim-title}
+[Simulation 2.14: Thickness versus cycles with a nucleation transient]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -2262,7 +2187,7 @@ Hydrogen bonded to a less electronegative element carries a partial negative cha
 :::
 
 ::: {.quiz}
-In Simulation 2.14, increasing the capture (diffusion) length while keeping everything else fixed mainly does what?
+In Simulation 2.13, increasing the capture (diffusion) length while keeping everything else fixed mainly does what?
 
 - [ ] Increases the number of nuclei, because species move to more sites.
 - [x] Decreases the number of nuclei and makes islands larger, because more of the arriving species join existing islands instead of starting new ones.
