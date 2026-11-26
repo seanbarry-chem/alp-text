@@ -76,3 +76,10 @@ $headings-font-weight: 600;
 @keyframes ald-drift { from { transform: translate(0, 0); } to { transform: translate(6px, -5px); } }
 .drift { animation: ald-drift 1.6s ease-in-out infinite alternate; }
 @media (prefers-reduced-motion: reduce) { .drift { animation: none; } }
+
+/* "Applies to" line under Part 1B section headings */
+.applies {
+  display: inline-block; font-size: 0.85rem; letter-spacing: 0.02em;
+  color: $cu-grey-dark; border: 1px solid $cu-grey; border-left: 4px solid $cu-red;
+  border-radius: 3px; padding: 0.1rem 0.6rem; margin-bottom: 0.5rem;
+}

@@ -1,0 +1,2380 @@
+---
+title: "Fundamentals of Atomic Layer Processing"
+---
+
+::: {.callout-tip appearance="simple"}
+## Learning outcomes
+After this chapter you should be able to:
+
+1. Write the rate equations for adsorption and desorption, derive the Langmuir isotherm and the saturation curve from them, and explain why the two are not the same thing.
+2. Explain why a saturated half-cycle deposits only a fraction of a monolayer, and why a constant GPC across a temperature range neither proves nor is required for self-limiting growth.
+3. Classify a ligand as L or X, predict from bond polarity and the chelate effect how it will behave, and place it in a ligand family.
+4. List what a precursor and a second precursor must do, and score a candidate precursor against those requirements.
+5. Read a TGA trace and a DSC trace, define T~V~ and T~D~, and calculate a thermal figure of merit.
+6. Recognize the classic organometallic reaction steps (association, dissociation, reductive elimination, oxidative addition, migratory insertion, ligand exchange) in a surface reaction.
+7. Describe how hydroxylated, metal and hydride surfaces differ as nucleation sites, and explain why defects and diffusion control the first cycles of growth.
+:::
+
+This chapter collects the ideas that every atomic layer process depends on. ALD, MLD, ALE and ASD all use self-limiting gas–surface reactions, all use the same families of precursors, and all fail in the same ways when a precursor decomposes or a surface does not cooperate. The later chapters on each process link back here rather than repeating this material. Each section starts with a line saying which processes it applies to.
+
+Most of the examples come from ALD, because that is where the chemistry is best understood. TMA/H~2~O is the model system throughout; its two half-reactions and one full cycle are set out in @sec-tma-model.
+
+## Saturation and surface kinetics {#sec-saturation}
+
+[Applies to: ALD · MLD · ALE · ASD]{.applies}
+
+Self-limitation is the property that makes a process "atomic layer" (@sec-what-makes-ald). This section treats it as what it is: a question of kinetics at a surface. The derivations follow Chapter 2 of @Barry2022.
+
+### Adsorption, desorption and surface energy {#sec-ka-kd}
+
+A clean surface is a high-energy state. Its atoms have lost neighbours on one side, so they are coordinatively unsaturated, and almost anything that bonds to them lowers the surface free energy. That is the driving force for adsorption. The cost is entropy: a molecule that adsorbs loses most of its translational freedom. Adsorption is therefore favoured at low temperature and desorption at high temperature, and the balance between the two is set by two rate constants.
+
+Write the adsorption of a gaseous precursor A onto a free surface site ‖ and its desorption as two elementary steps [@Barry2022]:
+
+$$
+\| + \text{A} \xrightarrow{\;k_\text{a}\;} \|\text{A} \qquad\qquad \|\text{A} \xrightarrow{\;k_\text{d}\;} \| + \text{A}
+$$ {#eq-ads-steps}
+
+Adsorption is second order (it needs a molecule and a free site) and desorption is first order. Define the coverage θ as the fraction of sites occupied, so that 1 − θ is the fraction free, and express the amount of A as its partial pressure p~A~. The two rates are then
+
+$$
+R_\text{a} = k_\text{a}\,p_\text{A}\,(1-\theta) \qquad\qquad R_\text{d} = k_\text{d}\,\theta
+$$ {#eq-rates}
+
+Both rate constants depend on temperature. Desorption is thermally activated, with an activation energy close to the adsorption energy E~des~, so the average time a molecule stays on the surface (its *residence time*) is
+
+$$
+\tau = \frac{1}{k_\text{d}} = \tau_0 \exp\!\left(\frac{E_\text{des}}{RT}\right)
+$$ {#eq-residence}
+
+where τ~0~ is roughly one vibrational period, about 10^−13^ s. This is where the difference between physisorption and chemisorption (@sec-vocabulary) becomes quantitative. At 200 °C, a physisorbed molecule held by 40 kJ mol^−1^ stays for a few nanoseconds. A chemisorbed fragment held by 150 kJ mol^−1^ stays for about an hour, far longer than any cycle. Physisorption can be the first step towards chemisorption, but a physisorbed layer starts to desorb as soon as the pulse ends and the gas-phase pressure drops, so it cannot by itself give a self-limiting step [@Barry2022].
+
+The monolayer does not have to be thermodynamically stable. It has to be *kinetically* stable: it must last longer than the purge and the next dose. Once a ligand has left as a by-product and been pumped away, the surface fragment has no easy route back to the gas phase, which is why chemisorption by ligand loss is effectively irreversible under process conditions [@Barry2022].
+
+### The Langmuir isotherm {#sec-langmuir}
+
+If adsorption and desorption are left to reach equilibrium, R~a~ = R~d~ and
+
+$$
+\theta_\text{eq} = \frac{k_\text{a}p_\text{A}}{k_\text{a}p_\text{A} + k_\text{d}} = \frac{K p_\text{A}}{1 + K p_\text{A}}, \qquad K = \frac{k_\text{a}}{k_\text{d}}
+$$ {#eq-isotherm}
+
+This is the Langmuir isotherm. It describes how much of the surface is covered at infinite time for a given pressure, and it shows that full coverage (θ~eq~ → 1) needs adsorption to dominate desorption, k~a~p~A~ ≫ k~d~ [@Barry2022]. The isotherm assumes identical, independent sites, an ideal gas and one adsorbate per site. Real surfaces break all three assumptions, but the isotherm is still the right starting point.
+
+::: {.sim-box}
+[Simulation 2.1: Langmuir coverage and residence time]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof lgmT = Inputs.range([25, 450], {value: 200, step: 5, label: "Temperature (°C)"})
+viewof lgmE = Inputs.range([20, 200], {value: 140, step: 1, label: "Desorption energy, E_des (kJ mol⁻¹)"})
+viewof lgmKa = Inputs.range([0, 5], {value: 2.7, step: 0.1, label: "log₁₀ kₐ (Torr⁻¹ s⁻¹)"})
+viewof lgmP = Inputs.range([-5, -1], {value: -2, step: 0.1, label: "log₁₀ partial pressure (Torr)"})
+viewof lgmPurge = Inputs.range([0.1, 30], {value: 5, step: 0.1, label: "Purge time (s)"})
+```
+
+```{ojs}
+//| echo: false
+lgm = {
+  const R = 8.314, tau0 = 1e-13, ka = 10 ** lgmKa;
+  const kd = T => (1 / tau0) * Math.exp(-lgmE * 1000 / (R * (T + 273.15)));
+  const theta = (p, T) => ka * p / (ka * p + kd(T));
+  const ps = d3.range(-7, 0.01, 0.05).map(x => 10 ** x);
+  const temps = [lgmT - 50, lgmT, lgmT + 50].filter(T => T >= 0);
+  const lines = temps.flatMap(T => ps.map(p => ({p, T: `${T} °C`, th: theta(p, T)})));
+  const p = 10 ** lgmP, k = kd(lgmT);
+  return {lines, temps, p, kd: k, tau: 1 / k, K: ka / k, th: theta(p, lgmT),
+          survive: Math.exp(-k * lgmPurge), t95: Math.log(20) / (ka * p + k)};
+}
+
+Plot.plot({
+  height: 320, marginLeft: 60, marginBottom: 50, marginTop: 20,
+  x: {label: "Partial pressure (Torr) →", type: "log", domain: [1e-7, 1], tickFormat: "~e"},
+  y: {label: "↑ Equilibrium coverage, θ_eq", domain: [0, 1.02], grid: true},
+  color: {domain: lgm.temps.map(T => `${T} °C`), range: ["#8C8C8C", "#000000", "#E91C24"].slice(0, lgm.temps.length), legend: true},
+  marks: [
+    Plot.line(lgm.lines, {x: "p", y: "th", stroke: "T", strokeWidth: d => d.T === `${lgmT} °C` ? 2.5 : 1.5}),
+    Plot.ruleX([lgm.p], {stroke: "#4D4D4D", strokeDasharray: "2,3"}),
+    Plot.dot([{p: lgm.p, th: lgm.th}], {x: "p", y: "th", r: 6, fill: "#E91C24"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+{
+  const fmt = t => t < 1e-6 ? `${(t * 1e9).toPrecision(2)} ns` : t < 1e-3 ? `${(t * 1e6).toPrecision(2)} µs`
+    : t < 1 ? `${(t * 1e3).toPrecision(2)} ms` : t < 3600 ? `${t.toPrecision(2)} s`
+    : t < 86400 * 365 ? `${(t / 3600).toPrecision(2)} h` : "> 1 year";
+  const sci = x => { if (x >= 0.01 && x < 1e4) return x.toPrecision(2); const e = Math.floor(Math.log10(x));
+    return `${(x / 10 ** e).toFixed(1)}×10${String(e).replace(/[-0-9]/g, c => "⁻⁰¹²³⁴⁵⁶⁷⁸⁹"["-0123456789".indexOf(c)])}`; };
+  return md`k_d = **${sci(lgm.kd)} s⁻¹** · residence time τ = **${fmt(lgm.tau)}** · K = **${sci(lgm.K)} Torr⁻¹**
+
+Coverage at this pressure: **θ_eq = ${lgm.th.toFixed(3)}**, reached to 95 % in **${fmt(lgm.t95)}**.
+After a ${lgmPurge} s purge, **${(100 * lgm.survive).toFixed(lgm.survive > 0.995 ? 1 : 0)} %** of the adsorbed layer is still there.`
+}
+```
+
+::: {.assumptions}
+**Assumptions.** Langmuir adsorption on identical, independent sites with one molecule per site; desorption follows @eq-residence with τ~0~ = 10^−13^ s and an activation energy equal to E~des~; k~a~ is held constant with temperature (in reality it is often activated too). The "after the purge" figure assumes the gas-phase pressure drops to zero instantly and that desorption is the only loss. The default k~a~ corresponds roughly to TMA at 200 °C with a sticking probability of 10^−3^ (see @sec-dose).
+
+**Things to try.** Lower E~des~ to 110 kJ mol^−1^: the coverage is still high during the pulse, but the layer is lost during the purge. Drop it to physisorption values (20–50 kJ mol^−1^) and the isotherm moves off the plot to high pressure. Raise the temperature at fixed E~des~ and watch the isotherm shift right, which is the high-temperature desorption edge of the ALD window (@sec-ald-window).
+:::
+:::
+
+### The saturation curve {#sec-saturation-curve}
+
+The Langmuir isotherm is often quoted as the "saturation curve", but that is not correct [@Barry2022]. The isotherm describes equilibrium at infinite time. An ALD pulse lasts milliseconds to seconds, and what matters is how θ grows during it. Combining the two rates in @eq-rates gives
+
+$$
+\frac{d\theta}{dt} = k_\text{a}p_\text{A}(1-\theta) - k_\text{d}\,\theta
+$$
+
+which integrates, from a bare surface at t = 0, to
+
+$$
+\theta(t) = \theta_\text{eq}\left[1 - e^{-(k_\text{a}p_\text{A} + k_\text{d})\,t}\right]
+$$ {#eq-saturation}
+
+When adsorption dominates (k~d~ → 0), θ~eq~ → 1 and @eq-saturation reduces to θ ≈ 1 − exp(−k~a~p~A~t) [@Barry2022]. Three things follow:
+
+- **Pressure and time play the same role.** In the irreversible limit, only the product p~A~t appears. This is the *exposure*, usually measured in langmuirs (1 L = 10^−6^ Torr s). Plotting GPC against pulse time is a shortcut that assumes the precursor pressure is constant; exposure is the variable that actually matters [@Barry2022].
+- **Saturation does not need irreversibility.** With k~d~ > 0, the curve still reaches a plateau, but more slowly and at θ~eq~ < 1. A process can be perfectly self-limiting while its "monolayer" is only a fraction of the sites. This is one reason why metal ALD often has a GPC far below the thickness of a monolayer of the metal [@Barry2022]. It also means that a small change in vapour pressure can change the coverage a lot when θ~eq~ is well below 1.
+- **Two surfaces can saturate at different rates.** If a hydroxylated oxide reacts with rate constant k~a~ and a neighbouring metal with k~a~′ = k~a~/100, then at short pulses the oxide is saturated while the metal has barely reacted. Given long enough, both saturate. This *kinetic selectivity* is a starting point for area-selective deposition [@Barry2022].
+
+In practice, a process is shown to be self-limiting by measuring a saturation curve for **each** precursor and each purge at the temperature of interest: the GPC must plateau as each dose increases, and must stop changing once each purge is long enough. A saturation curve is the only valid demonstration of self-limiting behaviour [@Barry2022].
+
+::: {.sim-box}
+[Simulation 2.2: Saturation curve builder]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof sbKa = Inputs.range([0, 5], {value: 2.7, step: 0.1, label: "log₁₀ kₐ (Torr⁻¹ s⁻¹)"})
+viewof sbP = Inputs.range([0.5, 100], {value: 10, step: 0.5, label: "Partial pressure (mTorr)"})
+viewof sbIrr = Inputs.toggle({label: "Irreversible (k_d = 0)", value: false})
+viewof sbKd = Inputs.range([-4, 1], {value: -1, step: 0.1, label: "log₁₀ k_d (s⁻¹)"})
+viewof sbGpc = Inputs.range([0.2, 2], {value: 1.1, step: 0.05, label: "GPC at full coverage (Å)"})
+viewof sbSel = Inputs.range([0, 3], {value: 0, step: 0.1, label: "Second surface: log₁₀ (kₐ / kₐ′) (0 = off)"})
+viewof sbLog = Inputs.toggle({label: "Logarithmic time axis", value: false})
+```
+
+```{ojs}
+//| echo: false
+sbNow = {
+  const ka = 10 ** sbKa, p = sbP * 1e-3, kd = sbIrr ? 0 : 10 ** sbKd;
+  const curve = (kaX) => {
+    const r = kaX * p + kd, th = kaX * p / r;
+    return t => th * (1 - Math.exp(-r * t));
+  };
+  const f1 = curve(ka), f2 = curve(ka / 10 ** sbSel);
+  const r1 = ka * p + kd, t99 = Math.log(100) / r1;
+  return {ka, p, kd, f1, f2, t99, thEq: ka * p / r1,
+          label: `kₐ=${ka.toExponential(1)}, p=${sbP} mTorr, k_d=${sbIrr ? 0 : kd.toExponential(1)}`};
+}
+mutable sbPinned = []
+viewof sbPin = Inputs.button([
+  ["Pin this curve", () => { mutable sbPinned = [...mutable sbPinned, {f: sbNow.f1, label: sbNow.label}].slice(-5); }],
+  ["Clear pinned curves", () => { mutable sbPinned = []; }]
+])
+```
+
+```{ojs}
+//| echo: false
+{
+  const tMax = Math.max(4 * sbNow.t99, 0.01), tMin = tMax / 1e4;
+  const ts = sbLog ? d3.range(0, 201).map(i => tMin * (tMax / tMin) ** (i / 200)) : d3.range(0, 201).map(i => tMax * i / 200);
+  const pts = (f, name) => ts.map(t => ({t, g: sbGpc * f(t), name}));
+  const data = [
+    ...sbPinned.flatMap((c, i) => pts(c.f, `pinned ${i + 1}`)),
+    ...(sbSel > 0 ? pts(sbNow.f2, "second surface") : []),
+    ...pts(sbNow.f1, "current")
+  ];
+  const names = [...sbPinned.map((c, i) => `pinned ${i + 1}`), ...(sbSel > 0 ? ["second surface"] : []), "current"];
+  const greys = ["#BFBFBF", "#A6A6A6", "#8C8C8C", "#737373", "#595959"];
+  return Plot.plot({
+    height: 340, marginLeft: 60, marginBottom: 50, marginTop: 20,
+    x: {label: "Pulse time (s) →", type: sbLog ? "log" : "linear", domain: sbLog ? [tMin, tMax] : [0, tMax], tickFormat: sbLog ? "~e" : undefined},
+    y: {label: "↑ GPC (Å)", domain: [0, sbGpc * 1.1], grid: true},
+    color: {domain: names, range: [...greys.slice(0, sbPinned.length), ...(sbSel > 0 ? ["#E91C24"] : []), "#000000"], legend: names.length > 1},
+    marks: [
+      Plot.ruleY([sbGpc], {stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+      Plot.line(data, {x: "t", y: "g", stroke: "name", strokeWidth: d => d.name === "current" ? 2.5 : 1.5})
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const t = sbNow.t99, th1 = sbNow.f1(t), th2 = sbNow.f2(t);
+  const S = (th1 - th2) / (th1 + th2);
+  const fmt = x => x < 1 ? `${(1000 * x).toPrecision(3)} ms` : `${x.toPrecision(3)} s`;
+  return md`Plateau: **${(sbNow.thEq * sbGpc).toFixed(2)} Å** (θ_eq = ${sbNow.thEq.toFixed(3)}) · Pulse for 99 % of the plateau: **${fmt(t)}** · Exposure at that point: **${(sbNow.p * t / 1e-6).toExponential(1)} L**
+${sbSel > 0 ? `\nAt that pulse the second surface has GPC **${(sbGpc * th2).toFixed(2)} Å**, a kinetic selectivity S = (θ₁ − θ₂)/(θ₁ + θ₂) = **${S.toFixed(2)}**.` : ""}`;
+}
+```
+
+::: {.assumptions}
+**Assumptions.** @eq-saturation at constant temperature and constant precursor pressure, with GPC taken as proportional to the coverage of this half-reaction (the other half-reaction is assumed saturated). The "second surface" has the same k~d~ and a smaller k~a~. Not a process model: real reactors deplete the precursor as it reacts, have non-uniform pressure and carrier-gas effects, and produce by-products that can re-adsorb [@Barry2022].
+
+**Things to try.** Pin an irreversible curve, then switch on k~d~ and raise it until it is comparable to k~a~p: the plateau drops and arrives later. Turn on the second surface at log₁₀(k~a~/k~a~′) = 2 and use the logarithmic time axis to see both surfaces saturate eventually.
+:::
+:::
+
+### Estimating the saturating dose {#sec-dose}
+
+How much precursor is "enough"? For a planar surface, a first estimate comes from kinetic gas theory. The impingement flux of molecules of mass $m$ at pressure $p$ and temperature $T$ is the Hertz–Knudsen flux:
+
+$$
+\Phi = \frac{p}{\sqrt{2\pi m k_\mathrm{B} T}}
+$$ {#eq-flux}
+
+If each impinging molecule reacts with probability $s$ on a free site, and there are $n_0$ reactive sites per unit area, first-order (Langmuir) kinetics give the fractional coverage after a pulse of length $t$:
+
+$$
+\theta(t) = 1 - \exp\!\left(-\frac{s\,\Phi\,t}{n_0}\right)
+$$ {#eq-langmuir}
+
+The simulation below evaluates @eq-flux and @eq-langmuir for TMA (M = 72.09 g mol^−1^) and scales the GPC by the coverage.
+
+::: {.sim-box}
+[Simulation 2.3: Estimating the saturating dose]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof P_mTorr = Inputs.range([0.5, 100], {value: 10, step: 0.5, label: "Partial pressure (mTorr)"})
+viewof T_C = Inputs.range([50, 350], {value: 200, step: 5, label: "Temperature (°C)"})
+viewof logS = Inputs.range([-5, -1], {value: -3, step: 0.1, label: "log₁₀ sticking probability, s"})
+viewof n0_e14 = Inputs.range([1, 10], {value: 4, step: 0.5, label: "Reactive sites (10¹⁴ cm⁻²)"})
+viewof gpcSat = Inputs.range([0.2, 2], {value: 1.1, step: 0.05, label: "Saturated GPC (Å)"})
+viewof tPulse = Inputs.range([0.001, 1], {value: 0.3, step: 0.001, label: "Pulse time (s)"})
+```
+
+```{ojs}
+//| echo: false
+satModel = {
+  const kB = 1.380649e-23, NA = 6.02214076e23, M = 72.09e-3;   // TMA
+  const p = P_mTorr * 0.133322;                                  // Pa
+  const m = M / NA;                                              // kg
+  const T = T_C + 273.15;
+  const flux = p / Math.sqrt(2 * Math.PI * m * kB * T) / 1e4;    // cm^-2 s^-1
+  const k = Math.pow(10, logS) * flux / (n0_e14 * 1e14);         // s^-1
+  const t99 = Math.log(100) / k;
+  const tMax = Math.max(3 * t99, 1.2 * tPulse);
+  const pts = d3.range(0, 201).map(i => {
+    const t = tMax * i / 200;
+    return {t, gpc: gpcSat * (1 - Math.exp(-k * t))};
+  });
+  const theta = 1 - Math.exp(-k * tPulse);
+  return {flux, k, t99, pts, theta, exposureL: P_mTorr * 1e-3 * tPulse / 1e-6,
+          exposure99L: P_mTorr * 1e-3 * t99 / 1e-6};
+}
+
+Plot.plot({
+  height: 340, marginLeft: 65, marginBottom: 50, marginTop: 30,
+  x: {label: "Pulse time (s) →"},
+  y: {label: "↑ GPC (Å)", domain: [0, gpcSat * 1.1], grid: true},
+  marks: [
+    Plot.ruleY([gpcSat], {stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+    Plot.line(satModel.pts, {x: "t", y: "gpc", stroke: "#000000", strokeWidth: 2}),
+    Plot.ruleX([satModel.t99], {stroke: "#4D4D4D", strokeDasharray: "2,3"}),
+    Plot.dot([{t: tPulse, gpc: gpcSat * satModel.theta}], {x: "t", y: "gpc", r: 6, fill: "#E91C24"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+md`Flux: **${satModel.flux.toExponential(2)} cm⁻² s⁻¹** · Coverage at this pulse: **${(100 * satModel.theta).toFixed(1)} %** · Exposure: **${satModel.exposureL.toFixed(0)} L**
+
+Pulse needed for 99 % coverage (dotted line): **${satModel.t99 < 1 ? (1000 * satModel.t99).toFixed(1) + " ms" : satModel.t99.toFixed(2) + " s"}** (≈ ${satModel.exposure99L.toExponential(1)} L)`
+```
+
+::: {.assumptions}
+**Assumptions:** planar substrate; ideal-gas flux at the substrate temperature; constant precursor partial pressure during the pulse; first-order Langmuir adsorption with constant $s$; GPC proportional to coverage of this half-reaction only (the other half-reaction is assumed saturated); no CVD or decomposition contribution. 1 L (Langmuir) = 10^−6^ Torr s.
+:::
+:::
+
+Things to try:
+
+- Change *s* by one decade and watch the saturation time change by a decade as well. Reported sticking probabilities vary over orders of magnitude, so a "saturating dose" taken from someone else's reactor is only a starting point.
+- Notice that the model contains **no** temperature dependence of *s*. In real systems *s* is often thermally activated, which couples dose requirements to the temperature window (@sec-ald-window).
+
+**High aspect ratio structures.** In a trench or pore, molecules must diffuse in, mostly in the Knudsen regime, while being consumed on the walls. The exposure needed for conformal coverage therefore grows steeply with aspect ratio: for large aspect ratios it scales roughly with the aspect ratio squared [@Gordon2003]. Doses that saturate a planar witness wafer can badly undercoat a high-aspect-ratio sample.
+
+### Steric crowding: why one cycle is not one monolayer {#sec-steric}
+
+A saturated TMA half-cycle does not deposit a monolayer of Al~2~O~3~. Each chemisorbed fragment keeps one or two methyl groups, and these take up much more room on the surface than a bare aluminum atom would [@Barry2022]. The methyls cover neighbouring –OH groups so that no further TMA molecule can reach them. The half-reaction saturates when every remaining –OH is either consumed or shielded. That point comes long before the surface holds a full layer of aluminum. In other words, a saturated layer of chemisorbed precursor is not a monolayer of the target film [@Barry2022; @Puurunen2005].
+
+There are two ways the coverage can be limited:
+
+- **Site-limited.** If –OH groups are sparse, TMA can reach all of them. The amount of Al per cycle is then set by the hydroxyl density.
+- **Sterically limited.** If –OH groups are dense, the ligands of the first fragments to land block the rest. The amount of Al per cycle is then set by the size of the fragments, not by the number of sites.
+
+Which regime applies depends on the precursor and the temperature, because the hydroxyl density falls as the surface dehydroxylates at higher temperature [@Puurunen2005].
+
+The simulation below drops TMA molecules at random onto a 10 nm × 10 nm patch of hydroxylated surface. Each molecule that lands on a free, unshielded –OH chemisorbs, either as a dimethyl species (one –OH) or, if a second free –OH is close by, as a monomethyl species (two –OH). Set the methyl diameter to zero to switch off steric hindrance and see the site-limited case.
+
+::: {.sim-box}
+[Simulation 2.4: Steric crowding during the TMA half-cycle]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof ohDens = Inputs.range([2, 12], {value: 8, step: 0.5, label: "–OH density (nm⁻²)"})
+viewof meD = Inputs.range([0, 4.5], {value: 3.5, step: 0.1, label: "Methyl group diameter (Å)"})
+viewof pBi = Inputs.range([0, 1], {value: 0.4, step: 0.05, label: "Probability of reacting with two –OH"})
+viewof expo = Inputs.range([0, 6], {value: 6, step: 0.05, label: "TMA exposure (arrivals per –OH)"})
+viewof reseed = Inputs.button("New random surface")
+```
+
+```{ojs}
+//| echo: false
+steric = {
+  reseed;                                            // re-run on button press
+  const L = 100;                                     // patch size, Å
+  let seed = (Math.random() * 2 ** 32) >>> 0;
+  const rnd = () => {                                // mulberry32
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const N = Math.round(ohDens * L * L / 100);
+  const sites = d3.range(N).map(() => ({x: rnd() * L, y: rnd() * L, used: false}));
+  const wrap = v => v - L * Math.round(v / L);
+  const dist = (a, b) => Math.hypot(wrap(a.x - b.x), wrap(a.y - b.y));
+  // neighbour lists for bifunctional reaction (second –OH within 3.5 Å)
+  const nb = sites.map((s, i) => sites.map((t, j) => j).filter(j => j !== i && dist(s, sites[j]) < 3.5));
+  const dDi = meD * Math.SQRT2, dMono = meD;         // footprint diameters
+  const frags = [];
+  const fits = (c, d) => frags.every(f => dist(c, f) >= (d + f.d) / 2);
+  const total = Math.round(6 * N), curve = [{e: 0, al: 0}];
+  for (let k = 1; k <= total; k++) {
+    const i = Math.floor(rnd() * N), s = sites[i];
+    if (!s.used) {
+      let placed = false;
+      if (rnd() < pBi) {
+        const free = nb[i].filter(j => !sites[j].used);
+        if (free.length) {
+          const j = free.reduce((a, b) => dist(s, sites[a]) < dist(s, sites[b]) ? a : b);
+          const t = sites[j];
+          const c = {x: (s.x + wrap(t.x - s.x) / 2 + L) % L, y: (s.y + wrap(t.y - s.y) / 2 + L) % L};
+          if (fits(c, dMono)) {
+            s.used = t.used = true;
+            frags.push({...c, d: dMono, me: 1, k, a: s, b: t});
+            placed = true;
+          }
+        }
+      }
+      if (!placed && fits(s, dDi)) { s.used = true; frags.push({x: s.x, y: s.y, d: dDi, me: 2, k, a: s}); }
+    }
+    if (k % Math.max(1, Math.round(N / 20)) === 0) curve.push({e: k / N, al: frags.length});
+  }
+  return {L, N, sites, frags, curve};
+}
+```
+
+```{ojs}
+//| echo: false
+stericNow = {
+  const kMax = expo * steric.N;
+  const frags = steric.frags.filter(f => f.k <= kMax);
+  const used = new Set(frags.flatMap(f => f.me === 1 ? [f.a, f.b] : [f.a]));
+  const area = steric.L * steric.L / 100;            // nm²
+  const al = frags.length / area;                    // Al nm⁻²
+  const me = frags.reduce((s, f) => s + f.me, 0) / area;
+  const vAl = 101.96 / (2 * 3.0 * 6.02214e23) * 1e24;// Å³ per Al at 3.0 g cm⁻³
+  const gpc = al / 100 * vAl;                        // Å
+  const ml = Math.cbrt(vAl);                         // Å, one "layer" of Al2O3
+  return {frags, used, al, me, gpc, ml, ohUsed: used.size / steric.N,
+          nMono: frags.filter(f => f.me === 1).length, nDi: frags.filter(f => f.me === 2).length};
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const S = width < 640 ? Math.min(width - 10, 400) : 320, sc = S / steric.L;
+  const wrapDraw = (f, draw) => {                    // draw periodic images near edges
+    let out = "";
+    for (const dx of [-steric.L, 0, steric.L]) for (const dy of [-steric.L, 0, steric.L]) {
+      const x = f.x + dx, y = f.y + dy;
+      if (x > -6 && x < steric.L + 6 && y > -6 && y < steric.L + 6) out += draw(x, y);
+    }
+    return out;
+  };
+  let svg = `<rect width="${S}" height="${S}" fill="#FFFFFF" stroke="#8C8C8C"/>`;
+  for (const f of stericNow.frags) {
+    svg += wrapDraw(f, (x, y) => {
+      const r = Math.max(f.d / 2, 0.9) * sc;
+      const fill = f.me === 2 ? "#4D4D4D" : "#B3B3B3";
+      return `<circle cx="${x * sc}" cy="${y * sc}" r="${r}" fill="${fill}" fill-opacity="0.55" stroke="#000" stroke-width="0.6"/>`;
+    });
+  }
+  for (const s of steric.sites) {
+    const used = stericNow.used.has(s);
+    svg += `<circle cx="${s.x * sc}" cy="${s.y * sc}" r="${used ? 1.6 : 2.2}" fill="${used ? "#000" : "#E91C24"}"/>`;
+  }
+  const map = `<svg viewBox="0 0 ${S} ${S}" width="${S}" height="${S}" style="max-width:100%" role="img" aria-label="Top view of the surface after the TMA pulse">${svg}</svg>`;
+  const legend = `<div class="map-legend" style="margin-top:0.4rem">
+      <span><i style="background:#E91C24;border-color:#E91C24"></i>free –OH</span>
+      <span><i style="background:#000"></i>reacted –OH</span>
+      <span><i style="background:#4D4D4D;opacity:0.6"></i>dimethyl footprint</span>
+      <span><i style="background:#B3B3B3"></i>monomethyl footprint</span></div>`;
+  const curve = Plot.plot({
+    width: width < 640 ? Math.min(width - 10, 400) : 300, height: 320, marginLeft: 50, marginBottom: 45,
+    x: {label: "TMA exposure (arrivals per –OH) →", domain: [0, 6]},
+    y: {label: "↑ Al adsorbed (nm⁻²)", domain: [0, Math.max(ohDens, 4) * 1.05], grid: true},
+    marks: [
+      Plot.ruleY([ohDens], {stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+      Plot.text([{x: 6, y: ohDens}], {x: "x", y: "y", text: () => "every –OH reacted", textAnchor: "end", dy: -7, fill: "#4D4D4D"}),
+      Plot.line(steric.curve, {x: "e", y: d => d.al / (steric.L * steric.L / 100), stroke: "#000", strokeWidth: 2}),
+      Plot.dot([{x: expo, y: stericNow.al}], {x: "x", y: "y", r: 6, fill: "#E91C24"})
+    ]
+  });
+  const box = html`<div><div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start">
+    <div>${html([map])}</div><div>${curve}</div></div>${html([legend])}</div>`;
+  return box;
+}
+```
+
+```{ojs}
+//| echo: false
+md`Al adsorbed: **${stericNow.al.toFixed(2)} nm⁻²** (${stericNow.nDi} dimethyl, ${stericNow.nMono} monomethyl) · –OH consumed: **${(100 * stericNow.ohUsed).toFixed(0)} %** · CH₃ left for the water step: **${stericNow.me.toFixed(2)} nm⁻²**
+
+Implied GPC: **${stericNow.gpc.toFixed(2)} Å**, which is **${(100 * stericNow.gpc / stericNow.ml).toFixed(0)} %** of one Al₂O₃ layer (${stericNow.ml.toFixed(1)} Å). Measured TMA/H₂O processes typically give about 1.1 Å.`
+```
+
+::: {.assumptions}
+**Assumptions.** Random sequential adsorption: TMA arrives at random –OH sites, sticks irreversibly where it lands, and never moves. Each fragment's footprint is a disc: a dimethyl species covers the area of two methyl groups, a monomethyl species the area of one. A molecule chemisorbs only if its footprint does not overlap an existing one. A monomethyl species forms only when a second free –OH lies within 3.5 Å. –OH groups are placed at random, and edges wrap around. TMA reaction with Al–O bridges is left out. The GPC conversion assumes each adsorbed Al ends up in Al~2~O~3~ of density 3.0 g cm^−3^.
+
+**Where it fails.** With realistic settings the model gives 0.6–0.9 Å, below the measured ~1.1 Å. Random, irreversible adsorption is the least efficient way to pack a surface, real fragments can rearrange, and the omitted reaction with Al–O bridges adds Al without consuming –OH. Use the model for trends (how coverage responds to –OH density and ligand size), not for absolute numbers.
+:::
+:::
+
+#### What is "typical" coverage for TMA/H~2~O?
+
+A useful way to express coverage is to compare the GPC with the thickness of one "layer" of the film. For Al~2~O~3~ with a density of about 3.0 g cm^−3^, the volume per Al atom is
+
+$$
+V_\text{Al} = \frac{M_{\text{Al}_2\text{O}_3}}{2\,\rho\,N_\text{A}} = \frac{101.96\ \text{g mol}^{-1}}{2 \times 3.0\ \text{g cm}^{-3} \times 6.022\times10^{23}\ \text{mol}^{-1}} \approx 28\ \text{Å}^3
+$$ {#eq-val}
+
+The cube root of this volume, about 3 Å, is a reasonable estimate of the thickness of one layer; @Barry2022 quotes about 2.9 Å. A typical TMA/H~2~O GPC of 1.1 Å therefore corresponds to:
+
+- **About 30–40 % of a monolayer** of Al~2~O~3~ per cycle, depending on temperature and nucleation-site density [@Barry2022].
+- **About 4 Al atoms per nm^2^ per cycle** (1.1 Å ÷ 28 Å^3^ ≈ 0.039 Å^−2^), compared with roughly 11 nm^−2^ for a complete layer.
+
+So it takes about three cycles to deposit the equivalent of one layer of aluminum oxide. After the TMA pulse, the surface is a mixture of fragments that have lost one methyl group and fragments that have lost two [@Barry2022]. Their ratio sets how many methyls go on to the water step, and both the ratio and the –OH density shift with temperature. This is why the GPC of TMA/H~2~O changes with deposition temperature even though each half-reaction is self-limiting [@Puurunen2005].
+
+::: {.callout-important appearance="simple"}
+### Saturation is not a monolayer
+"Saturated" means the surface will take up no more precursor. It does not mean the surface is covered with a full layer of metal atoms. For almost every ALD process, a saturated half-cycle deposits a fraction of a monolayer of the final film.
+:::
+
+The same argument resolves a puzzle about substrates. At room temperature, silica carries 4–5 hydroxyls per nm^2^ and alumina about 15, so alumina might be expected to grow much faster. In practice both oxides have a GPC of about 1 Å from TMA, and the TMA half-reaction plateaus at 30–40 % of a monolayer [@Barry2022]. When the sites are dense, the size of the adsorbed fragments, not the number of sites, sets the GPC. Chemisorption can also follow more than one path (loss of one or two methane molecules per TMA), and each path leaves a fragment with a different footprint. Simple geometric models of these footprints are often enough to explain a low GPC [@Barry2022].
+
+### Process windows {#sec-process-windows}
+
+Every atomic layer process has a range of conditions in which each step is self-limiting. For thermal ALD the variable is temperature, and the range is called the ALD window.
+
+#### The ALD window and its limits {#sec-ald-window}
+
+GPC is commonly plotted against temperature, and the range over which it is approximately constant is called the **ALD window**. On either side, growth departs from the ideal for different reasons:
+
+| Region | GPC trend | Typical cause |
+|---|---|---|
+| Low *T*, high GPC | ↑ | Precursor or co-reactant condensation; physisorbed water not removed by the purge |
+| Low *T*, low GPC | ↓ | Insufficient thermal energy; the reaction is too slow to saturate in the pulse time |
+| High *T*, high GPC | ↑ | Precursor decomposition, which adds a CVD-like, non-self-limiting component |
+| High *T*, low GPC | ↓ | Desorption of chemisorbed species, or loss of reactive sites (e.g. dehydroxylation) |
+
+::: {.sim-box}
+[Simulation 2.5: A qualitative ALD window]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof Tlow = Inputs.range([50, 250], {value: 140, step: 5, label: "Lower edge (°C)"})
+viewof Thigh = Inputs.range([150, 450], {value: 300, step: 5, label: "Upper edge (°C)"})
+viewof slope = Inputs.range([-0.4, 0.4], {value: 0, step: 0.02, label: "GPC slope inside window (Å per 100 °C)"})
+viewof lowMode = Inputs.radio(["Condensation", "Insufficient reactivity"], {value: "Insufficient reactivity", label: "Below the window"})
+viewof highMode = Inputs.radio(["Decomposition", "Desorption / site loss"], {value: "Decomposition", label: "Above the window"})
+```
+
+```{ojs}
+//| echo: false
+windowPts = {
+  const g0 = 1.0;
+  const hi = Math.max(Thigh, Tlow + 20);
+  const mid = (Tlow + hi) / 2;
+  const inside = T => g0 + slope * (T - mid) / 100;
+  const g = T => {
+    if (T < Tlow) {
+      const d = Tlow - T;
+      return lowMode === "Condensation" ? inside(Tlow) * (1 + 1.5 * (1 - Math.exp(-d / 40)))
+                                        : inside(Tlow) * Math.exp(-d / 35);
+    }
+    if (T > hi) {
+      const d = T - hi;
+      return highMode === "Decomposition" ? inside(hi) * Math.exp(d / 60)
+                                          : inside(hi) * Math.exp(-d / 70);
+    }
+    return inside(T);
+  };
+  return {hi, pts: d3.range(25, 501, 2).map(T => ({T, gpc: Math.max(0, g(T))}))};
+}
+
+Plot.plot({
+  height: 340, marginLeft: 65, marginBottom: 50, marginTop: 30,
+  x: {label: "Deposition temperature (°C) →", domain: [25, 500]},
+  y: {label: "↑ GPC (relative)", domain: [0, 3], grid: true},
+  marks: [
+    Plot.rectX([{x1: Tlow, x2: windowPts.hi}], {x1: "x1", x2: "x2", y1: 0, y2: 3, fill: "#8C8C8C", fillOpacity: 0.15}),
+    Plot.text([{x: (Tlow + windowPts.hi) / 2, y: 2.8, label: "\"window\""}], {x: "x", y: "y", text: "label", fill: "#4D4D4D"}),
+    Plot.line(windowPts.pts, {x: "T", y: "gpc", stroke: "#000000", strokeWidth: 2, clip: true})
+  ]
+})
+```
+
+::: {.assumptions}
+**This is a schematic, not a physical model.** The functional forms outside the window are chosen only to show the direction of each effect. Use it to reason about which mechanism could explain a data set, not to fit data.
+:::
+:::
+
+**A critical view of the window.** The flat plateau is a teaching idealization, and it causes two common errors:
+
+1. *Self-limiting is not the same as temperature-independent.* For TMA/H~2~O, the GPC falls steadily with temperature over the whole useful range because the surface hydroxyl density decreases [@Puurunen2005]. The process is still self-limiting at each temperature. Set the slope slider to a negative value to see what this looks like.
+2. *A plateau does not prove self-limitation.* An approximately constant GPC over some range can arise from competing effects, for example slow decomposition offset by site loss. Only dose and purge series at each temperature establish ALD behaviour.
+
+Film properties such as crystallinity, density and impurity content also change across the "window". Crystallization onset, for example, depends on the material and the temperature, so a constant GPC does not mean a constant film [@Miikkulainen2013].
+
+A self-limiting process can even have more than one plateau. InN grown from trimethylindium and an NH~3~ plasma shows a GPC plateau of 0.4 Å around 220 °C and a second plateau of 1.2 Å around 300 °C, and saturation curves show self-limiting growth at both temperatures [@Barry2022]. Whether the jump comes from a change in the density of nucleation sites, a shift in the balance between k~a~ and k~d~, or a gas-phase reaction that starts at higher temperature cannot be decided from the GPC data alone. Further experiments are needed: a GPC plateau tells you where to look, not what is happening.
+
+#### Windows in the other processes
+
+The same idea carries over, with different variables:
+
+- **ALE** has its own window. In directional (plasma) ALE, the variable is ion energy: there is a range above the energy needed to remove the modified layer and below the energy that sputters the unmodified material, in which the etch per cycle (EPC) is constant [@Kanarik2015]. Thermal ALE has temperature windows, because its ligand-exchange step often works only above a threshold temperature. Both are treated in the ALE chapter (in preparation).
+- **MLD** windows are usually narrower than ALD windows, because organic precursors condense at low temperature and decompose at moderate temperature.
+- **ASD** adds a window in *cycles*: selectivity holds only until enough nuclei form on the non-growth surface (@sec-nucleation-energetics).
+
+## Ligands {#sec-ligands}
+
+[Applies to: ALD · MLD · ALE (ligand exchange) · ASD (inhibitors)]{.applies}
+
+Ligands are not only an ALD topic. In thermal ALE, the removal step is a ligand-exchange reaction that turns the surface into a volatile metal complex. In ASD, many small-molecule inhibitors are ligands chosen to bind one surface and not another. The bonding ideas below apply to all of them.
+
+### What a ligand has to do
+
+In metal-organic chemistry, a ligand is a group bonded directly to a metal centre, through one atom or several [@Barry2022]. In an ALD precursor, the ligands carry the metal (the "payload" atom) into the reactor, and are then removed by surface chemistry. That gives them two jobs that pull in opposite directions:
+
+- The metal–ligand bonds must be **strong enough** to survive vaporization, delivery and the hot reactor without breaking.
+- They must also be **easy enough to remove** in the half-reactions, so that the ligand leaves cleanly and does not stay in the film as an impurity [@Barry2022].
+
+Put another way, a good precursor has to balance volatility, thermal stability and reactivity, and do all three while reacting self-limitingly. Compounds that strike this balance are uncommon, and for many metals none are known yet. Discovering and implementing a new ligand is one of the main contributions a chemist can make to ALD [@Barry2022].
+
+### Ligand bonding {#sec-ligand-bonding}
+
+#### L and X ligands
+
+A ligand is a Lewis base: it donates electron density into an empty orbital on the metal, which acts as a Lewis acid [@Barry2022]. For bookkeeping, ligands fall into two types:
+
+- **L ligands** are neutral donors that supply both electrons of the bond. Examples: CO, NH~3~, phosphines, ethers, N-heterocyclic carbenes.
+- **X ligands** are formally anionic. In the covalent picture, the metal and the ligand each contribute one electron to the bond. Examples: CH~3~^−^, Cl^−^, NR~2~^−^, OR^−^.
+
+This is a model for counting electrons, but it has a practical consequence for ALD. When an **L** ligand dissociates, both fragments are neutral, and the metal-containing fragment can survive in the gas phase even if it is less stable. When an **X** ligand dissociates heterolytically, it leaves a cation, which does not survive in the gas phase under reasonable conditions. So L ligands can complicate the gas-phase chemistry of a precursor much more than X ligands do [@Barry2022].
+
+##### Why is methyl a ligand?
+
+Consider trimethylaluminum. Each methyl is an X ligand whose conjugate acid is methane. Deprotonating methane (CH~4~ → CH~3~^−^ + H^+^) costs about 440 kJ mol^−1^, which is not very different from the H–Cl bond strength (428 kJ mol^−1^) [@Barry2022]. Yet HCl is a strong acid and methane is not. The difference is electronegativity, not bond strength: carbon (2.55) and hydrogen (2.20) share the bonding pair almost evenly, while chlorine (3.16) pulls it towards itself and releases H^+^ easily [@Barry2022]. Bond polarity, not just bond strength, is what decides how a bond breaks. We use this idea again below.
+
+##### Back-bonding
+
+Carbon monoxide is the classic L ligand. It donates its lone pair to the metal and, at the same time, accepts electron density from filled metal d orbitals into its empty π\* orbitals. This **back-bonding** makes the M–CO bond stronger than a simple dative bond, at the cost of weakening the C≡O bond [@Barry2022]. Isonitriles (R–NC) behave similarly. Metal carbonyls are a mature area of organometallic chemistry but are still under-represented in ALD [@Barry2022].
+
+The diagram below compares the three bonding situations in this section. Choose a ligand type to see how it bonds to the metal.
+
+::: {.sim-box}
+[Simulation 2.6: σ donation and π back-bonding]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof bondMode = Inputs.radio(["L ligand (dative σ bond)", "X ligand (covalent σ bond)", "CO (σ donation + π back-bonding)"],
+  {value: "CO (σ donation + π back-bonding)", label: "Ligand"})
+```
+
+```{ojs}
+//| echo: false
+{
+  const red = "#E91C24", dark = "#4D4D4D", grey = "#8C8C8C", light = "#EDEDED";
+  const isCO = bondMode.startsWith("CO"), isX = bondMode.startsWith("X");
+  const x = isCO ? 0.6 : 0;                         // fixed, schematic amount of back-donation
+  const M = [220, 175], D = isCO ? [455, 175] : [470, 175], O = [555, 175];
+  const e = (cx, cy) => `<circle cx="${cx}" cy="${cy}" r="4.5" fill="#000"/>`;
+  const atom = ([cx, cy], lab, fill, r = 22) =>
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#000" stroke-width="1.2"/>
+     <text x="${cx}" y="${cy + 6}" text-anchor="middle" font-size="17" font-weight="600" fill="${fill === "#FFFFFF" ? "#000" : "#fff"}">${lab}</text>`;
+  const arrow = (d, col, w, lab, lx, ly) =>
+    `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" marker-end="url(#bbArr)" style="color:${col}"/>
+     <text x="${lx}" y="${ly}" text-anchor="middle" font-size="14" font-weight="600" fill="${col}">${lab}</text>`;
+  let g = "";
+
+  // π system for CO: metal d orbital (four lobes) and CO π* (large on C, small on O)
+  if (isCO) {
+    const op = 0.15 + 0.75 * x;
+    [[1, -1, dark], [-1, 1, dark], [1, 1, "#FFFFFF"], [-1, -1, "#FFFFFF"]].forEach(([sx, sy, f]) => {
+      g += `<ellipse cx="${M[0] + 30 * sx}" cy="${M[1] + 30 * sy}" rx="30" ry="13" transform="rotate(${sx * sy > 0 ? 45 : -45} ${M[0] + 30 * sx} ${M[1] + 30 * sy})" fill="${f}" fill-opacity="0.8" stroke="#000" stroke-width="0.8"/>`;
+    });
+    g += e(M[0] + 36, M[1] - 36) + e(M[0] + 26, M[1] - 26);
+    g += `<ellipse cx="${D[0]}" cy="${D[1] - 42}" rx="16" ry="32" fill="${red}" fill-opacity="${op}" stroke="${red}" stroke-width="1"/>
+          <ellipse cx="${D[0]}" cy="${D[1] + 42}" rx="16" ry="32" fill="#FFFFFF" stroke="${red}" stroke-width="1"/>
+          <ellipse cx="${O[0]}" cy="${O[1] - 30}" rx="11" ry="20" fill="#FFFFFF" stroke="${red}" stroke-width="1"/>
+          <ellipse cx="${O[0]}" cy="${O[1] + 30}" rx="11" ry="20" fill="${red}" fill-opacity="${op}" stroke="${red}" stroke-width="1"/>
+          <text x="${(D[0] + O[0]) / 2 + 4}" y="${D[1] - 82}" text-anchor="middle" font-size="13" fill="${red}">CO π* (empty)</text>
+          <text x="${M[0]}" y="${M[1] - 78}" text-anchor="middle" font-size="13" fill="${dark}">filled metal d orbital</text>`;
+    g += arrow(`M${M[0] + 50},${M[1] - 58} Q${(M[0] + D[0]) / 2},${M[1] - 120} ${D[0] - 20},${D[1] - 60}`, dark, 1.5 + 4 * x,
+      "π back-donation", (M[0] + D[0]) / 2, M[1] - 100);
+  }
+
+  // σ system: metal acceptor lobe and ligand donor lobe on the M–D axis
+  const metalLobe = `<ellipse cx="${M[0] + 62}" cy="${M[1]}" rx="40" ry="20" fill="${isX ? light : "#FFFFFF"}" stroke="#000" stroke-width="1" stroke-dasharray="${isX ? "" : "4,3"}"/>`;
+  const ligLobe = `<ellipse cx="${D[0] - 66}" cy="${D[1]}" rx="44" ry="22" fill="${red}" fill-opacity="0.35" stroke="${red}" stroke-width="1"/>`;
+  g += metalLobe + ligLobe;
+  if (isX) g += e(M[0] + 62, M[1]) + e(D[0] - 66, D[1]);
+  else g += e(D[0] - 74, D[1]) + e(D[0] - 58, D[1]);
+  const sigmaLab = isX ? "1 e⁻ from M + 1 e⁻ from X" : "σ donation: 2 e⁻ from ligand";
+  const ay = M[1] + (isCO ? 105 : 60);
+  if (isX) {
+    // shared pair: bracket, no arrow
+    g += `<path d="M${M[0] + 30},${ay - 12} V${ay} H${D[0] - 30} V${ay - 12}" fill="none" stroke="${red}" stroke-width="2"/>
+          <text x="${(M[0] + D[0]) / 2}" y="${ay + 22}" text-anchor="middle" font-size="14" font-weight="600" fill="${red}">${sigmaLab}</text>`;
+  } else {
+    g += arrow(`M${D[0] - 50},${ay} L${M[0] + 50},${ay}`, red, 2.5, sigmaLab, (M[0] + D[0]) / 2, ay + 23);
+  }
+
+  // bonds and atoms
+  if (isCO) {
+    [-6, 0, 6].forEach((dy, i) => {
+      const op = i === 0 ? Math.max(0.12, 1 - x) : 1;
+      g += `<line x1="${D[0]}" y1="${D[1] + dy}" x2="${O[0]}" y2="${O[1] + dy}" stroke="#000" stroke-width="2" stroke-opacity="${op}"/>`;
+    });
+  }
+  g += atom(M, "M", dark);
+  g += atom(D, isCO ? "C" : isX ? "X" : "L", isCO ? "#000000" : red);
+  if (isCO) g += atom(O, "O", red, 19);
+
+  const svg = `<svg viewBox="${isCO ? "0 0 680 330" : "0 120 680 150"}" width="100%" style="max-width:720px" role="img" aria-label="Orbital diagram: ${bondMode}">
+    <defs><marker id="bbArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+    ${g}</svg>`;
+
+  const note = isCO
+    ? `CO donates its lone pair to the metal (σ), and the metal pushes electron density from a filled d orbital back into CO's empty π* orbital. Back-donation strengthens the metal–carbon bond to more than a single bond and weakens C≡O, because the electrons go into an antibonding orbital of CO. This is why metal carbonyls show a lower C–O stretching frequency than free CO (2143 cm⁻¹).`
+    : isX
+    ? `The metal and the ligand each supply one electron. Heterolytic cleavage gives X⁻ and a metal <b>cation</b>, which does not survive in the gas phase under reasonable conditions.`
+    : `The ligand supplies both electrons; the metal orbital is empty. Losing L leaves a <b>neutral</b> metal fragment that can survive in the gas phase, which is why L ligands can complicate precursor chemistry.`;
+  return html`<div>${html([svg])}<div class="map-card" style="margin-top:0.5rem">${html([note])}</div></div>`;
+}
+```
+
+::: {.assumptions}
+**Assumptions.** A cartoon, not a calculation: one metal d orbital and one of the two degenerate CO π\* orbitals are shown, and lobe sizes and the amount of back-donation drawn are schematic. Filled lobes have one phase and open lobes the other. π back-donation needs a filled metal d orbital whose lobe has the same phase as the π\* lobe on carbon it overlaps.
+:::
+:::
+
+
+#### Bond polarity: where will the bond break?
+
+The metals of the first transition series (Sc to Zn) have Pauling electronegativities between about 1.36 and 1.91, while N is 3.04 and O is 3.44. Metal–N and metal–O bonds are therefore strongly polarized towards the ligand [@Barry2022]. Pauling related the ionic character of a bond to the electronegativity difference Δχ between the two atoms:
+
+$$
+\%\,\text{ionicity} = -4.94\,(\Delta\chi)^3 + 23.0\,(\Delta\chi)^2 + 5.75\,\Delta\chi - 1.34
+$$ {#eq-ionicity}
+
+Combining ionicity with bond enthalpy gives a first prediction of precursor behaviour [@Barry2022]:
+
+- A **strong but highly ionic** bond tends to survive heating, but breaks cleanly at the metal under chemical attack. The ligand leaves intact.
+- A **weaker, more covalent** bond is more likely to fail thermally, and to fail somewhere other than the metal–ligand bond. Fragments of the ligand can then stay behind as impurities.
+
+Use the explorer below to compare donor atoms for a chosen metal.
+
+::: {.sim-box}
+[Simulation 2.7: Metal–ligand bond ionicity]{.sim-title}
+
+```{ojs}
+//| echo: false
+chiMetal = new Map([
+  ["Al", 1.61], ["Ga", 1.81], ["Si", 1.90], ["Sn", 1.96],
+  ["Sc", 1.36], ["Y", 1.22], ["La", 1.10],
+  ["Ti", 1.54], ["Zr", 1.33], ["Hf", 1.30],
+  ["V", 1.63], ["Cr", 1.66], ["Mn", 1.55], ["Fe", 1.83], ["Co", 1.88], ["Ni", 1.91], ["Cu", 1.90], ["Zn", 1.65],
+  ["Ru", 2.20], ["Pt", 2.28]
+])
+chiDonor = [
+  {el: "H", chi: 2.20, ligand: "hydride"},
+  {el: "C", chi: 2.55, ligand: "alkyl, Cp"},
+  {el: "S", chi: 2.58, ligand: "thiolate"},
+  {el: "I", chi: 2.66, ligand: "iodide"},
+  {el: "Br", chi: 2.96, ligand: "bromide"},
+  {el: "N", chi: 3.04, ligand: "amide, amidinate"},
+  {el: "Cl", chi: 3.16, ligand: "chloride"},
+  {el: "O", chi: 3.44, ligand: "alkoxide, β-diketonate"},
+  {el: "F", chi: 3.98, ligand: "fluoride"}
+]
+ionicity = d => Math.max(0, Math.min(100, -4.94 * d ** 3 + 23.0 * d ** 2 + 5.75 * d - 1.34))
+viewof metal = Inputs.select([...chiMetal.keys()], {value: "Sc", label: "Metal"})
+```
+
+```{ojs}
+//| echo: false
+bonds = chiDonor.map(d => {
+  const dchi = Math.abs(d.chi - chiMetal.get(metal));
+  return {...d, bond: `${metal}–${d.el}`, dchi, ion: ionicity(dchi)};
+})
+
+Plot.plot({
+  height: 340, marginLeft: 60, marginBottom: 50, marginTop: 30,
+  x: {label: "Electronegativity difference, Δχ →", domain: [0, 3]},
+  y: {label: "↑ Ionic character (%)", domain: [0, 100], grid: true},
+  marks: [
+    Plot.line(d3.range(0, 3.001, 0.02).map(x => ({x, y: ionicity(x)})), {x: "x", y: "y", stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+    Plot.dot(bonds, {x: "dchi", y: "ion", r: 6, fill: d => d.el === "N" || d.el === "O" ? "#E91C24" : "#000000",
+      channels: {Bond: "bond", "Typical ligand": "ligand"}, tip: {format: {x: ".2f", y: ".0f", fill: false}}}),
+    // S, Br and I are unlabelled to avoid overlap; hover or see the table
+    Plot.text(bonds.filter(b => ["H", "C", "N", "O", "Cl", "F"].includes(b.el)), {x: "dchi", y: "ion", text: "bond", dy: -12, fontSize: 12})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+Inputs.table(bonds.map(b => ({Bond: b.bond, "Typical ligand": b.ligand, "Δχ": b.dchi, "Ionic (%)": b.ion})),
+  {sort: "Ionic (%)", reverse: true, rows: 10,
+   format: {"Δχ": x => x.toFixed(2), "Ionic (%)": x => x.toFixed(0)}})
+```
+
+::: {.assumptions}
+**Assumptions.** Pauling electronegativities; @eq-ionicity applied to the absolute value of Δχ and capped at 0–100 %. Ionicity says nothing on its own about bond *strength*, which must come from bond enthalpies. Real precursors also depend on the rest of the molecule: the other ligands, oxidation state, sterics and the co-reactant.
+:::
+:::
+
+##### Two worked comparisons
+
+**Sc–O versus Sc–N.** Scandium has the lowest electronegativity of the first-row transition metals, so it is the most mismatched with both N and O. The Sc–O bond is about 66 % ionic and strong (682 kJ mol^−1^); Sc–N is about 50 % ionic and weaker (470 kJ mol^−1^). So Sc(thd)~3~, with Sc–O bonds, should hold on to its ligands at intermediate temperatures but cleave at the Sc–O bond when it reacts. Sc(iPrAMD)~3~, with Sc–N bonds, should decompose at lower temperatures, and more likely at a bond other than Sc–N, which can leave nitrogen in the film [@Barry2022].
+
+**AlMe~3~ versus AlCl~3~.** Both are homoleptic, three-coordinate Al(III) precursors for Al~2~O~3~ [@Barry2022].
+
+| | AlMe~3~ (TMA) | AlCl~3~ |
+|:---|:---|:---|
+| Al–X bond enthalpy | 268 kJ mol^−1^ | 502 kJ mol^−1^ |
+| Ionic character | ~20 % | ~44 % |
+| Deposition range (with H~2~O or alcohols) | Room temperature to ~300 °C (TMA decomposes above this) | 250–500 °C |
+| Typical impurities | Up to ~30 % C at low temperature; 3–5 % near 250 °C | Cl < 2 % (often undetectable), C < 2 % |
+| By-product | CH~4~ | HCl (corrosive) |
+
+: TMA and AlCl~3~ compared [@Barry2022]. {#tbl-tma-alcl3}
+
+The weaker, more covalent Al–C bond is more likely to leave an impurity at low temperature than the stronger, more ionic Al–Cl bond. TMA still wins in most labs because it reacts at much lower temperatures and avoids corrosive HCl. The trade-off depends on the application: its thermal budget, its tolerance for impurities, and how robust the process must be [@Barry2022].
+
+#### The chelate effect {#sec-chelate}
+
+A **chelating** ligand binds the metal through two or more atoms. Amidinates and β-diketonates are common examples in ALD. Chelates are more stable than comparable monodentate ligands for two reasons [@Barry2022]:
+
+- **Enthalpy.** Many chelates are resonance-stabilized: the negative charge is shared over both donor atoms, so neither bond is purely L or purely X.
+- **Entropy.** Losing a chelating ligand releases one particle, M(L~2~)~n~ ⇌ M(L~2~)~n−1~ + L~2~. Losing the equivalent two monodentate ligands releases two, ML~2n~ ⇌ ML~2n−2~ + 2 L. There is less entropic drive to lose the chelate.
+
+The effect is easiest to measure in solution. Replacing two waters on Cu(H~2~O)~6~^2+^ with two NH~3~ ligands, or with one ethylenediamine (en, H~2~N–CH~2~CH~2~–NH~2~), has a similar enthalpy change, but very different entropy changes [@Barry2022]:
+
+| Reaction | ΔH (kJ mol^−1^) | ΔS (J K^−1^ mol^−1^) |
+|:---|:---|:---|
+| Cu(H~2~O)~6~^2+^ + 2 NH~3~ → Cu(H~2~O)~4~(NH~3~)~2~^2+^ + 2 H~2~O | −46 | −8.4 |
+| Cu(H~2~O)~6~^2+^ + en → Cu(H~2~O)~4~(en)^2+^ + 2 H~2~O | −54 | +23 |
+
+: Thermodynamics of the chelate effect for Cu^2+^ [@Barry2022]. {#tbl-chelate}
+
+Because the entropy term is multiplied by temperature in ΔG = ΔH − TΔS, the chelate advantage grows as the temperature rises, which is relevant to ALD reactors running at 400–600 K.
+
+::: {.sim-box}
+[Simulation 2.8: The chelate effect and temperature]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof T_K = Inputs.range([250, 700], {value: 300, step: 5, label: "Temperature (K)"})
+```
+
+```{ojs}
+//| echo: false
+chel = {
+  const rx = [
+    {name: "2 NH₃ (monodentate)", dH: -46, dS: -8.4},
+    {name: "en (chelate)", dH: -54, dS: 23}
+  ];
+  const G = (r, T) => r.dH - T * r.dS / 1000;
+  const lines = rx.flatMap(r => d3.range(250, 701, 10).map(T => ({name: r.name, T, G: G(r, T)})));
+  const now = rx.map(r => ({name: r.name, T: T_K, G: G(r, T_K)}));
+  return {lines, now};
+}
+
+Plot.plot({
+  height: 320, marginLeft: 65, marginBottom: 50, marginTop: 20,
+  x: {label: "Temperature (K) →", domain: [250, 700]},
+  y: {label: "↑ ΔG (kJ mol⁻¹)", grid: true},
+  color: {domain: ["2 NH₃ (monodentate)", "en (chelate)"], range: ["#8C8C8C", "#E91C24"], legend: true},
+  marks: [
+    Plot.ruleX([T_K], {stroke: "#4D4D4D", strokeDasharray: "2,3"}),
+    Plot.line(chel.lines, {x: "T", y: "G", stroke: "name", strokeWidth: 2}),
+    Plot.dot(chel.now, {x: "T", y: "G", fill: "name", r: 6})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+md`At **${T_K} K** (${(T_K - 273.15).toFixed(0)} °C): ΔG(2 NH₃) = **${chel.now[0].G.toFixed(1)} kJ mol⁻¹**, ΔG(en) = **${chel.now[1].G.toFixed(1)} kJ mol⁻¹**. The chelate is favoured by **${(chel.now[0].G - chel.now[1].G).toFixed(1)} kJ mol⁻¹**.`
+```
+
+::: {.assumptions}
+**Assumptions.** ΔH and ΔS are aqueous values near room temperature, held constant over the whole range. Extrapolating them to 700 K, and from solution to the gas phase or a surface, is for illustration only: the point is the trend with temperature, not the numbers.
+:::
+:::
+
+##### Chelates and saturation
+
+Because chelating ligands are less likely to dissociate, they can also protect the payload atom once it is on the surface. A chelate that stays attached after chemisorption adds steric bulk that blocks further adsorption, which helps the half-reaction self-limit (@sec-steric). The metal–ligand bond then has to be tuned so the ligand stays on during the precursor pulse but is removed completely in the next one. Ligands that are retained are a major source of film impurities, so the identity of the atom bonded to the metal deserves careful thought [@Barry2022].
+
+#### Tunable ligand families {#sec-tunable-families}
+
+Ligands are often chosen for how easily their frameworks can be modified. A good example is the family of β-diketonates, β-ketoiminates and β-diiminates [@Barry2022]. All are deprotonated at the central carbon of the bridge, and the negative charge is delocalized over the two donor atoms E (O or N). The β-diketonate is made by condensing a ketone with an acid chloride, and stepwise reaction with primary amines replaces O donors with N [@Barry2022]. Each R group comes from a different reagent, so the symmetry and bulk of the ligand are easy to change.
+
+Switching O to N changes several things at once [@Barry2022]:
+
+- **Bond strength.** A different donor atom gives a different metal–ligand bond: stronger bonds improve thermal stability, weaker ones make the ligand easier to remove in the next pulse.
+- **Impurities.** A precursor for a nitride film should bond through N, because O would be an impurity.
+- **Sterics close to the metal.** On N, the R groups sit right next to the metal. Small groups (CH~3~) let the ligand approach closely and bond strongly; bulky groups (C(CH~3~)~3~) push it away and weaken the bond. Two N donors (β-diiminate) weaken the bonding more than one (β-ketoiminate).
+
+#### Bridging ligands: why TMA is a dimer
+
+Both AlCl~3~ and AlMe~3~ are dimers under standard conditions, Al~2~Cl~6~ and Al~2~Me~6~, but the bridges are different [@Barry2022]:
+
+- Each bridging **chloride** has lone pairs to spare and uses two electron pairs to bind both Al atoms: a **3-centre, 4-electron** (3c4e) bond.
+- Each bridging **methyl** has only one electron pair, shared across both Al atoms: a **3-centre, 2-electron** (3c2e) bond, which is inherently weaker.
+
+In the gas phase, both precursors are in equilibrium between monomer and dimer, and the surface reaction generally proceeds through the monomer [@Barry2022]. Methyl is also smaller than chloride, so methyl fragments can pack more densely on the surface, giving a higher GPC [@Barry2022]. This is the steric-crowding argument of @sec-steric applied to ligand choice, and it returns in the TMA/DMAI comparison (@sec-tma-dmai).
+
+### Simple, classic and complicated ligand families {#sec-ligand-tour}
+
+It helps to sort ALD ligands into three tiers by how much design has gone into them:
+
+- **Simple ligands** bond through a single atom and carry little or no organic framework: halides, hydrides and small alkyls. They are cheap, small and well understood, and they dominate industrial ALD.
+- **Classic ligands** are the long-established families of organometallic and coordination chemistry: amides, alkoxides, cyclopentadienyls and β-diketonates. Their chemistry is mature, and their substituents can be varied to tune volatility and stability.
+- **Complicated ligands** were designed, often for ALD specifically, to solve a problem the first two tiers could not: N,N-chelates such as amidinates, guanidinates and iminopyrrolidinates for low-valent metals; neutral donors such as carbenes and phosphines; and heteroleptic combinations in which each ligand has a job.
+
+The tiers are a teaching device, not a rule: TMA is "simple" and still the best-behaved precursor known, while some "complicated" ligands were too costly to make on a large scale [@Barry2022].
+
+| Tier | Family | Bonds through | Examples | Strengths | Weaknesses |
+|:---|:---|:---|:---|:---|:---|
+| Simple | Halides | M–X (X = F, Cl, Br, I) | TiCl~4~, HfCl~4~, WF~6~ | Thermally robust; no carbon; cheap | Halide impurities at low temperature; corrosive HX by-products; often solids |
+| Simple | Alkyls and hydrides | M–C, M–H | AlMe~3~, ZnEt~2~, GeH~2~Et~2~ | Very reactive; wide ALD windows | Often pyrophoric; transition-metal alkyls tend to decompose by β-H elimination |
+| Classic | Amides, silylamides and imides | M–N | Ti(NMe~2~)~4~, Zn[N(SiMe~3~)~2~]~2~, W(N^t^Bu)~2~(NMe~2~)~2~ | No halides; reactive at low temperature | Limited thermal stability; silylamides leave Si; volatile mainly for high oxidation states |
+| Classic | Alkoxides | M–O | Ti(O^i^Pr)~4~, Ta(OEt)~5~ | Thermally robust M–O bonds | Oligomerize unless bulky; can self-decompose; oxides only |
+| Classic | Cyclopentadienyls | M–C (π) | RuCp~2~, ZrCp~2~Me~2~, InCp | Strong M–Cp bonding; substitution tunes volatility and melting point | Can still decompose at source temperatures; may stay on the surface |
+| Classic | β-Diketonates | M–O (chelate) | M(acac)~n~, M(thd)~n~, M(hfac)~n~ | Robust; available for lanthanides, alkaline earths, noble metals | Low reactivity to water, usually need O~3~ or O~2~ |
+| Complicated | N,N-chelates | M–N (chelate) | [Cu(^i^PrAMD)]~2~, La(^i^PrAMD)~3~ | Volatile, thermally stable compounds for many low-valent metals | Surface decomposition at higher temperatures; ligand-centred fragmentation |
+| Complicated | Neutral donors (L) | M–CO, M–P, M–C (carbene) | W(CO)~6~, Au(PMe~3~)Me~3~, Cu(NHC)(N(SiMe~3~)~2~) | Stabilize low-valent metals; CO leaves cleanly | Carbonyls have low thermal stability; L-ligand loss complicates gas-phase chemistry |
+
+: The main ALD ligand families, grouped into three tiers [@Barry2021; @Barry2022]. {#tbl-ligand-families tbl-colwidths="[11,14,12,19,20,24]"}
+
+Two patterns are worth drawing out:
+
+- **Stability versus reactivity.** The move from halides to alkylamides for high-k dielectrics removed chloride contamination and corrosive by-products and lowered deposition temperatures, but gave up thermal stability. The trade-off between halides and alkylamides is a clean case study of the tension described at the start of @sec-ligands.
+- **Filling the low-oxidation-state gap.** Homoleptic dialkylamides of low-valent metals tend to oligomerize and decompose before they can be vaporized. Bidentate amidinates solved this, giving volatile, thermally stable compounds for many transition metals and lanthanum [@Lim2003]. Guanidinates extend the idea with an extra amino group on the central carbon [@Kurek2014].
+
+Many modern precursors are **heteroleptic**: they combine different ligands so that one supplies stability and another supplies reactivity.
+
+The gallery below shows representative precursors from each tier in three dimensions. Rotate them to see how much of each molecule is ligand: this is the bulk that sets steric saturation (@sec-steric) and that has to be removed cleanly in the next half-cycle.
+
+::: {.sim-box}
+[Simulation 2.9: 3D ligand gallery]{.sim-title}
+
+```{ojs}
+//| echo: false
+galData = FileAttachment("data/ligand-gallery.json").json()
+galInfo = [
+  {key: "AlMe3", tier: "Simple", fam: "Alkyl", note: "Trigonal planar monomer. Three small methyl X ligands leave a large, exposed Lewis-acidic Al, which is why TMA reacts so readily with –OH and water."},
+  {key: "Al2Me6", tier: "Simple", fam: "Alkyl (bridging)", note: "The dimer that TMA forms in the liquid and, partly, in the gas. Each bridging methyl holds two Al atoms with one electron pair (3-centre, 2-electron bond)."},
+  {key: "Al2Cl6", tier: "Simple", fam: "Halide (bridging)", note: "AlCl₃ dimer. Each bridging chloride uses two lone pairs (3-centre, 4-electron bond), a stronger bridge than methyl's."},
+  {key: "TiCl4", tier: "Simple", fam: "Halide", note: "Tetrahedral, volatile liquid. The by-product of its reaction with –OH is HCl."},
+  {key: "WF6", tier: "Simple", fam: "Halide", note: "Octahedral, very volatile gas. Fluorine's low polarizability is one reason for the volatility."},
+  {key: "ZnEt2", tier: "Simple", fam: "Alkyl", note: "Linear two-coordinate Zn. Ethyl groups carry β-hydrogens, a possible decomposition route at high temperature."},
+  {key: "TDMAT", tier: "Classic", fam: "Amide", note: "Ti(NMe₂)₄. Planar NMe₂ groups pack around tetrahedral Ti; reactive towards –OH at low temperature but limited in thermal stability."},
+  {key: "TTIP", tier: "Classic", fam: "Alkoxide", note: "Ti(OⁱPr)₄. Strong Ti–O bonds, but the isopropoxide carries β-hydrogens; it switches from ALD to CVD growth at about 240 °C."},
+  {key: "Znbtsa", tier: "Classic", fam: "Silylamide", note: "Zn[N(SiMe₃)₂]₂, the first amide precursor used in ALD. The bulky SiMe₃ groups shield the metal and keep the compound monomeric."},
+  {key: "RuCp2", tier: "Classic", fam: "Cyclopentadienyl", note: "A sandwich compound: each Cp ring bonds through all five carbons. Ru films grow from it with O₂ by combustion of the rings."},
+  {key: "Alacac3", tier: "Classic", fam: "β-Diketonate", note: "Three chelating acac ligands give an octahedral, coordinatively saturated Al: thermally robust but slow to react with water."},
+  {key: "AlAMDEt2", tier: "Complicated", fam: "Heteroleptic N,N-chelate", note: "Al(ⁱPrAMD)Et₂. The ethyl groups do the reacting; the chelating amidinate stays on the surface after chemisorption."},
+  {key: "Me3AuPMe3", tier: "Complicated", fam: "Neutral donor (phosphine)", note: "Square-planar Au(III) with three methyls and one PMe₃ (an L ligand). On a gold surface it dissociates, and both fragments bind (@sec-assoc-dissoc)."},
+  {key: "CuNHC", tier: "Complicated", fam: "Neutral donor (carbene)", note: "Cu(ⁱPr₂-NHC)[N(SiMe₃)₂]. A strong σ-donor carbene stabilizes linear Cu(I) next to a reactive silylamide."},
+  {key: "DMAI", tier: "Complicated", fam: "Heteroleptic alkyl/alkoxide", note: "[Me₂Al(OⁱPr)]₂ (DMAI), bridged through the alkoxide oxygens. Compare it with TMA in @sec-tma-dmai."}
+]
+viewof galPick = Inputs.select(new Map(galInfo.map(d => [`${d.tier} · ${d.fam} · ${galData[d.key].split("\n")[1]}`, d.key])), {label: "Molecule", value: "AlMe3"})
+viewof galSpin = Inputs.toggle({label: "Spin", value: true})
+viewof galLabels = Inputs.toggle({label: "Label heavy atoms", value: false})
+```
+
+```{ojs}
+//| echo: false
+$3Dmol = {
+  // 3Dmol is a UMD bundle: through require() it loads as a module; fall back to a global if one exists
+  try { const m = await require("3dmol@2.5.5/build/3Dmol-min.js"); if (m && m.createViewer) return m; } catch (e) {}
+  if (window.$3Dmol) return window.$3Dmol;
+  throw new Error("Could not load 3Dmol.js (needed for the 3D gallery).");
+}
+galColors = ({C: "#000000", H: "#FFFFFF", O: "#E91C24", N: "#8C8C8C", Cl: "#D9D9D9", F: "#EDEDED",
+              Si: "#B3B3B3", P: "#B3B3B3", Al: "#4D4D4D", Ti: "#4D4D4D", Zn: "#4D4D4D", W: "#4D4D4D",
+              Ru: "#4D4D4D", Cu: "#4D4D4D", Au: "#4D4D4D"})
+{
+  const div = html`<div style="width:100%;height:380px;position:relative;border:1px solid #CFCFCF;border-radius:4px;background:#fff"></div>`;
+  yield div;   // the viewer needs the element in the page before it is created
+  const v = $3Dmol.createViewer(div, {backgroundColor: "white"});
+  v.addModel(galData[galPick], "xyz");
+  const scheme = {prop: "elem", map: galColors};
+  v.setStyle({}, {stick: {radius: 0.13, colorscheme: scheme}, sphere: {scale: 0.27, colorscheme: scheme}});
+  v.setStyle({elem: "H"}, {stick: {radius: 0.1, colorscheme: scheme}, sphere: {scale: 0.18, colorscheme: scheme}});
+  if (galLabels) {
+    v.getModel().selectedAtoms({elem: ["Al", "Ti", "Zn", "W", "Ru", "Cu", "Au", "O", "N", "Cl", "F", "Si", "P"]}).forEach(a =>
+      v.addLabel(a.elem, {position: a, fontSize: 12, fontColor: "black", backgroundColor: "white", backgroundOpacity: 0.7, inFront: true}));
+  }
+  v.rotate(-35, "x"); v.rotate(25, "y");   // tilted starting view
+  v.zoomTo(); v.render();
+  if (galSpin) v.spin("y", 0.6);
+  invalidation.then(() => { try { v.spin(false); v.clear(); } catch (e) {} });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const d = galInfo.find(g => g.key === galPick);
+  return html`<div class="map-card" style="margin-top:0.5rem"><div class="map-card-title">${galData[galPick].split("\n")[1]}</div>
+    <div class="map-card-where">${d.tier} · ${d.fam}</div><div>${d.note}</div></div>
+    <div class="map-legend">${["C", "H", "O", "N", "Si/P", "Cl/F", "metal"].map((e, i) =>
+      html`<span><i style="background:${["#000", "#fff", "#E91C24", "#8C8C8C", "#B3B3B3", "#D9D9D9", "#4D4D4D"][i]}"></i>${e}</span>`)}</div>`;
+}
+```
+
+::: {.assumptions}
+**Assumptions.** These are idealized geometries for visualization, not crystal or computed structures. Metal centres are placed in ideal geometries (trigonal, tetrahedral, square-planar, octahedral or linear) with typical bond lengths; the organic fragments were embedded with RDKit and attached rigidly, and their rotations were chosen only to avoid clashes. Dimers are drawn with idealized D~2h~ cores. The script that builds them is `tools/build_ligand_gallery.py` in the source repository; add a molecule there to extend the gallery. Requires WebGL.
+:::
+:::
+
+The sections that follow look at how each family reacts at the surface, using representative precursors from the AtomicLimits ALD Database as collected by @Barry2021.
+
+#### Alkyls and hydrides
+
+Alkyl precursors are the most studied class. They are straightforward to make and modify, and TMA/H~2~O is the prototypical ALD reaction [@Barry2021]. Representative alkyls span four decades: GaMe~3~ and AlMe~3~ with AsH~3~ for GaAs and AlAs (1985), SnMe~4~ for SnO~2~ (1994), ZnEt~2~ for Al-doped ZnO (1994), Pt(CpMe)Me~3~ with O~2~ for Pt (2003), and Au(PMe~3~)Me~3~ for Au (2016) [@Barry2021].
+
+- **Chemisorption.** TMA reacts readily because Al is highly electropositive and has no accessible redox chemistry. The likely path is donation of the –OH lone pair into the empty p orbital on Al, followed by proton transfer to a methyl group, which leaves as CH~4~. TMA can bind to one –OH or to two neighbouring –OH groups (@sec-tma-model) [@Barry2021].
+- **Oxidizing co-reactants.** With water, the surface methyls are simply protonated off. With ozone or an oxygen plasma, oxygen inserts into the Al–C bonds to give surface methoxy groups, which burn to bicarbonate and formate, release CO~2~, and leave –OH. Ethene is also observed [@Barry2021].
+- **Metal surfaces.** On metals, the chemistry can differ. Au(PMe~3~)Me~3~ first loses its phosphine, and both fragments bind to the gold surface. RuCp(CO)~2~Et with O~2~ releases H~2~ as well as CO~2~ and H~2~O, and leaves a partial carbon layer that the next oxygen pulse removes [@Barry2021].
+- **Hydrides.** Ge films from GeH~2~Et~2~ form by losing both hydrides on chemisorption, leaving an ethyl-terminated surface that is cleared by a temperature step. A mass-27 signal attributed to an ethyl radical (29 amu) is more plausibly ethene formed by β-H elimination [@Barry2021].
+
+#### Cyclopentadienyls
+
+Cp precursors were introduced in 1991, with much of the early development in Lauri Niinistö's group in Helsinki. Examples include MgCp~2~, ScCp~3~, YCp~3~, LaCp~3~ and Er(CpMe)~3~ with water for oxides, and RuCp~2~ and OsCp~2~ with O~2~ for metals [@Barry2021].
+
+- **Combustion.** Ru from RuCp~2~ was first described as complete combustion of the ligands to CO~2~ and H~2~O; H~2~ was later found as a by-product too [@Barry2021].
+- **Ligands left behind.** Metallocenes nucleate poorly on H-terminated silicon. In hydrogen, Cp can couple to dihydrofulvalene or be hydrogenated, which helps keep carbon out of Co films. NiCp~2~ with water, however, gives carbon-rich NiO, showing that some Cp can remain after chemisorption [@Barry2021].
+- **Not every precursor loses a ligand on adsorption.** Mn(CpEt)~2~ appears to adsorb intact on a fluoride surface and only releases its Cp ligands during the HF-pyridine pulse [@Barry2021].
+- **Half-sandwiches.** InCp is a coordination polymer in the solid but volatilizes as a monomer. It either reacts with –OH, eliminating CpH, or binds to surface oxygen while keeping its Cp ligand [@Barry2021].
+
+#### Amides, silylamides and imides
+
+The first amide precursor in ALD was Zn[N(SiMe~3~)~2~]~2~, used with H~2~Se for ZnSe in 1992 [@Barry2021]. Amides generally follow the same Brønsted acid–base chemistry as alkyls, releasing an amine on reaction with surface –OH or –NH~x~ groups.
+
+- **Silylamides** (–N(SiMe~3~)~2~) are used across the periodic table, from Li and Zn to the lanthanides. With an oxygen source, the oxophilic silicon is scavenged into the film, giving a silicate [@Barry2021].
+- **TiN from Ti(NR~2~)~4~ and NH~3~** involves a reduction from Ti(IV) to Ti(III). The often-quoted mechanism, which releases N~2~, has stoichiometric problems. A better explanation is β-H elimination to a surface imine, giving a formal Ti(II) that comproportionates with neighbouring Ti(IV) [@Barry2021]. With water, Ti stays at +4 and the film is TiO~2~.
+- **Imido–amides**, M(NR)~x~(NR′~2~)~4−x~, are common for the refractory metals Nb, Mo, Ta and W. The strong M=N imido bond usually leads to nitride films [@Barry2021].
+
+#### N,N-chelates
+
+Amidinates (including guanidinates and iminopyrrolidinates) are the most important N,N-chelates. Their use traces back to one paper: in 2003, Gordon's group reported ALD of seven metals and oxides from amidinates [@Lim2003; @Barry2021]. Newer N,N-chelates include diazabutadienes, β-diketiminates (@sec-tunable-families) and triazenides [@Barry2021].
+
+- **Heteroleptic precursors** let one ligand do the reacting. Al(^i^PrAMD)Et~2~ deposits Al~2~O~3~ with water down to 125 °C; solid-state NMR on the gallium analogue showed both ethyl groups are lost while the amidinate stays on the surface [@Barry2021].
+- **Decomposition kinetics matter more than onset temperature.** On an ultraclean Ni surface in ultrahigh vacuum, the copper amidinate dimer starts decomposing at about −73 °C. Yet it gives self-limiting Cu ALD up to 280 °C. The difference is time: decomposition on Ni was followed over more than an hour, while an ALD pulse lasts seconds. Decomposition proceeds by β-H abstraction from the alkyl groups; replacing those H atoms with methyls raised thermal stability by more than 200 °C [@Barry2021].
+
+#### Designing against decomposition: from guanidinates to iminopyrrolidinates {#sec-ip-design}
+
+Amidinates and guanidinates have a low thermal threshold, and understanding why led directly to a better ligand [@Barry2013]. For Cu(I), Al(III) and Ga(III) compounds there are two main decomposition routes, and amidinates and guanidinates behave much the same way:
+
+- **Carbodiimide deinsertion.** The reverse of the reaction used to make the ligand: a carbodiimide RN=C=NR is expelled, leaving the metal bonded to the former R or NR~2~ group. It tends to be a low-temperature, solution-phase route.
+- **β-Hydrogen elimination.** A hydrogen on the carbon β to the metal (for example the methine H of an isopropyl group) is transferred, breaking up the ligand. It tends to be a higher-temperature, gas-phase route.
+
+DFT calculations on the copper guanidinate dimer [Cu{(N^i^Pr)~2~CNMe~2~}]~2~ showed that both routes start from the **same intermediate** [@Barry2013]. One nitrogen shifts its bonding so that an isopropyl methine hydrogen points at copper, at a cost of about 94 kJ mol^−1^ (22.5 kcal mol^−1^). From there, deinsertion is slightly downhill (about −3 kJ mol^−1^), while β-H elimination is uphill overall (about 138 kJ mol^−1^) and needs the lattice energy of forming Cu metal to drive it. This explains the pattern: a solvent can stabilize the intermediate and open the easy deinsertion path, while in the gas phase or at a surface both routes compete [@Barry2013].
+
+The redesign tackled each route in turn [@Barry2013]:
+
+1. **Block deinsertion with a ring.** In an **iminopyrrolidinate** (ip), one bonding nitrogen and the bridging carbon sit in a five-membered ring, which makes carbodiimide deinsertion much less favourable. The ligands are made from commercial 2-pyrrolidone, in up to 87 % overall yield.
+2. **Check what is left.** The Al(R-ip)Me~2~ family decomposed with half-lives of 1.8–24.8 days at 78 °C. The two fastest (R = ^i^Pr and ^s^Bu) still carry reactive β-hydrogens, so β-H elimination remained open.
+3. **Remove the β-hydrogens.** In **tert-butyl-imino-2,2-dimethylpyrrolidinate** (Me~2~-^t^Bu-ip), the ring β-hydrogens are replaced by methyl groups and the imine carries a tert-butyl group, which has no β-hydrogens.
+
+The copper compounds show the payoff:
+
+| Ligand on [CuL]~2~ | Half-life at 165 °C (days) |
+|:---|:---|
+| Guanidinate, (^i^PrN)~2~CNMe~2~ | 1.4 |
+| ^t^Bu-ip | 1.0 |
+| ^i^Pr-ip | 7.5 |
+| Me~2~-^t^Bu-ip | No measurable decomposition |
+
+: Thermal stability of copper(I) compounds at 165 °C [@Barry2013]. {#tbl-cu-halflife}
+
+On high-surface-area silica, [Cu(Me~2~-^t^Bu-ip)]~2~ chemisorbed as the dimer up to 275 °C, lost its tert-butyl group at 275 °C while remaining a stable monolayer, and only decomposed at 350 °C, leaving a diamine bound to copper [@Barry2013]. Compared with the guanidinate, which deposits copper metal by itself at 225 °C, the redesigned ligand raised the thermal limit by over 100 °C.
+
+The general lesson is to identify the decomposition mechanism first, then design the ligand to close it off. The same mechanisms can also be exploited: copper guanidinates make effective single-source CVD precursors for copper metal precisely because they decompose cleanly at low temperature [@Barry2013].
+
+The simulation below shows what these rate constants mean for a precursor held in a heated source. Assuming first-order decomposition, the fraction remaining after time t is exp(−kt).
+
+::: {.sim-box}
+[Simulation 2.10: How long does a precursor survive in a hot source?]{.sim-title}
+
+```{ojs}
+//| echo: false
+ipData = [
+  {set: "Cu(I) at 165 °C", name: "[Cu(guanidinate)]₂", k: 0.49},
+  {set: "Cu(I) at 165 °C", name: "[Cu(ᵗBu-ip)]₂", k: 0.71},
+  {set: "Cu(I) at 165 °C", name: "[Cu(ⁱPr-ip)]₂", k: 0.092},
+  {set: "Cu(I) at 165 °C", name: "[Cu(Me₂-ᵗBu-ip)]₂", k: 0},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ⁱPr", k: 0.382},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ⁿPr", k: 0.124},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ⁿBu", k: 0.028},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ⁱBu", k: 0.077},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ˢBu", k: 0.330},
+  {set: "Al(R-ip)Me₂ at 78 °C", name: "R = ᵗBu", k: 0.067}
+]
+viewof ipSet = Inputs.radio(["Cu(I) at 165 °C", "Al(R-ip)Me₂ at 78 °C"], {value: "Cu(I) at 165 °C", label: "Compound series"})
+viewof ipDays = Inputs.range([1, 30], {value: 7, step: 1, label: "Time in the source (days)"})
+// "Remaining (%)" in the table is at this time
+```
+
+```{ojs}
+//| echo: false
+ipRows = ipData.filter(d => d.set === ipSet).map(d => ({
+  ...d,
+  left: 100 * Math.exp(-d.k * ipDays),
+  half: d.k > 0 ? Math.LN2 / d.k : Infinity,
+  t2: d.k > 0 ? -Math.log(0.98) / d.k : Infinity
+}))
+
+Plot.plot({
+  height: 330, marginLeft: 55, marginBottom: 50, marginTop: 20,
+  x: {label: "Time (days) →", domain: [0, 30]},
+  y: {label: "↑ Precursor remaining (%)", domain: [0, 100], grid: true},
+  color: {legend: true, range: ["#E91C24", "#000000", "#8C8C8C", "#4D4D4D", "#F4B6B8", "#B3B3B3"]},
+  marks: [
+    Plot.ruleY([98], {stroke: "#E91C24", strokeDasharray: "2,3"}),
+    Plot.ruleX([ipDays], {stroke: "#4D4D4D", strokeDasharray: "4,3"}),
+    Plot.line(ipRows.flatMap(d => d3.range(0, 30.01, 0.25).map(t => ({name: d.name, t, y: 100 * Math.exp(-d.k * t)}))),
+      {x: "t", y: "y", stroke: "name", strokeWidth: 2}),
+    Plot.dot(ipRows, {x: () => ipDays, y: "left", fill: "name", r: 5})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+Inputs.table(ipRows.map(d => ({
+  Compound: d.name,
+  "k (d⁻¹)": d.k,
+  "Half-life (d)": d.half,
+  "2 % loss (d)": d.t2,
+  "Remaining (%)": d.left
+})), {format: {
+  "Half-life (d)": x => isFinite(x) ? x.toFixed(1) : "—",
+  "2 % loss (d)": x => isFinite(x) ? x.toFixed(2) : "—",
+  "Remaining (%)": x => x.toFixed(1)
+}})
+```
+
+::: {.assumptions}
+**Assumptions.** First-order decomposition with the rate constants measured at a single temperature [@Barry2013]; "no measurable decomposition" is plotted as k = 0. The dotted line marks 2 % loss: one patent specification for Group 11 precursors asks for less than about 2 % decomposition after a week at about 10 °C above the source temperature. Real sources also see temperature gradients, repeated heating cycles and impurities, all of which can speed up decomposition.
+:::
+:::
+
+#### Alkoxides and β-diketonates
+
+Alkoxides have been used for about 30 years, mainly for oxides, because the strong M–O bonds tend to leave oxygen in the film. Much of their early development was done by Leskelä and Ritala at the University of Helsinki [@Barry2021]. They are particularly useful for mixed oxides such as perovskites. In one striking case, Te metal is deposited from Te(SiMe~3~)~2~ and Te(OEt)~4~: the oxophilic silicon pulls the ethoxide off as Me~3~SiOEt, leaving Te^0^ in both half-cycles [@Barry2021].
+
+β-Diketonates (acac, thd, hfac and others) often **chemisorb as the ligand** rather than leaving as the free diketone, possibly because their conjugate acids are much more acidic than those of other ligands [@Barry2021]. The surface-bound ligand can then be combusted, which allows metal films of Pt, Cu, Ir and Rh. Fluorinated hfac rarely leaves fluorine in the film, but it has also been used deliberately as a fluorine source: CaF~2~ was grown from Ca(thd)~2~ and O~3~ alternated with H(hfac) [@Barry2021].
+
+#### Neutral donor ligands
+
+L ligands are less common in ALD, but they appear in several important precursors [@Barry2021]:
+
+- **Carbonyls** are rare and mostly found in heteroleptic compounds. Their main weakness is low thermal stability: CoCp(CO)~2~ is far more volatile than CoCp~2~, but it loses CO in the gas phase, which suits CVD rather than ALD. W(CO)~6~ with NH~3~ gives WN~x~ by CO loss with < 1 % carbon. On hydroxylated oxides, Mo(CO)~6~ shows complex redox chemistry that depends on the –OH density.
+- **Phosphines** stabilize low-valent and noble-metal precursors, as in Au(PMe~3~)Me~3~ above.
+- **N-heterocyclic carbenes** (NHCs) are strong σ-donors, used for example in Cu(^i^Pr~2~-NHC)(N(SiMe~3~)~2~) for Cu films.
+
+#### Which ligand leaves first?
+
+For a heteroleptic precursor, a first guess is that the ligand with the **least acidic conjugate acid** is the most basic, and so is protonated and lost first at a surface –OH. Approximate pK~a~ values of some conjugate acids are:
+
+| Ligand | Conjugate acid | Approximate pK~a~ |
+|:---|:---|:---|
+| Methyl | CH~4~ | ~50 |
+| Dialkylamide | HNR~2~ | ~35–40 |
+| Alkoxide | ROH | ~16–18 |
+| Cyclopentadienyl | C~5~H~6~ | ~16 |
+| β-Diketonate | β-diketone | ~9 |
+| Chloride | HCl | ~ −7 |
+
+: Approximate pK~a~ values of ligand conjugate acids. {#tbl-pka}
+
+On this basis, ZrCp~2~Me~2~ should lose its methyl groups and keep its Cp ligands. Mass spectrometry shows that it loses both, with methyl loss dominant but CpH also released [@Barry2021]. The reason is that ALD surface reactions are **not at equilibrium**: the leaving ligand is swept away by the gas flow, so less favourable pathways can compete. Tying the two Cp rings together (an *ansa*-zirconocene) brings in the chelate effect, and then only the methyls are lost [@Barry2021]. pK~a~ is a useful first guess, not a prediction.
+
+## Precursors {#sec-precursors}
+
+[Applies to: ALD · MLD · ALE · ASD]{.applies}
+
+Every gas-phase reactant in an atomic layer process is a precursor: the metal precursor and the water in ALD, the organic linker in MLD, the modification and removal reagents in ALE, and the inhibitor in ASD. The requirements below were worked out for ALD metal precursors, but the same questions (is it volatile, is it stable, does it react once and stop?) apply to all of them.
+
+### What is a precursor?
+
+Strictly, every gas-phase reactant in an ALD process is a precursor, and every one should be shown to be self-limiting [@Barry2022]. By tradition, though, the compound that carries the metal (the **payload** atom, such as Al in Al~2~O~3~) is called "the precursor", and the other is called the "co-reactant" or named for its role: oxidant, reducing agent, nitrogen source. The co-reactant often decides the film and so defines the chemistry of the cycle [@Barry2022].
+
+Labels like "oxidant" can mislead. Ozone is a good example, because it reacts in at least three different ways [@Barry2022]:
+
+- **With Mo(CO)~6~**, molybdenum goes from 0 to +6. Here ozone really is an oxidant, and the CO ligands may be oxidized to CO~2~ as well.
+- **With AlCl~3~**, aluminum is +3 before and after. Ozone supplies oxygen but oxidizes nothing at the metal; the by-product is likely a reactive chlorine oxide.
+- **With a Au(III) precursor**, ozone combusts the ligands and the gold ends up as Au(0), a formal *reduction*. Ozone did not reduce the gold: gold, being noble, prefers the zero oxidation state and takes electrons during the combustion.
+
+Surface reactions can go down many pathways at once. This is one reason simple, small precursors with well-defined reactivity are preferred: one pathway is more likely to dominate [@Barry2022].
+
+### How precursors react
+
+#### Brønsted acid–base chemisorption
+
+Most metal precursors react rapidly with air and moisture. This is deliberate: the same reactivity that forms an extended solid in ALD also makes the compound air-sensitive [@Barry2022]. The most common surface reaction is a proton transfer from a surface site to a ligand:
+
+$$
+\text{MX}_n + \|\!-\!\text{EH} \rightarrow \|\!-\!\text{E–MX}_{n-1} + \text{HX}
+$$ {#eq-acidbase}
+
+Here ‖–EH is a nucleation site such as ‖–OH on an oxide or ‖–NH~2~ on a nitride, and the ligand X acts as a Brønsted base, leaving as its conjugate acid HX [@Barry2022]. This reaction is the usual starting point when designing a precursor, which is why halide and alkyl precursors dominate.
+
+**Halides.** Metal halides are thermally stable, simple to make from the metal or its oxide, and volatile enough to be purified by distillation or sublimation, even on a large scale [@Barry2022]. Their by-product, HX, is a strong acid that can corrode equipment and etch films.
+
+**Alkyls.** With an alkyl, the by-product is a very stable alkane. Carbon contamination is then more likely to come from alkyl groups left *on* the surface than from the one that leaves [@Barry2022]. The by-product can be remarkably benign. When Beneq installed a TMA/H~2~O process at a Helsinki jewellery shop in the early 2000s to stop silver from tarnishing, it showed the authorities that a typical run released less methane than a cow does in a day [@Barry2022]. The cost is that alkyls are much more reactive towards water and less thermally stable than halides: they allow lower process temperatures, but give messy, CVD-like growth at higher ones [@Barry2022].
+
+#### Chemisorption versus physisorption
+
+AlCl~3~ shows the difference. In the gas phase it is in equilibrium between the Al~2~Cl~6~ dimer and the monomer; higher temperatures favour the monomer, which reacts faster, so the dimer can slow saturation slightly [@Barry2022]. At the surface:
+
+- **Chemisorption** by @eq-acidbase is strong and effectively permanent. Having lost an X ligand, the surface species cannot simply desorb, because it would have to leave as a cation.
+- **Physisorption** happens when the Lewis-acidic monomer accepts electron density from a surface oxygen through a weak dative bond. A physisorbed AlCl~3~ can easily return to the gas phase [@Barry2022].
+
+#### Combustion
+
+Less commonly, the precursor reacts by oxidation, for example with O~2~ as the co-reactant. RuO~2~ can be grown from Ru(CpEt)~2~ and O~2~. Written as a complete combustion [@Barry2022]:
+
+$$
+2\,\text{Ru(CpEt)}_2 + 39\,\text{O}_2 \rightarrow 2\,\text{RuO}_2 + 28\,\text{CO}_2 + 18\,\text{H}_2\text{O}
+$$ {#eq-ru-combustion}
+
+Nearly 20 O~2~ molecules are needed for each Ru atom, so combustion is often incomplete, giving CO and partly oxidized fragments. The water produced can also hydroxylate the surface and help the next cycle nucleate [@Barry2022]. In situ mass spectrometry of Ru and Pt ALD shows that the oxygen pulse leaves a layer of adsorbed oxygen, which then burns the ligands of the incoming precursor to CO~2~ and H~2~O [@Aaltonen2003]. Ozone combusts ligands too: with TMA, oxygen inserts into the Al–CH~3~ bonds to give surface methoxy and formate species before CO~2~ is released [@Goldstein2008].
+
+### Making precursors
+
+Two reactions do most of the work in laboratory-scale precursor synthesis [@Barry2022].
+
+**Salt metathesis** exchanges ligands between a metal halide and a ligand salt, often a lithium reagent:
+
+$$
+\text{ZnCl}_2 + 2\,\text{LiEt} \rightarrow \text{ZnEt}_2 + 2\,\text{LiCl}
+$$ {#eq-metathesis}
+
+The reaction is run in a solvent in which LiCl is insoluble. The salt precipitates and leaves the solution, so the equilibrium keeps shifting towards products until the reaction is complete.
+
+**Elimination of a volatile product** works the same way. Diethylzinc reacts with acetic acid to give zinc acetate (a precursor for ZnS) and ethane gas, which bubbles out of the solution:
+
+$$
+\text{ZnEt}_2 + 2\,\text{CH}_3\text{COOH} \rightarrow \text{Zn(O}_2\text{CCH}_3)_2 + 2\,\text{C}_2\text{H}_6
+$$ {#eq-elimination}
+
+The leaving group does not have to be an alkane; any ligand whose protonated form is volatile will do. Both reactions are applications of Le Chatelier's principle: removing a product drives the equilibrium to completion [@Barry2022]. A third route, insertion of a carbodiimide into a metal–alkyl or metal–amide bond, makes the amidinates and guanidinates discussed in @sec-ip-design.
+
+### Designing precursors {#sec-designing-precursors}
+
+#### What a precursor needs
+
+For a precursor to give ALD, it must be [@Barry2022]:
+
+1. Volatile
+2. Thermally stable
+3. Reactive with the substrate and the growing film
+4. Self-limiting
+5. Reactive towards the second precursor
+
+Each property can be optimized on its own; the art of precursor design is to improve one without sacrificing another. For industrial use, a precursor must also be easy to make, scalable, safe to handle and inexpensive [@Barry2022]. These requirements differ from those for CVD, where the precursor is meant to keep decomposing: an ALD precursor must survive the deposition temperature and react only with surface groups and the co-reactant [@Leskela1999; @Leskela2003]. In practice these requirements map onto specific tests:
+
+| Requirement | Why it matters | How it is tested |
+|:---|:---|:---|
+| Volatility | Enough vapour to saturate the surface in a short pulse | Thermogravimetric analysis (TGA), vapour pressure |
+| Thermal stability (source and reactor) | Decomposition breaks self-limitation and adds impurities | TGA residue, long-term ageing at source temperature, NMR after heating |
+| Self-limiting reactivity | The precursor must chemisorb, then stop | Saturation curves (@sec-what-makes-ald) |
+| Complete reaction with the co-reactant | Low impurity levels | Film composition (XPS, ERDA) |
+| Benign by-products | Volatile, non-etching, not re-adsorbed | Mass spectrometry of the exhaust |
+| Matching oxidation state | Avoids an extra redox step | Compare metal oxidation state in precursor and film |
+| Physical state | Liquids deliver vapour more steadily than solids | Melting point |
+
+: Precursor requirements and how they are tested. {#tbl-requirements}
+
+**Oxidation state.** Ideally, the metal's oxidation state is the same in the precursor and the film. Ta(NMe~2~)~5~ contains Ta(V) and gives insulating Ta~3~N~5~ by default; conductive TaN needs Ta(III), so a reduction step is required. Metal films are the extreme case, needing M^n+^ → M^0^. For electropositive first-row transition metals this requires strong reducing co-reactants and remains one of the hardest problems in ALD precursor chemistry [@Knisley2013; @Emslie2013].
+
+**How stable is stable enough?** One patent for Group 11 precursors specifies less than about 2 % decomposition by weight (preferably less than 1 %) after one week at about 10 °C above the ALD source temperature [@Barry2016patent]. Simulation 2.10 shows what this means in terms of rate constants. Industrial suppliers screen new precursors in the same spirit, using TGA and NMR after extended heating to decide whether a compound is safe to use in production equipment [@Rushworth2007].
+
+#### Volatility
+
+A precursor needs to vaporize at a low temperature, and fast enough to keep pulses short [@Barry2022].
+
+##### The molecular-weight myth
+
+A common idea is that lighter molecules are more volatile. It comes from the Knudsen effusion equation, which relates the mass loss Δm through an orifice of area A~o~ in time Δt to the vapour pressure p~v~:
+
+$$
+p_\text{v} = \frac{\Delta m}{A_\text{o}\,\Delta t}\sqrt{\frac{2\pi RT}{M}}
+$$ {#eq-knudsen}
+
+The M^−1/2^ dependence describes how fast molecules escape once they are in the gas, assuming ideal, non-interacting molecules. That assumption is reasonable in a dilute gas but fails in the condensed phase, where intermolecular interactions decide whether a molecule can leave at all [@Barry2022]. Lighter molecules often have fewer ways to interact, so molecular weight correlates with volatility, but it is not the cause.
+
+##### Thermodynamics of evaporation
+
+Evaporation and sublimation are always **endothermic** (ΔH~vap~ > 0), and always increase entropy (ΔS~vap~ > 0). From ΔG = ΔH − TΔS, vaporization becomes favourable once TΔS outweighs ΔH. A volatile precursor therefore needs a **small enthalpy of vaporization** and a **large entropy of vaporization** [@Barry2022]. The equilibrium vapour pressure follows the Clausius–Clapeyron form:
+
+$$
+\ln\frac{p}{p^\circ} = -\frac{\Delta H_\text{vap}}{RT} + \frac{\Delta S_\text{vap}}{R}
+$$ {#eq-cc}
+
+with p° = 1 bar. Simulation 2.13 in @sec-volatility-control uses this equation to find the source temperature for a given vapour pressure.
+
+##### Controlling intermolecular interactions
+
+Lowering ΔH~vap~ means weakening the interactions between molecules: electrostatic, hydrogen bonding, dipole–dipole, ion–dipole and van der Waals [@Barry2022].
+
+- **Bond polarity.** Polar bonds strengthen intermolecular interactions. AlCl~3~ (Δχ(Al–Cl) = 1.55) is less volatile than TMA (Δχ(Al–C) = 0.94) [@Barry2022].
+- **Hydrocarbon shells.** Non-polar alkyl groups on the ligand periphery shield the polar core of the molecule.
+- **Fluorination.** Fluorine holds its electrons tightly and is hard to polarize, so replacing CH~3~ with CF~3~ weakens intermolecular interactions. In a series of β-diketonate dimethylgold(III) compounds sharing the same framework, volatility at 25 °C increases with each CF~3~ group, while the decomposition temperature stays the same [@Barry2022]. The trade-off is a greater risk of fluorine in the film.
+
+#### Thermal stability
+
+Thermal stability comes down to the strength of the bonds between the payload atom and its ligands [@Barry2022]:
+
+- **Electropositive metals** (Al, Zn, Ti) form strong bonds to oxygen, so O-donor ligands give stable precursors. The price is oxygen in the film, and metal films of these elements are very hard to make.
+- **Electronegative, noble metals** (Au, Pt, Pd) form weak bonds to oxygen, so O-donor precursors tend to be unstable. Their oxides are also hard to make: with water, O~2~ or O~3~ as the co-reactant, these metals usually give metallic films.
+
+Design for stability follows two paths: use chelating ligands, and design out low-temperature decomposition pathways [@Barry2022].
+
+##### Chelation
+
+TTIP, Ti(O^i^Pr)~4~, switches from ALD to CVD growth at 240 °C. In Ti(thd)~2~(O^i^Pr)~2~, all bonds to Ti(IV) are still to oxygen, but two of the ligands are chelating β-diketonates. Surface decomposition then starts at 380 °C, 140 °C higher [@Barry2022]. The thermodynamics of chelation are covered in @sec-chelate.
+
+##### Designing out decomposition pathways
+
+The common decomposition pathways are:
+
+- **β-Hydrogen elimination**, in which a hydrogen two bonds away from the metal is transferred to the metal, giving a metal hydride and an alkene (or an imine, for alkylamides). Ligands with β-hydrogens and coordinatively unsaturated metals are most at risk.
+- **Ligand fragmentation**, such as carbodiimide deinsertion from amidinates and guanidinates, or C–N, C–O and N–N bond cleavage.
+- **Redox reactions**, such as disproportionation of Cu(I) or Au(I).
+- **Surface-catalysed decomposition**: metals and reducible oxides lower decomposition barriers compared with the gas phase.
+
+Gold shows how far redesign can go. An early Au(I) guanidinate gave CVD at 150 °C with a growth rate of 39 nm min^−1^, useless for ALD. It decomposed by both carbodiimide deinsertion and β-H elimination. Switching to the iminopyrrolidinate tert-butyl-imino-2,2-dimethylpyrrolidinate, which blocks deinsertion and has no β-hydrogens, gave a gold(I) compound that does not decompose below 275 °C, compared with 150 °C for the guanidinate; in CVD experiments, gas-phase decomposition was observed at about 300 °C [@Coyle2013; @Barry2022]. The new ligand was too costly to make industrially, which illustrates another design rule: **keep it simple** [@Barry2022]. The same strategy for copper is described in @sec-ip-design.
+
+#### Melting point
+
+A low melting point is not essential, but a liquid source improves reproducibility [@Barry2022]. A liquid's surface area stays constant and surface impurities are mobile. A solid's surface area shrinks as its particles evaporate, and impurities collect on it, so the vapour delivered can fall over the life of the source. On the other hand, solids are safer to ship and easier to load. The ideal precursor melts **above** shipping and handling temperatures but **below** the source temperature [@Barry2022].
+
+Melting points can be tuned. Long, unbranched alkyl chains frustrate crystallization because they can adopt many conformations. Tungsten hexacarbonyl shows why this matters: as a solid it is not a reproducible vapour source, because its surface area changes as it evaporates, and its vapour is toxic [@Gordon2000]. W(CO)~6~ melts at 170 °C; replacing one CO with an isonitrile, CNR, gives W(CO)~5~(CNR), which melts below 100 °C. As R grows from C~3~ to C~5~, the melting point falls roughly linearly to below 0 °C, suggesting a butyl chain would give a solid at room temperature that melts in the source. There is no further gain at C~6~, and with C~8~ the melting point rises again to about 20 °C [@Barry2022]. With suitable alkyl groups these compounds are low-viscosity liquids at room temperature, suitable for liquid delivery [@Gordon2000].
+
+#### Reactivity and heteroleptic design
+
+A precursor must react with the surface and the co-reactant (intermolecular reactivity) without reacting with itself (intramolecular reactivity) [@Barry2022]. Heteroleptic precursors split these jobs: one ligand anchors the precursor to the surface, and another stays on the metal and protects it.
+
+The pK~a~ of each ligand's conjugate acid is a first guide to which ligand will act as the anchor (@sec-ligand-tour): the most basic ligand, whose conjugate acid has the highest pK~a~, is the most likely to take a proton from the surface. In MeAlCl~2~, for example, the methyl group (pK~a~ of CH~4~ ≈ 50) reacts with a surface –OH, and the chlorides (pK~a~ of HCl ≈ −7) stay on the chemisorbed aluminum [@Barry2022]. Choosing which ligand reacts lets a chemist choose what is left on the surface for the next half-cycle.
+
+### Case study: TMA versus DMAI {#sec-tma-dmai}
+
+<!-- TODO(SB): add measured vapour pressure, GPC, temperature range and impurity data for TMA vs DMAI from L3, and the primary references. The predictions below are deliberately qualitative until then. -->
+
+Dimethylaluminum isopropoxide, [Me~2~Al(μ-O^i^Pr)]~2~ (DMAI), has been explored as an alternative to TMA for Al~2~O~3~. It differs from TMA by one ligand: an isopropoxide in place of a methyl. That single change touches every requirement in @tbl-requirements, which makes the pair a good exercise in using the principles of this chapter. Look at both molecules in Simulation 2.9 before reading on.
+
+| | TMA, Al~2~Me~6~ ⇌ 2 AlMe~3~ | DMAI, [Me~2~Al(O^i^Pr)]~2~ |
+|:---|:---|:---|
+| Bridging ligand in the dimer | Methyl, 3c–2e bond (weak) | Alkoxide oxygen, lone-pair donation (strong) |
+| Coordination at Al | 3 in the monomer, so strongly Lewis acidic | 4 in the dimer |
+| Most basic ligand (anchor) | CH~3~^−^ (CH~4~, pK~a~ ≈ 50) | CH~3~^−^; the O^i^Pr (pK~a~ of ^i^PrOH ≈ 17) is a much weaker base |
+| Al content (monomer formula) | 37 % by mass | 23 % by mass |
+| β-Hydrogens | None | Yes, on the isopropoxide |
+
+: TMA and DMAI compared from their structures. {#tbl-tma-dmai}
+
+From these differences, the principles in this chapter predict:
+
+- **Volatility.** The alkoxide bridge is a lone-pair donation, like the chloride bridge in Al~2~Cl~6~, and is stronger than TMA's methyl bridge. DMAI should be a more robust dimer, with a larger enthalpy of vaporization, so it needs a heated source where TMA does not.
+- **Handling.** Monomeric TMA has an exposed, three-coordinate Al, which is why it is pyrophoric. In DMAI, the oxygen bridges keep Al four-coordinate, so it should react less violently with air and moisture. This is the main practical argument for it.
+- **Chemisorption.** By the pK~a~ argument (@tbl-pka), the methyl groups react with surface –OH and the isopropoxide stays on the chemisorbed aluminum until the water pulse removes it as isopropanol.
+- **Growth per cycle.** A surface fragment that keeps an isopropoxide is larger than one that keeps a methyl, so steric saturation (@sec-steric) should set in at fewer Al per nm^2^. Expect a lower GPC than TMA at the same temperature.
+- **Upper temperature limit.** The isopropoxide carries β-hydrogens, which opens β-H elimination (to propene and an Al–H or Al–OH) at high temperature: a route to a CVD component that TMA does not have.
+- **Payload.** With less Al per gram, more precursor is consumed per unit of film, which matters for cost and for the figure of merit in @sec-fom.
+
+Each prediction is testable with the tools in @sec-thermolysis and a saturation curve. Note what the comparison does *not* say: neither molecule is simply "better". TMA should win on volatility, GPC and simplicity; DMAI's case rests on safety and handling. As with TMA and AlCl~3~ (@tbl-tma-alcl3), the choice depends on what the application can tolerate.
+
+### Second precursors {#sec-second-precursors}
+
+The co-reactant sets the film's anion (or reduces the metal), removes the remaining ligands and regenerates reactive surface sites.
+
+| Film | Typical co-reactants |
+|:---|:---|
+| Metal oxide | H~2~O, O~3~, O~2~ (thermal or plasma) |
+| Metal nitride | NH~3~, hydrazines and amines, N~2~/H~2~ plasma |
+| Metal sulfide, selenide, telluride | H~2~S, H~2~Se, H~2~Te (toxic), or E(SiMe~3~)~2~ with metal chlorides |
+| Metal fluoride | HF–pyridine, TiF~4~, TaF~5~ |
+| Elemental metal | Reducing agents; O~2~ or O~3~ for noble metals only |
+
+: Co-reactants by film type. {#tbl-coreactants}
+
+The three common oxygen sources behave very differently:
+
+| | H~2~O | O~3~ | O~2~ plasma |
+|:---|:---|:---|:---|
+| Mechanism | Protonolysis; regenerates –OH | Combusts ligands; can oxidize the substrate | Combustion by O radicals and ions |
+| Works with | Alkyls, amides, halides | Also β-diketonates and Cp, which react poorly with water | Most precursors |
+| Temperature | Moderate | Lower possible | Lowest |
+| Typical issues | Slow purges at low temperature; hygroscopic films | Carbonate and carbon impurities; substrate oxidation | Plasma damage; lower conformality |
+
+: Oxygen co-reactants compared [@Goldstein2008; @Profijt2011]. {#tbl-oxygen-sources}
+
+A weaker co-reactant can even **create selectivity**. O~2~ dissociates readily only on noble metals, so a metal oxide can be grown on Pt while not growing on SiO~2~ or Al~2~O~3~. Stronger oxidants such as O~3~ or an oxygen plasma react on any surface and remove that selectivity [@Singh2018].
+
+The common second precursors each bring their own chemistry:
+
+- **Water** reacts by protonolysis: it protonates the remaining ligands off as their conjugate acids and leaves the surface hydroxylated for the next cycle. Its weakness is that it sticks to everything, including the reactor walls, so it needs long purges, especially at low temperature. In a typical showerhead reactor depositing Al~2~O~3~, a water purge is of the order of 10 s, while ozone can be cleared in about 1 s [@Barry2022]. Water that is not purged meets the next metal precursor pulse and adds a CVD component.
+- **Ozone** decomposes to O~2~ and atomic oxygen, and either can react at the surface. Rather than simply protonating the ligands, it inserts oxygen into metal–carbon and C–H bonds and then burns the ligands to CO, CO~2~ and water through methoxy, formate and bicarbonate intermediates (@sec-migratory-insertion) [@Barry2022; @Goldstein2008]. It works with ligands that react poorly with water, such as β-diketonates and Cp, but can leave carbonate impurities and oxidize the substrate.
+- **Plasmas** supply radicals, ions and photons. An O~2~ plasma reacts largely through O radicals, so the chemistry is close to that of ozone [@Barry2022]. H~2~ plasmas supply atomic hydrogen for metals; N~2~/H~2~ and NH~3~ plasmas are used for nitrides. Plasmas allow much lower temperatures, but radicals recombine on the walls of deep features, which limits conformality, and ions can damage the film or substrate [@Profijt2011].
+- **Ammonia** is the usual nitrogen source. It leaves ‖–NH~x~ groups that act as nucleation sites for the next metal pulse (@sec-surfaces). For many nitrides the metal must also be reduced, Ti(IV) to Ti(III) in TiN for example, and this needs a surface redox step such as reductive elimination (@sec-reductive-elimination).
+- **Reducing agents** are needed when the film is a metal and the metal is not noble. Molecular H~2~ often reacts only on a catalytically active metal surface, H~2~ plasma supplies atomic hydrogen, and metal reductants such as zinc vapour or diethylzinc reduce by ligand exchange [@Barry2022]. For electropositive first-row metals this is still one of the hardest problems in ALD precursor chemistry [@Knisley2013; @Emslie2013]. Noble metals are the exception: they grow with O~2~, by combustion of the ligands, because their oxides are unstable.
+
+### Scoring a precursor
+
+The scorecard below brings the requirements of this section together with the thermal parameters defined in @sec-thermolysis. Pick a starting compound, then change the numbers to see which requirement fails first.
+
+::: {.sim-box}
+[Simulation 2.11: Precursor scorecard]{.sim-title}
+
+```{ojs}
+//| echo: false
+scAnchors = [
+  {name: "Alkyl (CH₄, pKa ≈ 50)", pKa: 50, by: "CH₄", st: "ok", note: "Strong base: fast protonolysis by –OH; benign alkane by-product."},
+  {name: "Amide (HNR₂, pKa ≈ 35–40)", pKa: 37, by: "HNR₂", st: "ok", note: "Strong base: reacts with –OH at low temperature; amine by-product."},
+  {name: "Alkoxide (ROH, pKa ≈ 16–18)", pKa: 17, by: "ROH", st: "ok", note: "Moderate base: reacts with –OH; Al–O/Ti–O bonds tend to leave oxygen in the film."},
+  {name: "Cyclopentadienyl (CpH, pKa ≈ 16)", pKa: 16, by: "CpH", st: "warn", note: "Moderate base, but Cp is often retained and reacts poorly with water: usually needs O₃ or O₂."},
+  {name: "β-Diketonate (pKa ≈ 9)", pKa: 9, by: "H(β-dik)", st: "warn", note: "Weak base: often chemisorbs as the ligand rather than leaving; usually needs O₃ or O₂."},
+  {name: "Chloride (HCl, pKa ≈ −7)", pKa: -7, by: "HCl", st: "warn", note: "Reacts, but the HCl by-product is corrosive and can etch the film or passivate sites."}
+]
+scPresets = [
+  {name: "TMA (AlMe₃)", tv: -14, td: 300, mr: 0, mm: 37.4, mp: 15, anchor: 0, pyro: true, src: 20, proc: 200,
+   ref: "T_V from a literature Antoine fit; T_D ≈ 300 °C [Barry 2022]."},
+  {name: "AlCl₃", tv: 100, td: 500, mr: 0, mm: 20.2, mp: 192, anchor: 5, pyro: false, src: 120, proc: 350,
+   ref: "Approximate: sublimes, about 1 Torr near 100 °C. T_D is a lower bound: AlCl₃ is used for Al₂O₃ up to 500 °C [Barry 2022]."},
+  {name: "Candidate A (invented)", tv: 85, td: 190, mr: 4, mm: 25, mp: 60, anchor: 1, pyro: false, src: 90, proc: 200, ref: "Invented for practice."},
+  {name: "Candidate B (invented)", tv: 120, td: 135, mr: 18, mm: 22, mp: 140, anchor: 4, pyro: false, src: 125, proc: 250, ref: "Invented for practice."},
+  {name: "Candidate C (invented)", tv: 60, td: 260, mr: 1, mm: 30, mp: 35, anchor: 2, pyro: false, src: 70, proc: 220, ref: "Invented for practice."}
+]
+viewof scPreset = Inputs.select(scPresets.map(d => d.name), {label: "Start from"})
+scBase = scPresets.find(d => d.name === scPreset)
+viewof scIn = Inputs.form({
+  tv: Inputs.number({value: scBase.tv, label: "T_V, temperature for 1 Torr (°C)"}),
+  td: Inputs.number({value: scBase.td, label: "T_D, decomposition onset (°C)"}),
+  mr: Inputs.number({value: scBase.mr, label: "TGA residual mass, %m_r"}),
+  mm: Inputs.number({value: scBase.mm, label: "Payload mass fraction, %m_M"}),
+  mp: Inputs.number({value: scBase.mp, label: "Melting point (°C)"}),
+  anchor: Inputs.select(scAnchors.map((d, i) => i), {value: scBase.anchor, format: i => scAnchors[i].name, label: "Most basic ligand"}),
+  pyro: Inputs.toggle({label: "Pyrophoric", value: scBase.pyro}),
+  src: Inputs.range([-20, 250], {value: scBase.src, step: 1, label: "Source temperature (°C)"}),
+  proc: Inputs.range([25, 500], {value: scBase.proc, step: 5, label: "Deposition temperature (°C)"})
+})
+```
+
+```{ojs}
+//| echo: false
+scResult = {
+  const x = scIn, a = scAnchors[x.anchor];
+  const sigma = (x.td - x.tv) * (1 - x.mr / x.mm);
+  const rows = [
+    ["Volatile in the source", x.src >= x.tv ? "ok" : x.src >= x.tv - 30 ? "warn" : "bad",
+      x.src >= x.tv ? `≥ 1 Torr at ${x.src} °C.` : `Below 1 Torr at ${x.src} °C; usable only with long pulses or a boosted delivery. Raise the source to ${x.tv} °C?`],
+    ["Stable in the source", x.td - x.src >= 10 ? "ok" : x.td >= x.src ? "warn" : "bad",
+      x.td - x.src >= 10 ? `T_D is ${x.td - x.src} °C above the source.` : x.td >= x.src ? "Less than 10 °C of margin; check long-term stability at the source temperature." : "The source is above T_D: the precursor decomposes before it is delivered."],
+    ["Thermal range, σ", sigma > 100 ? "ok" : sigma > 0 ? "warn" : "bad", `σ = ${sigma.toFixed(0)} °C (see the figure of merit in the thermolysis section).`],
+    ["Clean volatilization", x.mr <= 2 ? "ok" : x.mr < x.mm ? "warn" : "bad",
+      x.mr <= 2 ? "Little or no TGA residue." : x.mr < x.mm ? "Some of the payload stays behind: slow decomposition during evaporation." : "More residue than the payload alone can explain: the compound does not volatilize intact."],
+    ["Physical state in the source", x.mp < x.src ? "ok" : "warn",
+      (x.mp < x.src ? "Liquid in the source: steady delivery." : "Solid in the source: delivery can drift as the particles shrink.") + (x.mp > 25 ? " Ships and loads as a solid." : " Liquid at room temperature.")],
+    ["Deposition temperature", x.proc <= x.td ? "ok" : "warn",
+      x.proc <= x.td ? "Below T_D, though a reactive surface can still catalyse decomposition." : "Above T_D: expect a CVD component unless the surface reaction outruns decomposition. Check with a saturation curve."],
+    ["Anchor ligand", a.st, `${a.note} By-product with –OH: ${a.by}.`],
+    ["Handling", x.pyro ? "warn" : "ok", x.pyro ? "Pyrophoric: needs air-free handling and delivery." : "Not pyrophoric."]
+  ];
+  return {rows, sigma};
+}
+{
+  const sym = {ok: ["✓", "#000"], warn: ["!", "#4D4D4D"], bad: ["✗", "#E91C24"]};
+  return html`<table class="table" style="font-size:0.95rem"><thead><tr><th>Requirement</th><th></th><th>Comment</th></tr></thead><tbody>
+    ${scResult.rows.map(([k, s, c]) => html`<tr><td>${k}</td><td style="font-weight:700;color:${sym[s][1]};font-size:1.15rem">${sym[s][0]}</td><td>${c}</td></tr>`)}
+  </tbody></table><div class="map-ref">${scBase.ref}</div>`;
+}
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  height: 220, marginLeft: 210, marginBottom: 40,
+  x: {label: "Figure of merit σ (°C) →", grid: true},
+  y: {label: null},
+  marks: [
+    Plot.barX([...scPresets.filter(d => d.name !== scPreset).map(d => ({name: d.name, s: (d.td - d.tv) * (1 - d.mr / d.mm)})),
+               {name: `${scPreset} (as edited)`, s: scResult.sigma}],
+      {y: "name", x: "s", fill: d => d.name.endsWith("(as edited)") ? "#E91C24" : "#8C8C8C", sort: {y: "x", reverse: true}}),
+    Plot.ruleX([0])
+  ]
+})
+```
+
+::: {.assumptions}
+**Assumptions.** A checklist, not a prediction. The thresholds (a 10 °C stability margin, σ > 100 °C, residue ≤ 2 %) are rules of thumb for ranking candidates, and every "✓" still needs a saturation curve in a reactor. σ is the figure of merit of @eq-fom; it uses T~V~ and T~D~ from separate measurements and can mislead when both terms are negative (see the text). Values for TMA and AlCl~3~ are approximate; the candidates are invented. Surface chemistry, film purity and cost are not scored.
+:::
+:::
+
+## Thermolysis and thermal characterization {#sec-thermolysis}
+
+[Applies to: ALD · MLD · ALE · ASD]{.applies}
+
+What a precursor does at the surface depends on the process: the target film, the second precursor, the temperature. Two properties do not. A precursor must be volatile at a useful temperature, and it must not react with itself in that range. There is no process at all without both, which makes them the first things to measure [@Barry2022].
+
+Neither property has an on/off temperature. Evaporation and decomposition are both reactions with their own kinetics, and both speed up as the temperature rises. The useful question is not "at what temperature does it start?" but "at what temperature does it become fast enough to matter over the timescale of a pulse, or of a week in a heated source?" [@Barry2022].
+
+### Thermal onset temperatures
+
+Two working definitions make the question answerable [@Barry2022]:
+
+- **T~V~, the volatilization temperature**: the lowest temperature at which the precursor gives enough vapour for a process. A common choice is the temperature at which the vapour pressure reaches 1 Torr (133 Pa). This suits flow reactors, where carrier gases are typically at 1–5 Torr and the precursor is then not overly diluted.
+- **T~D~, the decomposition temperature**: the highest temperature at which thermal decomposition can be ignored. The decomposition that matters here happens before or during volatilization, so T~D~ is effectively the highest safe source ("bubbler") temperature. It says nothing directly about decomposition at the substrate, which can be catalysed by the surface (@sec-au-120).
+
+### Thermogravimetric analysis {#sec-tga}
+
+Thermogravimetric analysis (TGA) follows the mass of a sample on a microbalance while a furnace runs a temperature programme. The standard screening experiment for a new precursor loads 10–50 mg and ramps the temperature at a constant rate, usually 10 °C min^−1^ [@Barry2022]. A precursor that volatilizes cleanly shows three things:
+
+1. **One thermal event**: a single, smooth mass-loss step with no inflections.
+2. **An exponential onset** in the derivative of the mass-loss curve (DTG), which then drops sharply to zero when the sample is gone.
+3. **Zero residual mass.**
+
+None of these is proof, but a trace with all three is encouraging [@Barry2022]. Three refinements turn the screening run into a better test:
+
+- **Change the ramp rate.** At a slower ramp, the sample spends longer at each temperature. A compound with a slow decomposition leaves more residue; one that does not decompose simply loses its mass at a lower apparent onset temperature and over a steeper step. This is one reason not to trust the "onset" of a TGA trace as a material property: it depends on ramp rate and sample mass [@Barry2022]. (Whether a slower ramp raises the residue also depends on how steeply decomposition speeds up with temperature compared with evaporation; Simulation 2.12 lets you explore this.)
+- **Change the sample mass (the thermal stress test).** The evaporation rate is set by the pan area, not by the sample mass, so a larger sample is still in the pan at higher temperatures. Repeating the ramp at several masses exposes slow decomposition: in one example, the residue rose from 2 % for about 10 mg to 14 % for about 60 mg [@Barry2022]. A precursor like that would be a risk in a source held at moderate temperature for days or weeks.
+- **Run it isothermally.** An isothermal run gives the delivery rate at one temperature. Because the purge gas sweeps vapour away, evaporation never reaches equilibrium (Le Chatelier's principle again), so a TGA can overestimate the vapour pressure that would build up in a closed source. For ranking similar precursors, and as a model of a pulse that also removes vapour, it is still very useful [@Barry2022].
+
+A careful vapour-pressure measurement uses a **stepped isotherm**: the temperature is raised in increments (for example 5 °C) and held at each step until the mass loss is linear, giving a rate Δm/Δt at each temperature. The Langmuir vapour-pressure equation, from kinetic gas theory, then gives
+
+$$
+p_\text{vap} = \frac{1}{\alpha}\frac{\Delta m}{\Delta t}\sqrt{\frac{2\pi RT}{M}} = k\,\frac{\Delta m}{\Delta t}\sqrt{\frac{T}{M}}
+$$ {#eq-langmuir-vp}
+
+where α corrects for non-ideal behaviour (α = 1 in vacuum). In practice, the whole prefactor k is calibrated against a standard of known vapour pressure [@Barry2022]. A plot of ln p~vap~ against 1/T then follows the Clausius–Clapeyron equation (@eq-cc): its slope gives ΔH~vap~, and reading off 1 Torr gives T~V~. If several related precursors give parallel lines, they share their volatilization thermodynamics; one that does not is worth a closer look [@Barry2022].
+
+::: {.sim-box}
+[Simulation 2.12: TGA curve reader]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof tgBeta = Inputs.range([1, 20], {value: 10, step: 0.5, label: "Ramp rate (°C min⁻¹)"})
+viewof tgMass = Inputs.range([5, 80], {value: 10, step: 1, label: "Sample mass (mg)"})
+viewof tgH = Inputs.range([40, 120], {value: 70, step: 1, label: "ΔH_vap (kJ mol⁻¹)"})
+viewof tgS = Inputs.range([90, 200], {value: 150, step: 1, label: "ΔS_vap (J K⁻¹ mol⁻¹)"})
+viewof tgM = Inputs.range([50, 600], {value: 250, step: 5, label: "Molar mass (g mol⁻¹)"})
+viewof tgTd = Inputs.range([60, 400], {value: 100, step: 5, label: "Decomposition: T at which t½ = 1 h (°C)"})
+viewof tgEa = Inputs.range([40, 220], {value: 60, step: 5, label: "Decomposition activation energy (kJ mol⁻¹)"})
+viewof tgRes = Inputs.range([0, 1], {value: 0.25, step: 0.05, label: "Non-volatile fraction of decomposed mass"})
+viewof tgStress = Inputs.toggle({label: "Thermal stress test: overlay 10, 30 and 60 mg", value: false})
+```
+
+```{ojs}
+//| echo: false
+tg = {
+  const R = 8.314, kEff = 0.1;                       // mg min⁻¹ Torr⁻¹ (g mol⁻¹ / K)^-½, see Assumptions
+  const pTorr = T => 750.06 * Math.exp(-tgH * 1000 / (R * T) + tgS / R);
+  const Ts = tgTd + 273.15;
+  const kdec = T => (Math.LN2 / 60) * Math.exp(-tgEa * 1000 / R * (1 / T - 1 / Ts));   // min⁻¹
+  const run = (m0) => {
+    let ml = m0, mr = 0, out = [], dT = 0.5, dt = dT / tgBeta;
+    for (let Tc = 25; Tc <= 450; Tc += dT) {
+      const T = Tc + 273.15;
+      const ev = Math.min(ml, kEff * pTorr(T) * Math.sqrt(tgM / T) * dt);
+      const dec = (ml - ev) * (1 - Math.exp(-kdec(T) * dt));
+      ml -= ev + dec; mr += tgRes * dec;
+      out.push({T: Tc, w: 100 * (ml + mr) / m0, m0});
+    }
+    for (let i = 1; i < out.length; i++) out[i].dtg = Math.max(0, (out[i - 1].w - out[i].w) / dT);
+    out[0].dtg = 0;
+    const at = f => (out.find(d => d.w <= 100 - f) || {T: NaN}).T;
+    return {pts: out, t1: at(1), t50: at(50), res: out[out.length - 1].w};
+  };
+  const main = run(tgMass);
+  const stress = tgStress ? [10, 30, 60].map(m => ({m, ...run(m)})) : [];
+  const Tv = tgH * 1000 / (tgS - R * Math.log(1 / 750.06)) - 273.15;
+  return {main, stress, Tv};
+}
+
+{
+  const dmax = d3.max(tg.main.pts, d => d.dtg) || 1;
+  const greys = {10: "#BFBFBF", 30: "#8C8C8C", 60: "#4D4D4D"};
+  return Plot.plot({
+    height: 360, marginLeft: 60, marginBottom: 50, marginTop: 20,
+    x: {label: "Temperature (°C) →", domain: [25, 450]},
+    y: {label: "↑ Mass (%)", domain: [0, 105], grid: true},
+    marks: [
+      Plot.ruleX([tg.Tv], {stroke: "#E91C24", strokeDasharray: "4,3"}),
+      Plot.text([{x: tg.Tv, y: 103}], {x: "x", y: "y", text: () => "T_V (1 Torr)", fill: "#E91C24", textAnchor: "start", dx: 4}),
+      ...tg.stress.map(s => Plot.line(s.pts, {x: "T", y: "w", stroke: greys[s.m], strokeWidth: 1.5})),
+      ...tg.stress.map(s => Plot.text([{x: 445, y: s.res}], {x: "x", y: "y", text: () => `${s.m} mg: ${s.res.toFixed(1)} %`, textAnchor: "end", dy: -6, fill: greys[s.m]})),
+      Plot.line(tg.main.pts, {x: "T", y: d => 100 * d.dtg / dmax, stroke: "#8C8C8C", strokeDasharray: "2,2"}),
+      Plot.line(tg.main.pts, {x: "T", y: "w", stroke: "#000", strokeWidth: 2.5})
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+md`1 % mass loss at **${tg.main.t1.toFixed(0)} °C** · 50 % at **${tg.main.t50.toFixed(0)} °C** · residual mass **${tg.main.res.toFixed(1)} %** · T_V (1 Torr, from ΔH and ΔS) **${tg.Tv.toFixed(0)} °C**
+${tg.stress.length ? `\nStress test residues: ${tg.stress.map(s => `${s.m} mg → **${s.res.toFixed(1)} %**`).join(" · ")}` : ""}`
+```
+
+::: {.assumptions}
+**Assumptions.** Black: mass; grey dashed: DTG (−d(mass)/dT), scaled to the same height. Evaporation follows @eq-langmuir-vp from a pan of fixed area, so its rate does not depend on sample mass; the vapour pressure follows @eq-cc with constant ΔH~vap~ and ΔS~vap~. The prefactor (0.1 mg min^−1^ at 1 Torr, scaled by √(M/T)) was chosen so that the traces resemble atmospheric-pressure TGA; it is not a property of any real instrument. Decomposition is first order in the remaining precursor with an Arrhenius rate constant, and a fixed fraction of the decomposed mass stays as residue. Melting, sublimation of solids, and gas-phase decomposition after evaporation are ignored.
+
+**Things to try.** The defaults describe a slow decomposition: the 10 mg trace looks clean, with under 2 % residue. Turn on the stress test and the residue grows with sample mass. Then raise the decomposition temperature until the three residues converge: that is what a thermally robust precursor looks like. Slowing the ramp from 10 to 2 °C min^−1^ also raises the residue here, but only because decomposition has a lower activation energy than evaporation; raise E~a~ above ΔH~vap~ and a slower ramp *lowers* the residue, because the sample evaporates before it gets hot. The stress test works either way. Notice, too, that the 1 % loss temperature is not T~V~.
+:::
+:::
+
+### Differential scanning calorimetry
+
+TGA only sees decomposition that happens before or during evaporation. For a precursor that evaporates cleanly and passes the stress test, differential scanning calorimetry (DSC) asks the next question: at what temperature would decomposition interfere with forming a self-limiting monolayer? [@Barry2022]
+
+In DSC, a sample and an inert reference are heated together, and the instrument adjusts the power to each so that their temperatures stay equal. An endothermic event in the sample (melting, evaporation) needs extra power; an exothermic one (decomposition) needs less. Plotted against temperature, endotherms are usually drawn downward and exotherms upward. For precursor testing, the pan must be **sealed without a pinhole**: if the sample can escape, the DSC only repeats what the TGA has already said [@Barry2022].
+
+A typical trace might show an endotherm at 150 °C (melting) and a strong exotherm at 270 °C (probably decomposition). Running the sample through the same temperature range twice separates the two: melting comes back on the second cycle, decomposition does not. The exotherm onset is a reasonable working value for T~D~, though it should be confirmed by an independent test at that temperature [@Barry2022].
+
+### Thermal range and figure of merit {#sec-fom}
+
+T~V~ and T~D~ bracket the thermal range in which an ALD process can be sought: hot enough to deliver vapour, cool enough that the precursor neither decomposes into the film nor deposits continuously. To rank large families of candidates, a single number helps [@Barry2022]:
+
+$$
+\sigma = (T_\text{D} - T_\text{V})\left(1 - \frac{\%m_\text{r}}{\%m_\text{M}}\right)
+$$ {#eq-fom}
+
+Here %m~r~ is the TGA residual mass and %m~M~ the mass percentage of the payload atom in the precursor. The second factor estimates how much of the payload failed to volatilize, and shrinks the thermal range accordingly [@Barry2022].
+
+σ is a ranking tool, not a verdict. It can go negative in two ways: T~V~ above T~D~ (the compound decomposes before it evaporates, so it is a poor ALD precursor, though it might work for CVD), or a residue larger than the payload alone can explain. If **both** terms are negative, σ comes out positive for a truly terrible precursor [@Barry2022]. Use it to compare candidates that already look reasonable, and look at the data behind the number. Simulation 2.11 uses σ alongside the other requirements.
+
+### Decomposition testing {#sec-decomposition-testing}
+
+Thermal testing can also diagnose *how* a precursor decomposes, which is what a redesign needs. A simple method is to seal the precursor in solution in an NMR tube, keep it in an oven at the temperature of interest, and record spectra over time [@Barry2022]. The half-lives in Simulation 2.10 come from experiments of this kind.
+
+Solution is a different thermodynamic system from the condensed precursor and from the gas phase, so it can highlight the wrong pathway. The gold guanidinates are the cautionary example [@Barry2022]. In solution, they decompose by carbodiimide deinsertion, and the carbodiimide can be isolated to prove it. In a modified ALD reactor in which the gaseous by-products were collected, carbodiimide was only a minor product at 150 °C. The main route was β-hydrogen abstraction, releasing an "oxidized guanidinate"; the gold hydride left behind immediately gave gold metal. Both pathways are open at 150 °C, but the β-H route is faster at a surface. Measure thermolysis under conditions as close to the process as you can.
+
+#### Recognizing decomposition
+
+When a precursor decomposes instead of reacting cleanly, growth gains a **CVD component**. Signs include:
+
+- GPC that keeps rising with dose, or rises sharply with temperature above the ALD window
+- A thickness gradient along the gas-flow direction
+- Carbon or nitrogen in the film, or a large residue in TGA
+
+Decomposition can also happen in the **source**, long before the precursor reaches the substrate, and a fast TGA ramp does not test days at source temperature. When TTIP was held in a sealed container at 120, 150 or 180 °C for 7 days, its decomposition products changed its vapour pressure and its TGA behaviour. TiO~2~ films grown from the stressed precursor had a different growth rate, poorer uniformity (after stress at 180 °C), more Ti^2+^ and higher leakage current [@Kim2022]. Decomposition is not always unwanted, though. It can be used deliberately, for example by adsorbing a precursor self-limitingly at low temperature and then decomposing it in a separate heating step.
+
+### Volatility control {#sec-volatility-control}
+
+A liquid is often more volatile than a solid, since its molecules are on average farther apart, and melting-point control (@sec-designing-precursors) can help. That rule holds for closely related molecules and fails across families, so volatility is mostly improved by trial and error [@Barry2022].
+
+One ploy that works reliably is to **reduce the ability to bridge**. Group 13 compounds with group 15 donor ligands (the precursors for III–V semiconductors) are prone to oligomerize through the lone pair on N, P or As. In a family of gallium compounds with a chelating ethylenediamide ligand, RN–CH~2~CH~2~–NMe~2~, the compound with R = methyl exists in solution as a monomer–dimer equilibrium, because the small R group lets the ligand of one molecule reach the gallium of the next. With R = ethyl, it is monomeric [@Barry2022]. Fewer intermolecular bonds, lower ΔH~vap~, higher vapour pressure. TMA and DMAI (@sec-tma-dmai) show the same effect in reverse.
+
+The two calculators below turn vapour-pressure data into the numbers a process needs.
+
+::: {.sim-box}
+[Simulation 2.13: Vapour pressure and source temperature]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof dHvap = Inputs.range([30, 160], {value: 70, step: 1, label: "ΔHᵥₐₚ (kJ mol⁻¹)"})
+viewof dSvap = Inputs.range([60, 250], {value: 150, step: 1, label: "ΔSᵥₐₚ (J K⁻¹ mol⁻¹)"})
+viewof pTarget = Inputs.select([0.1, 0.5, 1, 5], {value: 1, label: "Target vapour pressure (Torr)", format: x => `${x} Torr`})
+```
+
+```{ojs}
+//| echo: false
+vp = {
+  const R = 8.314, p0 = 750.06;                    // Torr per bar
+  const p = T => p0 * Math.exp(-dHvap * 1000 / (R * T) + dSvap / R);
+  const Tt = dHvap * 1000 / (dSvap - R * Math.log(pTarget / p0));   // K at target p
+  const Tb = dHvap * 1000 / dSvap;                                  // K at 1 bar
+  const pts = d3.range(250, 673.2, 2).map(T => ({T: T - 273.15, p: p(T)}));
+  return {Tt, Tb, pts, p25: p(298.15)};
+}
+
+Plot.plot({
+  height: 340, marginLeft: 70, marginBottom: 50, marginTop: 20,
+  x: {label: "Temperature (°C) →", domain: [-25, 400]},
+  y: {label: "↑ Vapour pressure (Torr)", type: "log", domain: [1e-4, 1e4], grid: true, tickFormat: "~g"},
+  marks: [
+    Plot.rectY([{}], {x1: -25, x2: 400, y1: 0.1, y2: 1, fill: "#E91C24", fillOpacity: 0.07}),
+    Plot.ruleY([pTarget], {stroke: "#E91C24", strokeDasharray: "4,3"}),
+    Plot.line(vp.pts.filter(d => d.p > 1e-4 && d.p < 1e4), {x: "T", y: "p", stroke: "#000", strokeWidth: 2, clip: true}),
+    Plot.dot([{T: vp.Tt - 273.15, p: pTarget}], {x: "T", y: "p", r: 6, fill: "#E91C24"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+md`Temperature for **${pTarget} Torr**: **${(vp.Tt - 273.15).toFixed(0)} °C** · Vapour pressure at 25 °C: **${vp.p25 < 0.01 ? vp.p25.toExponential(1) : vp.p25.toFixed(2)} Torr** · Normal boiling (or sublimation) point: **${(vp.Tb - 273.15).toFixed(0)} °C**`
+```
+
+::: {.assumptions}
+**Assumptions.** ΔH~vap~ and ΔS~vap~ are constant with temperature, and the vapour is ideal. The shaded band (0.1–1 Torr) is a common working range for ALD sources. For many liquids, ΔS~vap~ at the boiling point is close to Trouton's value of about 85–90 J K^−1^ mol^−1^; associated liquids and many solids (where ΔH includes the enthalpy of fusion) depart from it. The model does not account for decomposition: a compound may decompose before it reaches the temperature shown.
+:::
+:::
+
+::: {.sim-box}
+[Simulation 2.14: Vapour pressure from a stepped isotherm]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof siData = Inputs.textarea({label: "T (°C), Δm/Δt (µg min⁻¹)", rows: 9, width: 260,
+  value: "45, 6.7\n50, 9.6\n55, 14.0\n60, 19.6\n65, 27.4\n70, 38.8\n75, 55.1\n80, 74.7"})
+viewof siCalT = Inputs.number({value: 60, label: "Calibration: at T (°C)"})
+viewof siCalP = Inputs.number({value: 0.5, label: "the vapour pressure is (Torr)"})
+```
+
+```{ojs}
+//| echo: false
+si = {
+  const R = 8.314;
+  const pts = siData.split(/\n/).map(l => l.split(/[,;\s\t]+/).filter(Boolean).map(Number))
+    .filter(a => a.length >= 2 && isFinite(a[0]) && isFinite(a[1]) && a[1] > 0)
+    .map(([t, r]) => ({t, T: t + 273.15, x: 1 / (t + 273.15), y: Math.log(r * Math.sqrt(t + 273.15))}));
+  if (pts.length < 2) return {ok: false};
+  const n = pts.length, mx = d3.mean(pts, d => d.x), my = d3.mean(pts, d => d.y);
+  const sxy = d3.sum(pts, d => (d.x - mx) * (d.y - my)), sxx = d3.sum(pts, d => (d.x - mx) ** 2);
+  const slope = sxy / sxx, icpt = my - slope * mx;
+  const syy = d3.sum(pts, d => (d.y - my) ** 2), r2 = sxy * sxy / (sxx * syy);
+  const dH = -slope * R / 1000;                                  // kJ mol⁻¹
+  // absolute scale from the calibration point: ln p = ln p_cal - ΔH/R (1/T - 1/T_cal)
+  const Tc = siCalT + 273.15;
+  const lnp = T => Math.log(siCalP) - dH * 1000 / R * (1 / T - 1 / Tc);
+  const Tv = 1 / (1 / Tc + R * Math.log(siCalP) / (dH * 1000)) - 273.15;
+  const fit = d3.range(0, 41).map(i => { const x = d3.min(pts, d => d.x) + (d3.max(pts, d => d.x) - d3.min(pts, d => d.x)) * i / 40; return {x, y: icpt + slope * x}; });
+  return {ok: true, pts, fit, dH, r2, Tv, lnp, n};
+}
+
+si.ok ? Plot.plot({
+  height: 300, marginLeft: 70, marginBottom: 50, marginTop: 20,
+  x: {label: "1000 / T (K⁻¹) →", transform: x => 1000 * x},
+  y: {label: "↑ ln[(Δm/Δt)·√T]", grid: true},
+  marks: [
+    Plot.line(si.fit, {x: "x", y: "y", stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+    Plot.dot(si.pts, {x: "x", y: "y", r: 5, fill: "#E91C24", stroke: "#000", tip: true, channels: {"T (°C)": "t"}})
+  ]
+}) : md`*Enter at least two lines of the form* \`T, rate\`.`
+```
+
+```{ojs}
+//| echo: false
+si.ok ? md`From ${si.n} points: ΔH_vap = **${si.dH.toFixed(1)} kJ mol⁻¹** (R² = ${si.r2.toFixed(4)}). With the calibration point, T_V (1 Torr) = **${si.Tv.toFixed(0)} °C**; vapour pressure at the hottest step = **${Math.exp(si.lnp(d3.max(si.pts, d => d.T))).toPrecision(3)} Torr**.` : md``
+```
+
+::: {.assumptions}
+**Assumptions.** @eq-langmuir-vp with a constant prefactor, so ln[(Δm/Δt)√T] is linear in 1/T with slope −ΔH~vap~/R, whatever the (unknown) calibration constant; the molar mass cancels from the slope. ΔH~vap~ is assumed constant over the range. The calibration point sets the absolute scale and is needed only for T~V~; in practice it comes from a reference compound measured in the same instrument. The default data are synthetic (ΔH~vap~ = 65 kJ mol^−1^ with 3 % noise). Paste your own data to analyse it.
+:::
+:::
+
+### Impurity control
+
+A common source of film impurities is the atom bonded directly to the metal in the precursor. Those bonds have to be strong to survive volatilization, and they are often the ones that survive into the film [@Barry2022]. AlN is the clearest example. From TMA and ammonia, films typically contain 10–15 at. % carbon, depending on temperature, because every Al starts with three Al–C bonds. Dihydridodimethylamidoaluminum(III), with Al–H and Al–N bonds but no Al–C bonds, gives AlN with less than 1 at. % carbon, below the detection limit of common film analysis [@Barry2022]. Impurity is not the only difference between the two precursors, but the design logic is general: **if an element must stay out of the film, keep it off the metal.**
+
+### When self-limiting becomes CVD: Au at 120 °C {#sec-au-120}
+
+Trimethyl(trimethylphosphine)gold(III), Me~3~AuPMe~3~, is a liquid, air- and water-stable precursor that gave the first ALD process for pure gold [@Griffiths2016]. Its story shows how a process can look self-limiting and still have a decomposition problem hiding at the top of its temperature range.
+
+- **The first process (120 °C).** An oxygen plasma converts the precursor to gold, but combustion of the phosphine leaves phosphorus oxide in the film. Adding a water pulse after the plasma hydrolyses it to phosphoric acid, which is purged away. The resulting three-step process gave pure metallic gold with a self-limiting GPC of 0.5 Å [@Griffiths2016].
+- **A second process (50–120 °C).** With an H~2~ plasma as the second precursor, the GPC was 0.30 Å, again with clear saturation, and films grown at 120 °C were very pure (< 1 at. % C and O, < 0.1 at. % P) [@VanDaele2019].
+- **The mechanism.** In situ infrared spectroscopy, in vacuo XPS and mass spectrometry showed that both methyl and PMe~3~ ligands stay on the gold surface after the precursor pulse, and the H~2~ plasma removes both [@VanDaele2020]. Above 100 °C, however, the surface ligands begin to desorb *during* the precursor exposure. Each ligand that leaves frees a site for more precursor, so growth is no longer limited by the surface: it becomes decomposition-driven, CVD-like growth. The safe upper limit of the process was revised from 120 °C down to 100 °C [@VanDaele2020]. On bare SiO~2~, by contrast, the precursor did not decompose.
+
+Three lessons carry over to every process:
+
+1. **Self-limitation depends on how long the ligands stay, not only on how fast the precursor reacts.** Here the residence time of the surface ligands (@eq-residence) fell below the length of the pulse. A saturation curve recorded with short pulses can look flat while slow ligand loss adds growth at longer exposures.
+2. **The surface is a reactant.** Gold catalyses ligand loss that does not happen on silica or in the source, so T~D~ from TGA or DSC cannot predict it. Decomposition at the substrate has to be tested at the substrate.
+3. **Mechanism studies change process windows.** A window reported from GPC data alone moved by 20 °C once the surface chemistry was followed directly. The same precursor also shows the association and dissociation steps discussed next (@sec-assoc-dissoc), and the island growth of @sec-nucleation-energetics.
+
+## Surface reaction mechanisms {#sec-mechanisms}
+
+[Applies to: ALD · MLD · ALE · ASD]{.applies}
+
+Surface reactions are often described with a handful of labels: ligand exchange, dissociation, association, combustion [@Richey2020]. Careful studies regularly find that the real path is messier, with several steps and more than one route competing, and that the classic one-step ligand exchange does not describe it well [@Richey2020]. A more useful approach is to treat the surface as one more ligand on the metal, and to borrow the reaction steps of organometallic chemistry. These steps come in pairs, each the reverse of the other [@Barry2022]:
+
+| Step | Idealized reaction | Effect on the metal's oxidation state |
+|:---|:---|:---|
+| Association | ML~n~ + L → ML~n+1~ | None |
+| Dissociation | ML~n+1~ → ML~n~ + L | None |
+| Comproportionation | M^(n−x)+^ + M^(n+x)+^ → 2 M^n+^ | One decreases, one increases |
+| Disproportionation | 2 M^n+^ → M^(n−x)+^ + M^(n+x)+^ | One increases, one decreases |
+| Oxidative addition | ML~n~ + X~2~ → ML~n~X~2~ | Increases by 2 |
+| Reductive elimination | ML~n~X~2~ → ML~n~ + X~2~ | Decreases by 2 |
+| Migratory insertion | ML~n~X → ML~n−1~(X–L) | None |
+| β-Elimination | ML~n−1~(X–L) → ML~n~X | None |
+
+: The fundamental reaction steps of inorganic and organometallic chemistry [@Barry2022]. {#tbl-mechanism-steps}
+
+Ligand exchange, the most common surface reaction of all, is a combination of these steps (association then dissociation, or the reverse). The examples below are taken from Chapter 7 of @Barry2022.
+
+### Reaction with surface hydroxyls {#sec-hydroxyl-reaction}
+
+The archetypal surface reaction is the Brønsted acid–base reaction of a metal precursor with a surface hydroxyl (@eq-acidbase). For TMA, allowing for the fact that it reacts with either one or two –OH groups, the two half-reactions can be written [@Barry2022]:
+
+$$
+\begin{aligned}
+3\,\|\!-\!\text{OH} + 2\,\text{AlMe}_3 &\rightarrow \|\!-\!\text{OAlMe}_2 + (\|\!-\!\text{O})_2\text{AlMe} + 3\,\text{CH}_4 \\
+\|\!-\!\text{OAlMe}_2 + (\|\!-\!\text{O})_2\text{AlMe} + 3\,\text{H}_2\text{O} &\rightarrow 3\,\|\!-\!\text{OH} + 3\,\text{CH}_4
+\end{aligned}
+$$ {#eq-tma-stoich}
+
+Hydroxylated surfaces also dehydrate as the temperature rises, 2 ‖–OH → ‖–O–‖ + H~2~O, which is why the GPC of TMA/H~2~O falls at higher temperature [@Barry2022].
+
+The single arrow hides at least two steps. The likely path starts with an association: a lone pair on the surface oxygen donates into the empty p orbital on aluminum, making a Lewis acid–base adduct. A proton then moves from the –OH to a methyl group, which leaves as methane [@Barry2021]. Two general rules follow: strongly Lewis-acidic metals adsorb readily, and more basic leaving ligands (alkyl > amide > alkoxide) are protonated faster (@tbl-pka). Neighbouring adsorbates also matter. Computational work shows that nearby fragments assist proton transfer and ligand loss, and that the reaction stops partly because the surface metal atoms become fully coordinated, not only because the hydroxyls run out [@Shirazi2015].
+
+### Association and dissociation {#sec-assoc-dissoc}
+
+Every atomic layer process starts with an **association**: the physisorption of a precursor, or of a fragment of one, at the surface [@Barry2022]. AlCl~3~ shows the two possible outcomes (@sec-precursors). Physisorbed through a dative bond from a surface oxygen, it can easily leave again. Chemisorbed by losing a chloride, it cannot.
+
+Chemisorption does not always need a reaction with a surface site. Mo(CO)~6~ coordinates to an aluminum atom in an alumina surface at room temperature, bridging through one of its carbonyls, and then **dissociates** a CO ligand. Once the CO is pumped away, the fragment has no easy way to leave: losing a ligand into the gas, in a separate step, is enough to make the adsorption irreversible [@Barry2022].
+
+Dissociation at a surface can also cause trouble. Me~3~AuPMe~3~ on gold splits into two surface species [@Barry2022]:
+
+$$
+\|\!-\!\text{Au} + \|\!-\!\text{Au} + \text{Me}_3\text{AuPMe}_3 \rightarrow \|\!-\!\text{AuMe}_3 + \|\!-\!\text{Au–PMe}_3
+$$
+
+A ligand that binds strongly to the surface takes up sites that the precursor needs, and if it decomposes, it leaves impurities. With an oxygen plasma alone, the phosphine burns to P~2~O~5~, which stays in the film until a water pulse converts it to volatile phosphoric acid, P~2~O~5~ + 3 H~2~O → 2 H~3~PO~4~ [@Barry2022; @Griffiths2016]. With an H~2~ plasma, the methyls leave as methane and the phosphine is broken down to methane and smaller phosphines [@Barry2022]. Ligand exchange itself can be fully associative (the new ligand binds before the old one leaves), fully dissociative (the reverse order), or in between [@Barry2022].
+
+### Reductive elimination and oxidative addition {#sec-reductive-elimination}
+
+When the metal's oxidation state in the film differs from that in the precursor, something must transfer electrons. **Reductive elimination** does this by joining two ligands into a stable molecule and reducing the metal by two electrons.
+
+TiN is the standard example. Ti(IV) precursors are preferred because they are more stable than Ti(III) ones, but TiN contains Ti(III). For TiCl~4~ and NH~3~, the overall reaction is usually written TiCl~4~ + 2 NH~3~ → TiN + 4 HCl + H~2~ + ½ N~2~ [@Barry2022]. Reductive elimination at the surface can account for both gases [@Barry2022]:
+
+- **N~2~**: 2 ‖–Ti~3~N~4~ → 2 ‖–Ti~3~N~3~ + N~2~, reducing Ti(IV) to Ti(III) while oxidizing N^3−^ to N^0^.
+- **H~2~**: a surface amide gives up a hydrogen to a neighbouring titanium, ‖–Ti–NH~2~ + ‖–Ti → ‖–Ti=NH + ‖–Ti–H, and two surface hydrides then eliminate H~2~.
+
+Stronger evidence comes from TiN grown from Ti(NMeEt)~4~ and NH~3~, where a chemisorbed imine and the free amine are both observed [@Barry2022]. An alternative explanation for amide precursors is β-hydrogen elimination to a surface imine, giving a formal Ti(II) that comproportionates with neighbouring Ti(IV) [@Barry2021].
+
+A precursor cannot carry two ligands that could reductively eliminate from it, because it would then decompose continuously, which is CVD. In copper ALD the step is set up *after* chemisorption [@Barry2022]:
+
+$$
+\begin{aligned}
+2\,\|\!-\!\text{Cu(dmae)} + \text{ZnEt}_2 &\rightarrow 2\,\|\!-\!\text{CuEt} + \text{Zn(dmae)}_2 \\
+2\,\|\!-\!\text{CuEt} &\rightarrow 2\,\|\!-\!\text{Cu}^0 + \text{C}_4\text{H}_{10}
+\end{aligned}
+$$
+
+The surface Cu(dmae) groups come from Cu(dmae)~2~ (dmae = dimethylaminoethoxide), which loses one ligand to a copper surface; see comproportionation below. With H~2~ instead of ZnEt~2~, the same surface groups form a copper hydride that eliminates H~2~. A simpler reduction, with no elimination, uses zinc vapour: 2 ‖–CuCl + Zn → 2 ‖–Cu + ZnCl~2~ [@Barry2022].
+
+**Oxidative addition**, the reverse step, raises the oxidation state. SnO~2~ can be grown from a tin(II) N-heterocyclic stannylene and hydrogen peroxide. The stannylene first binds two surface hydroxyls and releases its ligand as the diamine. H~2~O~2~ then adds across the surface tin, breaking its O–O bond and oxidizing Sn(II) to Sn(IV), which leaves a surface tin with two hydroxyl groups ready for the next cycle [@Barry2022].
+
+### Migratory insertion and β-elimination {#sec-migratory-insertion}
+
+In **migratory insertion**, a ligand moves from the metal onto a neighbouring atom. TMA and ozone show it at work [@Barry2022; @Goldstein2008]:
+
+1. TMA chemisorbs on –OH as usual.
+2. Ozone, or an oxygen atom from it, coordinates to aluminum, and a methyl migrates onto the oxygen. The result looks like an insertion of O into the Al–C bond, giving a surface methoxy group. O can insert into C–H bonds the same way.
+3. Neighbouring methoxy groups and further oxygen give formate and bicarbonate groups, which lose CO or CO~2~ and leave surface –OH.
+4. Once –OH groups exist again, TMA can chemisorb by the ordinary acid–base route, which is why the TMA/O~3~ process has a similar temperature dependence to TMA/H~2~O. Ethene, seen early in the ozone pulse, probably comes from a minor route in which CH~2~ fragments couple.
+
+**β-Elimination** is the reverse step, and the most common way for a precursor to decompose (@sec-designing-precursors). A surface Cu(dmae) group, for example, undergoes β-hydrogen elimination if the surface is hot enough, forming a copper hydride that reductively eliminates. That route is not self-limiting, so Cu(dmae)~2~ gives ALD at low temperature and CVD at high temperature [@Barry2022].
+
+### Disproportionation and comproportionation
+
+Copper shows both. When Cu(dmae)~2~ meets a copper surface, it loses a ligand to the surface, and the Cu(II) adatom **comproportionates** with a surface Cu(0) to give two Cu(I) centres, ‖–Cu^0^ + ‖–Cu^2+^ → 2 ‖–Cu^+^ [@Barry2022]. Cu(I) compounds can also **disproportionate**, 2 CuL → Cu^0^ + CuL~2~. Because this reaction does not stop, it is fatal to ALD; it is also why copper(I) β-diketonates make excellent CVD precursors. Nitrogen-based ligands suppress it [@Barry2022].
+
+### Ligand exchange {#sec-ligand-exchange}
+
+Ligand exchange swaps a ligand on the metal for a group from somewhere else: a proton from a surface –OH (protonolysis, @sec-hydroxyl-reaction), an alkyl from a second metal precursor (the ZnEt~2~ step above), or a hydride from the surface (@sec-hydride-surfaces). Two ideas from earlier in the chapter decide which exchange happens. The basicity of the leaving ligand sets a first guess (@tbl-pka), and the fact that products are swept away means that ALD surface reactions are never at equilibrium, so less favourable exchanges can compete [@Barry2021].
+
+The same reaction runs in the other direction in **thermal ALE**. There, a fluorination step converts the top of an Al~2~O~3~ film to AlF~3~, and a precursor such as Sn(acac)~2~ then exchanges its acac ligands for fluoride, taking aluminum away as a volatile complex [@Lee2015; @George2016]. The requirements are the ones in @sec-precursors read backwards: the *product* of the exchange must be volatile and thermally stable, and the reaction must stop once the modified layer is used up. The ALE chapter (in preparation) develops this in detail.
+
+## Surfaces and nucleation sites {#sec-surfaces}
+
+[Applies to: ALD · MLD · ASD]{.applies}
+
+The surface is half of every reaction in this chapter, and it changes during a process: first the substrate, then the growing film (@sec-vocabulary). Chapter 6 of @Barry2022 classifies surfaces by the nucleation sites they offer. This section follows that classification, then looks at what happens when sites are scarce.
+
+### Protonated surfaces {#sec-protonated-surfaces}
+
+Hydroxyls are the most-taught nucleation sites, for good reason: they terminate the native oxide on silicon, and SiO~2~ and Al~2~O~3~, which are the most common starting and growing surfaces [@Barry2022]. Any oxide exposed to water carries –OH groups, and so does an oxophilic metal that has oxidized in air. A nitride exposed to ammonia carries –NH and –NH~2~ groups instead, with two different pK~a~ values and so two different reactivities [@Barry2022].
+
+Not all hydroxyl surfaces are equal. At 350 °C, silica carries about 3.5 OH nm^−2^, mostly isolated single hydroxyls (about 100 for every 6 geminal pairs), so its reactivity is relatively uniform. Alumina carries 5–7 OH nm^−2^ at the same temperature, spread over five distinct environments on tetrahedral and octahedral aluminum, in proportions that depend on how the surface was prepared [@Barry2022]. Hydroxyl density falls as the surface dehydrates; silica can be stripped of hydroxyls completely at about 900 °C. Pre-heating a substrate is therefore a way to tune the first cycles of a process [@Barry2022].
+
+Density changes chemistry, not just GPC. A titanium precursor carrying both Cp and guanidinate ligands keeps one of each when it chemisorbs on silica pre-treated at low temperature, because a neighbouring –OH hydrogen-bonds to the guanidinate and holds it in place. On silica pre-treated at high temperature, with fewer neighbours, it loses its guanidinates instead and keeps its Cp ligands [@Barry2022].
+
+### Metal surfaces {#sec-metal-surfaces}
+
+A clean metal surface offers a different set of sites: single atoms on a terrace, atoms on flat and stepped edges, bridges between two atoms on a terrace or an edge, and three-fold hollows between three atoms [@Barry2022]. These sites are more alike than the hydroxyls on an oxide, but metals are also *less* selective about what they bind. A precursor can bond through its ligands as well as through its metal. Bis(dimethylamino-2-propoxo)copper(II) adsorbs on Cu(111) at several kinds of site, but always through both the copper and the ligand oxygens, a hint that the growing film could pick up oxygen [@Barry2022]. Metal surfaces can also catalyse ligand loss, as the gold example in @sec-au-120 showed.
+
+### Hydride surfaces {#sec-hydride-surfaces}
+
+In inorganic chemistry, hydrogen bonded to a less electronegative element (χ < 2.20) is a hydride, H^δ−^. By that definition most hydrogen-terminated metal surfaces (χ from about 0.7 to 2.16) are hydride surfaces, and the larger the electronegativity difference, the more hydridic the hydrogen: Ti–H (Δχ = 0.66) is much more active than Mo–H (Δχ = 0.04). H-terminated silicon (Δχ = 0.30) is also a hydride surface. The noble metals (Ru, Rh, Pd, Os, Ir, Pt, Au, χ = 2.20–2.54), W and Pb polarize the bond the other way, and their surface hydrogens behave as protons, so ordinary Brønsted chemistry is the right first guess there [@Barry2022].
+
+On a hydride surface, the reaction to consider is with H^−^. TMA on Si–H has two options [@Barry2022]:
+
+- **Exchange** of CH~3~^−^ and H^−^ between Si and Al, with no net stabilization. Viable, but with no driving force, so methyl saturation would be slow.
+- **Elimination of methane**, with a net stabilization of about 40 kJ mol^−1^. The surface hydride combines with a methyl to give CH~4~, in which the hydrogen is now protic because carbon (χ = 2.55) is more electronegative than hydrogen. Formally, this is a redox reaction: the hydride is oxidized and the surface silicon reduced.
+
+### Nucleation energetics: clean versus defect-rich surfaces {#sec-nucleation-energetics}
+
+Growth needs nuclei, and nuclei need sites. On a surface rich in the right groups, every site is a potential nucleus and growth is linear from the first cycle. On a surface that lacks them (H-terminated silicon for a precursor that needs –OH, or an oxide for a metal that binds it weakly), the first nuclei can only form at **defects**: residual hydroxyls, step edges, impurities, vacancies.
+
+Classical nucleation theory makes this quantitative. A small cluster of the film on a substrate costs surface energy and gains bulk free energy, so its free energy passes through a maximum, ΔG\*, at a critical size. On a substrate, the barrier is reduced by a wetting factor that depends on the contact angle θ between film and substrate:
+
+$$
+\Delta G^*_\text{het} = \Delta G^*_\text{hom}\, f(\theta), \qquad f(\theta) = \frac{(2+\cos\theta)(1-\cos\theta)^2}{4}
+$$ {#eq-cnt}
+
+A film that wets the substrate (small θ) nucleates easily and can grow layer by layer. A film that interacts weakly (θ large, f → 1) forms islands: the Volmer–Weber growth of metals on oxides. Gold from Me~3~AuPMe~3~ forms discrete nanoparticles after 2–5 cycles rather than a continuous film [@Griffiths2016], and with an H~2~ plasma the particles grow and coalesce into worm-like nanostructures [@VanDaele2019]. A defect lowers ΔG\* locally. Because the nucleation rate depends exponentially on the barrier, J ∝ exp(−ΔG\*/k~B~T), a few kJ mol^−1^ makes a defect many times more likely to nucleate than a terrace site. On a clean surface with few defects, nucleation is slow and sparse; on a defect-rich one, it is fast and dense.
+
+This is why selectivity in deposition is best described by *relative nucleation rates* on different surfaces [@Gladfelter1993], and it is the physical basis of inherent area-selective deposition: a long nucleation delay on the non-growth surface and none on the growth surface give a window of cycles in which film grows only where it is wanted (@sec-history-asd).
+
+### Diffusion and dynamic processes {#sec-diffusion}
+
+Adsorbed species do not have to stay where they land. Hopping between sites is thermally activated with a barrier smaller than the desorption energy, so a species can often diffuse a long way before it desorbs or reacts. Diffusion changes nucleation in several ways:
+
+- **Capture.** A species that lands within a diffusion length of an existing island is likely to join it rather than start a new one. Each island has a *capture zone*, and the density of nuclei falls as the diffusion length grows (for example with temperature).
+- **Ripening and coalescence.** Small islands, with more of their atoms at an edge, are less stable than large ones and can shrink in favour of them; touching islands merge. Both change the morphology long after the nuclei formed, as in the gold nanostructures above.
+- **Reorganization of the monolayer.** Chemisorbed fragments can rearrange into a denser layer, raising the coverage, or react with each other and leave, lowering it. This is another reason to think of ALD in terms of kinetic rather than thermodynamic stability [@Barry2022].
+
+The simulation below puts these ideas together on two surfaces that differ only in their defect density. It is written so that the same model can describe a growth and a non-growth surface in area-selective deposition.
+
+::: {.sim-box}
+[Simulation 2.15: Stochastic nucleation on clean and defect-rich surfaces]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof nuPt = Inputs.range([-6, -2], {value: -4.7, step: 0.1, label: "log₁₀ nucleation probability, terrace site (per cycle)"})
+viewof nuPd = Inputs.range([-3, 0], {value: -0.7, step: 0.1, label: "log₁₀ nucleation probability, defect site (per cycle)"})
+viewof nuDa = Inputs.range([0, 5], {value: 0.05, step: 0.05, label: "Defect density, surface A (% of sites)"})
+viewof nuDb = Inputs.range([0, 10], {value: 1, step: 0.1, label: "Defect density, surface B (% of sites)"})
+viewof nuGrow = Inputs.range([0.05, 1], {value: 0.15, step: 0.05, label: "Lateral growth probability per cycle"})
+viewof nuLd = Inputs.range([0, 6], {value: 2, step: 1, label: "Capture (diffusion) length (sites)"})
+viewof nuSeed = Inputs.button("New random surfaces")
+```
+
+```{ojs}
+//| echo: false
+nuSim = {
+  nuSeed;
+  const N = 80, NN = N * N, C = 150;
+  let seed = (Math.random() * 2 ** 32) >>> 0;
+  const rnd = () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const nb = i => { const x = i % N, y = (i / N) | 0;
+    return [((x + 1) % N) + y * N, ((x + N - 1) % N) + y * N, x + ((y + 1) % N) * N, x + ((y + N - 1) % N) * N]; };
+  const NB = Array.from({length: NN}, (_, i) => nb(i));
+  const pT = 10 ** nuPt, pD = 10 ** nuPd;
+  const run = (dens) => {
+    const defect = new Uint8Array(NN).map(() => rnd() < dens / 100 ? 1 : 0);
+    let cov = new Uint8Array(NN);
+    const frames = [cov.slice()], fresh = [new Uint8Array(NN)], theta = [0], nuclei = [0];
+    let nTot = 0;
+    for (let c = 1; c <= C; c++) {
+      const next = cov.slice();
+      for (let i = 0; i < NN; i++) if (cov[i]) for (const j of NB[i]) if (!cov[j] && rnd() < nuGrow) next[j] = 1;   // lateral growth
+      // distance (in steps) to the nearest covered site, up to the capture length
+      const dist = new Int16Array(NN).fill(99); let q = [];
+      for (let i = 0; i < NN; i++) if (next[i]) { dist[i] = 0; q.push(i); }
+      for (let d = 1; d <= nuLd && q.length; d++) { const q2 = [];
+        for (const i of q) for (const j of NB[i]) if (dist[j] > d) { dist[j] = d; q2.push(j); } q = q2; }
+      const born = new Uint8Array(NN);
+      for (let i = 0; i < NN; i++) if (!next[i] && dist[i] > nuLd && rnd() < (defect[i] ? pD : pT)) { next[i] = 1; born[i] = 1; nTot++; }
+      cov = next; frames.push(cov); fresh.push(born);
+      theta.push(d3.sum(cov) / NN); nuclei.push(nTot);
+    }
+    return {defect, frames, fresh, theta, nuclei};
+  };
+  return {N, C, A: run(nuDa), B: run(nuDb)};
+}
+viewof nuCyc = Inputs.range([0, 150], {value: 30, step: 1, label: "Cycle"})
+```
+
+```{ojs}
+//| echo: false
+{
+  const {N} = nuSim, px = Math.max(2, Math.min(4, Math.floor((width - 40) / (2 * N + 10))));
+  const draw = (s, title) => {
+    const cv = document.createElement("canvas"); cv.width = N * px; cv.height = N * px;
+    cv.style.cssText = "border:1px solid #8C8C8C;image-rendering:pixelated;max-width:100%";
+    const g = cv.getContext("2d"); g.fillStyle = "#FFFFFF"; g.fillRect(0, 0, cv.width, cv.height);
+    const f = s.frames[nuCyc], b = s.fresh[nuCyc];
+    for (let i = 0; i < N * N; i++) {
+      const col = b[i] ? "#E91C24" : f[i] ? "#000000" : s.defect[i] ? "#8C8C8C" : null;
+      if (col) { g.fillStyle = col; g.fillRect((i % N) * px, ((i / N) | 0) * px, px, px); }
+    }
+    return html`<div style="text-align:center"><div style="font-weight:600">${title}</div>${cv}
+      <div>θ = <b>${(100 * s.theta[nuCyc]).toFixed(1)} %</b> · nuclei so far: <b>${s.nuclei[nuCyc]}</b></div></div>`;
+  };
+  return html`<div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center">
+    ${draw(nuSim.A, `Surface A: ${nuDa} % defects`)}${draw(nuSim.B, `Surface B: ${nuDb} % defects`)}</div>
+    <div class="map-legend" style="justify-content:center"><span><i style="background:#000"></i>film</span>
+    <span><i style="background:#E91C24;border-color:#E91C24"></i>nucleus formed this cycle</span>
+    <span><i style="background:#8C8C8C"></i>defect site</span><span><i style="background:#fff"></i>bare surface</span></div>`;
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const rows = d3.range(0, nuSim.C + 1).flatMap(c => [
+    {c, th: 100 * nuSim.A.theta[c], s: "Surface A"}, {c, th: 100 * nuSim.B.theta[c], s: "Surface B"}]);
+  return Plot.plot({
+    height: 280, marginLeft: 55, marginBottom: 45, marginTop: 30,
+    x: {label: "Cycle →", domain: [0, nuSim.C]},
+    y: {label: "↑ Surface covered (%)", domain: [0, 100], grid: true},
+    color: {domain: ["Surface A", "Surface B"], range: ["#000000", "#E91C24"], legend: true},
+    marks: [Plot.ruleX([nuCyc], {stroke: "#8C8C8C", strokeDasharray: "2,3"}),
+            Plot.line(rows, {x: "c", y: "th", stroke: "s", strokeWidth: 2})]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const a = nuSim.A.theta[nuCyc], b = nuSim.B.theta[nuCyc];
+  const S = a + b > 0 ? (b - a) / (a + b) : 0;
+  const dG = 8.314 * 473.15 * Math.log(10 ** nuPd / 10 ** nuPt) / 1000;
+  const half = s => { const i = s.theta.findIndex(t => t >= 0.5); return i < 0 ? `> ${nuSim.C}` : i; };
+  return md`Cycles to 50 % coverage: A **${half(nuSim.A)}**, B **${half(nuSim.B)}** · At cycle ${nuCyc}, S = (θ_B − θ_A)/(θ_B + θ_A) = **${S.toFixed(2)}**
+The defect/terrace probability ratio corresponds to a barrier lowered by about **${dG.toFixed(0)} kJ mol⁻¹** at a defect (at 200 °C).`;
+}
+```
+
+::: {.assumptions}
+**Assumptions.** An 80 × 80 lattice with periodic edges. Each cycle, every bare site next to the film is covered with the lateral-growth probability (film grows only at island edges, never on bare terrace without a nucleus), then every bare site farther than the capture length from the film nucleates with the terrace or defect probability. Species landing inside a capture zone are assumed to join the nearest island; their contribution to growth is folded into the lateral-growth probability. There is no thickness, desorption, ripening or etching. The barrier estimate is RT ln(p~defect~/p~terrace~) and treats the probabilities as rates with the same prefactor. S has the form used in area-selective deposition, with B as the "growth" surface.
+
+**Things to try.** Set the capture length to 0 and then 4 and compare the number of nuclei on surface B. Raise the terrace probability until the two surfaces behave the same: once the terrace dominates, defects no longer matter.
+:::
+:::
+
+### Initial growth and growth modes {#sec-growth-modes}
+
+The first cycles on a new substrate rarely look like the steady state. The substrate's own surface chemistry sets how many reactive sites are available at first. Puurunen and Vandervorst classified the behaviour as **linear**, **substrate-enhanced** or **substrate-inhibited** growth, and further divided substrate-inhibited growth into two types, the second of which involves island growth [@Puurunen2004].
+
+A simple way to capture the first three cases is a GPC that relaxes exponentially from an initial value $r\,\mathrm{GPC}_\infty$ to the steady-state value $\mathrm{GPC}_\infty$ over a characteristic number of cycles $n_0$:
+
+$$
+\begin{aligned}
+\mathrm{GPC}(n) &= \mathrm{GPC}_\infty\left[1 + (r-1)\,e^{-n/n_0}\right] \\
+d(N) &= \mathrm{GPC}_\infty\left[N + (r-1)\,n_0\left(1-e^{-N/n_0}\right)\right]
+\end{aligned}
+$$ {#eq-nucleation}
+
+::: {.sim-box}
+[Simulation 2.16: Thickness versus cycles with a nucleation transient]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof rInit = Inputs.range([0, 3], {value: 0.2, step: 0.05, label: "Initial GPC / steady-state GPC, r"})
+viewof nTrans = Inputs.range([1, 100], {value: 20, step: 1, label: "Transient length, n₀ (cycles)"})
+viewof gpcInf = Inputs.range([0.2, 2], {value: 1.0, step: 0.05, label: "Steady-state GPC (Å)"})
+viewof nCycles = Inputs.range([10, 500], {value: 100, step: 5, label: "Cycles deposited, N"})
+```
+
+```{ojs}
+//| echo: false
+nuc = {
+  const d = n => gpcInf * (n + (rInit - 1) * nTrans * (1 - Math.exp(-n / nTrans)));
+  const pts = d3.range(0, nCycles + 1).map(n => ({n, d: d(n)}));
+  const offset = (rInit - 1) * nTrans;          // asymptote: d = GPC∞ (n + offset)
+  const asym = [{n: Math.max(0, -offset), d: Math.max(0, gpcInf * offset)}, {n: nCycles, d: gpcInf * (nCycles + offset)}];
+  return {pts, asym, offset, dN: d(nCycles), apparent: d(nCycles) / nCycles};
+}
+
+Plot.plot({
+  height: 340, marginLeft: 65, marginBottom: 50, marginTop: 30,
+  x: {label: "Cycle number →"},
+  y: {label: "↑ Thickness (Å)", grid: true},
+  marks: [
+    Plot.line(nuc.asym, {x: "n", y: "d", stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+    Plot.line(nuc.pts.map(p => ({n: p.n, d: gpcInf * p.n})), {x: "n", y: "d", stroke: "#BFBFBF"}),
+    Plot.line(nuc.pts, {x: "n", y: "d", stroke: "#000000", strokeWidth: 2}),
+    Plot.dot([{n: nCycles, d: nuc.dN}], {x: "n", y: "d", r: 5, fill: "#E91C24"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+md`Thickness after ${nCycles} cycles: **${nuc.dN.toFixed(1)} Å** · Apparent GPC (d/N): **${nuc.apparent.toFixed(3)} Å** vs. true steady state **${gpcInf.toFixed(2)} Å** (${(100 * (nuc.apparent / gpcInf - 1)).toFixed(1)} % error)
+
+${nuc.offset < 0 ? `Extrapolated nucleation delay (dashed line intercept): **${(-nuc.offset).toFixed(1)} cycles**` : `Extrapolated thickness offset: **+${(gpcInf * nuc.offset).toFixed(1)} Å** (substrate-enhanced)`}`
+```
+
+::: {.assumptions}
+**Assumptions:** smooth, laterally uniform growth; a single exponential transient. This model does **not** reproduce the GPC overshoot of island growth (substrate-inhibited type 2), and it treats the film as continuous from the first cycle, which is false for strongly inhibited nucleation. Grey line: ideal linear growth. Dashed line: steady-state asymptote.
+:::
+:::
+
+The practical lesson is that **a single thickness divided by a single cycle count is a biased GPC estimate.** Measure several cycle numbers and take the slope of the linear part instead. The bias is largest for thin films, which are exactly the films where ALD is usually chosen.
+
+## Check your understanding
+
+### Saturation and surface kinetics
+
+::: {.quiz}
+A colleague fits a measured plot of GPC against TMA pulse time to the Langmuir isotherm, θ = Kp/(1 + Kp). What is wrong with this?
+
+- [ ] Nothing; the Langmuir isotherm is the saturation curve.
+- [x] The isotherm gives the equilibrium coverage as a function of pressure at infinite time. A pulse series at fixed pressure follows the time-dependent solution, θ(t) = θ~eq~[1 − exp(−(k~a~p + k~d~)t)].
+- [ ] The isotherm only applies to physisorption.
+- [ ] GPC cannot be related to coverage.
+
+::: {.explanation}
+The two come from the same rate equations (@eq-rates) but answer different questions. The isotherm is the plateau that the saturation curve approaches; the saturation curve describes how it gets there [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+A precursor physisorbs with an adsorption energy of about 40 kJ mol^−1^. Why can this step alone not make a self-limiting ALD half-reaction at 200 °C?
+
+- [ ] Physisorption is always slower than chemisorption.
+- [x] Its residence time (@eq-residence) is of the order of nanoseconds, so the layer desorbs as soon as the gas-phase pressure drops during the purge.
+- [ ] Physisorbed molecules cannot be removed by the next precursor.
+- [ ] Physisorption only occurs below room temperature.
+
+::: {.explanation}
+τ = τ~0~ exp(E~des~/RT) ≈ 10^−13^ s × exp(10) ≈ a few ns. A self-limiting step needs the adsorbed layer to outlast the purge, which in practice means chemisorption, usually with loss of a ligand [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+A metal ALD process gives a well-defined plateau at a GPC of 0.3 Å, far below the thickness of a monolayer of the metal. A student concludes that the precursor dose is too small. What is the best response?
+
+- [ ] Correct; any plateau below one monolayer means undersaturation.
+- [x] A plateau is saturation. If desorption competes with adsorption (k~d~ > 0), the plateau sits at θ~eq~ < 1; steric bulk and site density can also cap it. More dose will not raise it.
+- [ ] The second precursor must be in excess.
+- [ ] The plateau must be an artefact of the thickness measurement.
+
+::: {.explanation}
+@eq-saturation reaches a plateau at θ~eq~ = k~a~p/(k~a~p + k~d~), which is below 1 whenever k~d~ is not negligible. This is one reason metal processes often have low GPCs [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+Why is the TMA/H~2~O growth per cycle well below one monolayer of Al~2~O~3~?
+
+- [ ] Purges are never complete, so some material is removed every cycle.
+- [ ] The water step partially etches the film.
+- [x] Steric hindrance from the remaining methyl ligands, and the limited number of reactive surface sites, cap how much Al can adsorb per cycle.
+- [ ] As-deposited ALD alumina is highly porous.
+
+::: {.explanation}
+The GPC is set by how many precursor molecules fit and react on the surface in one half-cycle. Ligand size (steric hindrance) and site density are the two limiting factors [@Puurunen2005].
+:::
+:::
+
+::: {.quiz}
+A colleague claims a process is "true ALD" because its GPC is constant between 150 and 250 °C. What is wrong with this argument?
+
+- [ ] Nothing; a flat window is the standard proof of ALD.
+- [x] A plateau in temperature neither proves nor is required for self-limitation; only dose and purge saturation tests establish it.
+- [ ] The window must span at least 200 °C.
+- [ ] GPC must increase with temperature in a true ALD process.
+
+::: {.explanation}
+Self-limiting processes can have temperature-dependent GPC (TMA/H~2~O is the standard example). A flat region can also arise from competing non-ideal effects. Saturation is tested in dose, not in temperature.
+:::
+:::
+
+::: {.quiz}
+A 50-cycle film is 3.0 nm thick. The steady-state GPC is known to be 1.0 Å. Assuming growth is linear after an abrupt nucleation delay, how long is the delay?
+
+- [ ] 10 cycles
+- [x] 20 cycles
+- [ ] 30 cycles
+- [ ] 50 cycles
+
+::: {.explanation}
+30 Å = 1.0 Å × (50 − n~delay~), so n~delay~ = 20 cycles. The apparent GPC from this single film (0.6 Å) would underestimate the true value by 40 %.
+:::
+:::
+
+::: {.quiz}
+A TMA/H~2~O process has a GPC of 1.1 Å, and one layer of Al~2~O~3~ is about 2.9 Å thick. A student concludes that the TMA half-reaction is undersaturated, because a saturated half-reaction should give a full monolayer. What is wrong with this reasoning?
+
+- [ ] Nothing; the TMA dose should be increased until the GPC reaches 2.9 Å.
+- [ ] The water half-reaction must be undersaturated instead.
+- [x] Saturation means no further uptake, not full coverage. Steric crowding by the remaining methyl groups and the finite –OH density cap a saturated cycle at roughly 30–40 % of a monolayer.
+- [ ] GPC is a rate, so it cannot be compared with a layer thickness.
+
+::: {.explanation}
+A saturated half-cycle stops when every remaining –OH is consumed or shielded by ligands, which happens well before a full layer of Al is adsorbed [@Barry2022; @Puurunen2005]. Increasing the dose beyond saturation does not raise the GPC.
+:::
+:::
+
+### Ligands
+
+::: {.quiz}
+A precursor loses a neutral ligand in the hot delivery line. Why is this more likely to cause problems than the loss of an anionic ligand?
+
+- [ ] Neutral ligands always have higher bond enthalpies.
+- [x] Losing an L ligand leaves a neutral metal fragment that can survive in the gas phase and react unpredictably; losing an X ligand heterolytically would leave a cation that does not survive under reasonable conditions.
+- [ ] Anionic ligands cannot be removed by a co-reactant.
+- [ ] Neutral ligands are always larger, so they block the surface.
+
+::: {.explanation}
+The L/X distinction tells you what fragments a bond cleavage produces. Neutral metal-containing fragments can persist in the gas phase and complicate the chemistry [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+Sc–O bonds are more ionic and stronger than Sc–N bonds. What does this suggest for Sc(thd)~3~ compared with Sc(iPrAMD)~3~?
+
+- [ ] Sc(thd)~3~ will decompose at lower temperatures and leave oxygen in the film.
+- [x] Sc(thd)~3~ should keep its ligands at intermediate temperatures and lose them by cleanly breaking the Sc–O bond, while Sc(iPrAMD)~3~ is more likely to decompose thermally at another bond and leave nitrogen.
+- [ ] Both will behave the same, because both are Sc(III).
+- [ ] Ionicity has no bearing on where a bond breaks.
+
+::: {.explanation}
+High bond enthalpy resists thermolysis; high ionicity favours clean heterolytic cleavage at the metal under chemical attack. The weaker, more covalent Sc–N bond is more likely to fail elsewhere in the ligand [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+Using the data in @tbl-chelate, what happens to the stability advantage of the chelate (en) over two NH~3~ ligands as the temperature rises?
+
+- [ ] It shrinks, because the enthalpies are similar.
+- [ ] It stays constant.
+- [x] It grows, because the entropy difference (about 31 J K^−1^ mol^−1^) is multiplied by T.
+- [ ] It reverses above 400 K.
+
+::: {.explanation}
+ΔΔG = ΔΔH − TΔΔS = (−54 + 46) − T(23 + 8.4)/1000 kJ mol^−1^, which becomes more negative as T increases. At 300 K the chelate is favoured by about 17 kJ mol^−1^; at 600 K, by about 27 kJ mol^−1^.
+:::
+:::
+
+::: {.quiz}
+ZrCp~2~Me~2~ is pulsed onto a hydroxylated surface. Methane is the main by-product, but cyclopentadiene is also detected. Why is CpH released at all, given that CH~4~ (pK~a~ ~50) is far less acidic than CpH (pK~a~ ~16)?
+
+- [ ] The pK~a~ values are reversed at ALD temperatures.
+- [ ] Cp ligands are always lost first because they are larger.
+- [x] Surface reactions in ALD are not at equilibrium: the leaving ligand is swept away by the gas flow, so less favourable pathways can still contribute.
+- [ ] The Cp ligand is lost by thermal decomposition in the source.
+
+::: {.explanation}
+pK~a~ predicts which ligand is lost under equilibrium conditions. In ALD, products are removed as they form, so kinetically accessible but less favourable pathways compete. Linking the Cp rings into an *ansa*-zirconocene adds a chelate effect, and then only methyl is lost [@Barry2021].
+:::
+:::
+
+::: {.quiz}
+The Al(R-ip)Me~2~ compounds with R = ^i^Pr and ^s^Bu decomposed fastest at 78 °C. What did this suggest, and how was the ligand redesigned in response?
+
+- [ ] Carbodiimide deinsertion was still active, so the ring was enlarged.
+- [x] β-Hydrogen elimination was still possible, so the ring β-hydrogens were replaced with methyl groups and a tert-butyl group was put on the imine.
+- [ ] The Al–Me bonds were too weak, so the methyls were replaced with chlorides.
+- [ ] The compounds were oligomerizing, so bulkier R groups were used throughout.
+
+::: {.explanation}
+The iminopyrrolidinate ring already blocks deinsertion. The fastest-decomposing compounds were the ones with reactive β-hydrogens, which pointed to β-H elimination. Removing those hydrogens gave [Cu(Me~2~-^t^Bu-ip)]~2~, with no measurable decomposition at 165 °C [@Barry2013].
+:::
+:::
+
+### Precursors
+
+::: {.quiz}
+A gold film is deposited from a Au(III) precursor and ozone. Which statement best describes the role of ozone?
+
+- [ ] Ozone reduces Au(III) to Au(0).
+- [ ] Ozone oxidizes Au(III) to Au(V).
+- [x] Ozone combusts the ligands; gold, which prefers the zero oxidation state, takes up electrons during the combustion and ends up as Au(0).
+- [ ] Ozone is not involved; the precursor decomposes thermally.
+
+::: {.explanation}
+The gold is formally reduced, but it is not accurate to call ozone the reducing agent. Labels such as "oxidant" describe what is added, not necessarily what happens to the metal [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+Why does adding CF~3~ groups to a dimethylgold(III) β-diketonate increase its volatility?
+
+- [ ] It lowers the molecular weight.
+- [ ] It raises the enthalpy of vaporization.
+- [x] Fluorine is hard to polarize and holds its electrons tightly, which weakens intermolecular interactions and lowers the enthalpy of vaporization.
+- [ ] It makes the compound decompose at a lower temperature.
+
+::: {.explanation}
+CF~3~ is heavier than CH~3~, so molecular weight cannot be the explanation. Volatility is controlled by intermolecular interactions in the condensed phase [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+A precursor is a free-flowing powder at room temperature and is delivered from a solid source at 120 °C. Over many runs, the dose delivered by a fixed pulse slowly falls. What is the most likely cause?
+
+- [ ] The precursor's enthalpy of sublimation increases over time.
+- [x] The surface area of the solid shrinks as particles evaporate, and impurities collect on it, so the evaporation rate drops.
+- [ ] Solids always have lower vapour pressures than liquids.
+- [ ] The carrier gas becomes saturated.
+
+::: {.explanation}
+A liquid presents a constant surface and keeps impurities mobile; a solid does not. This is why a melting point between handling and source temperature is useful [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+In MeAlCl~2~, which ligand is expected to react with a surface hydroxyl, and why?
+
+- [x] The methyl group, because CH~4~ is a far weaker acid than HCl, so CH~3~^−^ is the stronger base.
+- [ ] A chloride, because Al–Cl bonds are more ionic.
+- [ ] Both equally, because they are on the same metal.
+- [ ] Neither; the compound physisorbs.
+
+::: {.explanation}
+The ligand whose conjugate acid has the highest pK~a~ is the strongest base and the most likely to accept a surface proton. The chlorides remain on the chemisorbed aluminum [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+In DMAI, [Me~2~Al(O^i^Pr)]~2~, which ligand is expected to react first with a surface hydroxyl, and what does that predict for the GPC compared with TMA?
+
+- [ ] The isopropoxide, because Al–O bonds are more ionic; a higher GPC.
+- [x] A methyl, because CH~4~ is a much weaker acid than isopropanol; the isopropoxide stays on the surface fragment, which is bulkier, so a lower GPC.
+- [ ] Both at once; the same GPC.
+- [ ] Neither; DMAI only physisorbs.
+
+::: {.explanation}
+The ligand whose conjugate acid has the higher pK~a~ is the stronger base and is protonated first. A retained isopropoxide makes each chemisorbed fragment larger, so steric saturation sets in at fewer Al per nm^2^ (@sec-tma-dmai).
+:::
+:::
+
+### Thermolysis
+
+::: {.quiz}
+A new precursor is run by TGA at 10 °C min^−1^. With 10 mg in the pan, the residual mass is 1 %; with 50 mg it is 9 %. What does this tell you?
+
+- [ ] The balance is drifting; the two results should be averaged.
+- [ ] The larger sample evaporated faster.
+- [x] The compound decomposes slowly at the temperatures reached late in the run. A larger sample stays in the pan longer and at higher temperature, so more of it decomposes. It is a risk in a source held hot for days.
+- [ ] The compound is a solid, so the result is meaningless.
+
+::: {.explanation}
+This is the thermal stress test. The evaporation rate is set by the pan area, so more mass means more time at temperature. A clean precursor gives the same, near-zero residue at every mass [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+A candidate has T~V~ = 90 °C, T~D~ = 180 °C, a TGA residue of 3 % and a payload mass fraction of 30 %. What is its figure of merit σ?
+
+- [ ] 90 °C
+- [x] 81 °C
+- [ ] 87 °C
+- [ ] 63 °C
+
+::: {.explanation}
+σ = (T~D~ − T~V~)(1 − %m~r~/%m~M~) = 90 × (1 − 3/30) = 81 °C (@eq-fom).
+:::
+:::
+
+::: {.quiz}
+The Me~3~AuPMe~3~/H~2~ plasma process gave saturating growth up to 120 °C, but its safe upper limit was later revised to 100 °C. Why?
+
+- [ ] The precursor decomposes in the source above 100 °C.
+- [ ] The H~2~ plasma etches gold above 100 °C.
+- [x] Above 100 °C, the methyl and phosphine ligands left on the gold surface start to desorb during the precursor pulse, freeing sites for more precursor, so growth is no longer limited by the surface.
+- [ ] The film becomes amorphous above 100 °C.
+
+::: {.explanation}
+In situ studies showed ligand loss during the exposure itself [@VanDaele2020]. The decomposition was catalysed by the gold surface; it would not have been predicted from TGA or DSC of the precursor (@sec-au-120).
+:::
+:::
+
+### Mechanisms and surfaces
+
+::: {.quiz}
+When ozone reacts with a surface Al–CH~3~ group to give Al–OCH~3~, which fundamental step is this?
+
+- [ ] Oxidative addition
+- [ ] Reductive elimination
+- [x] Migratory insertion: the methyl moves from aluminum onto the newly bound oxygen.
+- [ ] Disproportionation
+
+::: {.explanation}
+The oxidation state of aluminum does not change; the methyl migrates onto oxygen, which looks like insertion of O into the Al–C bond [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+Why can a copper ALD precursor not carry two ligands that could reductively eliminate from each other, even though reductive elimination is what produces Cu^0^ in the process?
+
+- [ ] Reductive elimination only happens on oxide surfaces.
+- [x] The precursor would then decompose to the metal by itself, continuously, which gives CVD rather than self-limiting growth. The eliminating pair has to be assembled at the surface, after chemisorption and a ligand exchange.
+- [ ] Two such ligands would make the precursor non-volatile.
+- [ ] Copper cannot change its oxidation state at ALD temperatures.
+
+::: {.explanation}
+In the Cu(dmae)~2~/ZnEt~2~ process, ethyl groups are put on surface copper by exchange with ZnEt~2~, and only then eliminate butane [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+Which hydrogen-terminated surface is expected to react with TMA as a *hydride* (H^δ−^) rather than as a proton?
+
+- [x] Ti–H, because titanium (χ = 1.54) is less electronegative than hydrogen (χ = 2.20).
+- [ ] Pt–H, because platinum is a noble metal.
+- [ ] Au–H, because gold binds hydrogen strongly.
+- [ ] None; surface hydrogen always behaves as a proton.
+
+::: {.explanation}
+Hydrogen bonded to a less electronegative element carries a partial negative charge. Noble metals, W and Pb polarize the bond the other way, so their surface hydrogens are protic [@Barry2022].
+:::
+:::
+
+::: {.quiz}
+In Simulation 2.15, increasing the capture (diffusion) length while keeping everything else fixed mainly does what?
+
+- [ ] Increases the number of nuclei, because species move to more sites.
+- [x] Decreases the number of nuclei and makes islands larger, because more of the arriving species join existing islands instead of starting new ones.
+- [ ] Removes the difference between clean and defect-rich surfaces.
+- [ ] Has no effect, because diffusion is not included in the model.
+
+::: {.explanation}
+Each island collects material from its capture zone. Longer diffusion lengths mean larger zones, fewer independent nucleation events and a coarser film (@sec-diffusion).
+:::
+:::
+
+## Further reading
+
+- @Barry2022, Chapters 2–7: saturation, ligands, precursors, thermolysis, nucleation and surface mechanisms; the main source for this chapter.
+- @Puurunen2005: the definitive case study of TMA/H~2~O surface chemistry and of GPC-limiting factors.
+- @Barry2021: the main organometallic precursor families and their surface mechanisms.
+- @Richey2020: a review of chemical and physical mechanisms in ALD, and of where the textbook mechanisms break down.
+- @Barry2013: a case study in designing a ligand against specific decomposition pathways.
+- @Griffiths2016 and @VanDaele2020: gold ALD from Me~3~AuPMe~3~, from the first process to the mechanism that revised its window.
+- @Leskela2003: a classic review of ALD chemistry and precursor selection.
+- @Knisley2013 and @Emslie2013: precursors and reducing chemistry for metal films, the hardest case.
+- @Profijt2011: plasma-assisted ALD and how plasma second precursors differ from thermal ones.
+- @Puurunen2004 and @Gladfelter1993: growth modes in the first cycles, and selectivity as a matter of nucleation rates.
+- @George2010 and @Johnson2014: broad overviews of ALD chemistries and mechanisms.

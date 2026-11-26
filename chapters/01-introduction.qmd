@@ -22,14 +22,14 @@ This book covers four processes that apply that logic in different ways:
 
 | Process | What one cycle does | Typical per-cycle quantity | Main chapter |
 |:---|:---|:---|:---|
-| **Atomic layer deposition (ALD)** | Adds a fraction of a monolayer of an inorganic film | Growth per cycle (GPC), in Å | Chapters 2–4 |
+| **Atomic layer deposition (ALD)** | Adds a fraction of a monolayer of an inorganic film | Growth per cycle (GPC), in Å | Chapter 3 |
 | **Molecular layer deposition (MLD)** | Adds a molecular fragment, giving an organic or hybrid film | GPC, in Å | (in preparation) |
 | **Atomic layer etching (ALE)** | Removes a thin, chemically modified layer | Etch per cycle (EPC), in Å | (in preparation) |
 | **Area-selective deposition (ASD)** | Adds film on one part of a patterned surface but not another | GPC on each surface, and selectivity | (in preparation) |
 
 : The four atomic layer processes covered in this book. {#tbl-four-processes}
 
-ALD is the oldest and best understood, so this book develops the shared fundamentals (saturation, ligands, precursors, thermolysis) in the ALD chapters. MLD, ALE and ASD are then treated as variations on the same chemistry.
+The concepts all four share (saturation, ligands, precursors, thermolysis, surface mechanisms and nucleation) are developed once, in Chapter 2. ALD is the oldest and best understood of the four, so most of the examples there come from ALD, and MLD, ALE and ASD are then treated as variations on the same chemistry.
 
 ### ALD is not just slow CVD
 
@@ -140,7 +140,7 @@ Adsorption
 : The general term for a molecule binding to a surface. It covers **chemisorption**, which involves a change in bonding (for example, loss of a ligand as a volatile by-product) and is hard to reverse, and **physisorption**, a weak and easily reversed interaction that is often the first step towards chemisorption. "Adsorption" is the safe word to use until the mechanism is known [@Barry2022].
 
 Substrate and surface
-: The *substrate* is the material on which deposition starts, a term borrowed from microelectronics. Once the substrate is covered, the process continues on the growing film, which is the *surface*. The precursor and the surface together make up the thermodynamic system, so when the surface changes from substrate to film, the chemistry can change too [@Barry2022]. This is the root of the nucleation effects discussed in Chapter 2, and of area-selective deposition.
+: The *substrate* is the material on which deposition starts, a term borrowed from microelectronics. Once the substrate is covered, the process continues on the growing film, which is the *surface*. The precursor and the surface together make up the thermodynamic system, so when the surface changes from substrate to film, the chemistry can change too [@Barry2022]. This is the root of the nucleation effects discussed in @sec-surfaces, and of area-selective deposition.
 
 Monolayer
 : A layer of adsorbed species after which the surface will not accept any more. It does not have to be densely packed: the size of the precursor, the number of reactive sites and the surface roughness all limit how full it is [@Barry2022].
@@ -207,7 +207,7 @@ They did come close to meeting. In the late 1970s, Suntola defended his patent a
 
 : The two origins of ALD compared [@Malygin2015; @Puurunen2014; @Barry2022]. {#tbl-origins}
 
-The way we draw ALD has changed with the field. Kol'tsov's 1971 thesis pictured the growing surface as a regular lattice of atomic points, one layer added per cycle. Modern depictions, such as Puurunen's, show bulky chemisorbed precursor fragments and the complexity of the surface reactions [@Barry2022]. Simulation 2.1 in the next chapter sits between the two: a cartoon, but one that shows steric shielding and more than one adsorbed species.
+The way we draw ALD has changed with the field. Kol'tsov's 1971 thesis pictured the growing surface as a regular lattice of atomic points, one layer added per cycle. Modern depictions, such as Puurunen's, show bulky chemisorbed precursor fragments and the complexity of the surface reactions [@Barry2022]. Simulation 3.1 in @sec-tma-model sits between the two: a cartoon, but one that shows steric shielding and more than one adsorbed species.
 
 #### What's in a name
 

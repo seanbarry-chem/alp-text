@@ -20,11 +20,10 @@ book:
     - part: "Introduction"
       chapters:
         - chapters/01-introduction.qmd
+        - chapters/01b-fundamentals.qmd
     - part: "Atomic Layer Deposition"
       chapters:
         - chapters/02-ald-fundamentals.qmd
-        - chapters/03-ligands.qmd
-        - chapters/04-precursors.qmd
     - references.qmd
 
 bibliography: references.bib
