@@ -40,7 +40,7 @@ The organic part does not have to be a simple diol. Carboxylic acids, amines, ar
 
 Two practical differences from ALD follow from the larger, organic precursors:
 
-- **GPC is larger and much more variable.** A single organic fragment is several ångströms long, so GPCs of 3–5 Å are common, and some multistep processes grow by more than 20 Å per cycle (@tbl-mld-gpc). ALD oxides typically grow by about 1 Å [@Barry2022].
+- **GPC is larger and much more variable.** A single organic fragment is several Ångströms long, so GPCs of 3–5 Å are common, and some multistep processes grow by more than 20 Å per cycle (@tbl-mld-gpc). ALD oxides typically grow by about 1 Å [@Barry2022].
 - **The process window is narrow.** Organic precursors tend to condense at low temperature and to decompose at moderate temperature (@sec-process-windows). Many organic precursors are also only weakly bound to the surface before they react, which, as @sec-mld-trends shows, makes the GPC sensitive to temperature even inside the window.
 
 ### Bifunctional monomers {#sec-bifunctional}
