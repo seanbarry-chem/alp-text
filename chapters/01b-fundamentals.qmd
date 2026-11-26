@@ -11,8 +11,9 @@ After this chapter you should be able to:
 3. Classify a ligand as L or X, predict from bond polarity and the chelate effect how it will behave, and place it in a ligand family.
 4. List what a precursor and a second precursor must do, and explain what each requirement rules out.
 5. Read a TGA trace and a DSC trace, define T~V~ and T~D~, and calculate a thermal figure of merit.
-6. Recognize the classic organometallic reaction steps (association, dissociation, reductive elimination, oxidative addition, migratory insertion, ligand exchange) in a surface reaction.
-7. Describe how hydroxylated, metal and hydride surfaces differ as nucleation sites, and explain why defects control the first cycles of growth.
+6. Use residual mass, step size, DTG shape, sample mass and isothermal runs to decide whether, and how, a precursor decomposes in a TGA.
+7. Recognize the classic organometallic reaction steps (association, dissociation, reductive elimination, oxidative addition, migratory insertion, ligand exchange) in a surface reaction.
+8. Describe how hydroxylated, metal and hydride surfaces differ as nucleation sites, and explain why defects control the first cycles of growth.
 :::
 
 This chapter collects the ideas that every atomic layer process depends on. ALD, MLD, ALE and ASD all use self-limiting gas–surface reactions, all use the same families of precursors, and all fail in the same ways when a precursor decomposes or a surface does not cooperate. The later chapters on each process link back here rather than repeating this material. Each section starts with a line saying which processes it applies to.
@@ -1254,7 +1255,7 @@ $$
 \ln\frac{p}{p^\circ} = -\frac{\Delta H_\text{vap}}{RT} + \frac{\Delta S_\text{vap}}{R}
 $$ {#eq-cc}
 
-with p° = 1 bar. Simulation 2.11 in @sec-volatility-control uses this equation to find the source temperature for a given vapour pressure.
+with p° = 1 bar. Simulation 2.12 in @sec-volatility-control uses this equation to find the source temperature for a given vapour pressure.
 
 ##### Controlling intermolecular interactions
 
@@ -1399,6 +1400,303 @@ $$ {#eq-langmuir-vp}
 
 where α corrects for non-ideal behaviour (α = 1 in vacuum). In practice, the whole prefactor k is calibrated against a standard of known vapour pressure [@Barry2022]. A plot of ln p~vap~ against 1/T then follows the Clausius–Clapeyron equation (@eq-cc): its slope gives ΔH~vap~, and reading off 1 Torr gives T~V~. If several related precursors give parallel lines, they share their volatilization thermodynamics; one that does not is worth a closer look [@Barry2022].
 
+### Diagnosing decomposition from mass loss {#sec-tga-decomposition}
+
+A TGA trace records a race between two ways of losing mass. **Evaporation** removes intact molecules at a rate set by the vapour pressure and the area of the pan; it does not depend on how much sample is left, so it is zero order in sample mass. **Decomposition** is a reaction of whatever is still in the pan; it is (usually) first order in that mass, and its products split between gases that leave and solids that stay. Diagnosing decomposition means working out which process won, at what temperature, and what was left behind. Five pieces of evidence do most of the work.
+
+#### 1. Compare the residue with the payload
+
+The first number to calculate for any new precursor is the mass percentage of the payload atom, %m~M~ (@eq-fom). If a precursor decomposes completely in the pan, the ligands leave as volatile fragments and the payload stays, so the residual mass lands near %m~M~, or near the mass percentage of the oxide, nitride or carbide if heteroatoms are retained. Calculate all the plausible phases before you look at the trace. For a tin compound of molar mass 400 g mol^−1^, tin is 29.7 % of the mass and SnO~2~ would be 37.7 %. A residue near one of these numbers, and *independent of sample mass*, says that most of the sample decomposed before it could evaporate. A residue that is larger than any plausible payload phase means ligand fragments or carbon were left behind as well.
+
+The reverse does not hold. A residue near zero shows that nothing involatile was left; it does not show that the molecule that left was the one you loaded (point 2).
+
+#### 2. Count the steps and measure them
+
+A clean precursor gives one step. Two or more steps, separated by a plateau or an inflection, mean that the sample changed into something else part-way through the run [@Barry2022]. The size of the first step is a stoichiometry measurement: compare it with the molar masses of the ligands, or the fragments, that the molecule could lose.
+
+Aluminium tris(amidinate)s are a worked case. For [MeC(N^i^Pr)~2~]~3~Al (M = 450.7 g mol^−1^), loss of one *N*,*N*′-diisopropylcarbodiimide (^i^PrN=C=N^i^Pr, 126.2 g mol^−1^) by deinsertion (@sec-ip-design) would remove 28.0 % of the mass. When these compounds were heated in a TGA and the condensed off-gas was examined by NMR, carbodiimide deinsertion turned out to be the main decomposition route of the homoleptic tris(amidinate)s, with onsets of only 88–120 °C. A heteroleptic dimethyl compound with an ethyl-substituted amidinate, EtC(N^i^Pr)~2~AlMe~2~, volatilized cleanly below 210 °C with no carbodiimide detected [@Brazeau2006]. The calculation tells you what to look for; collecting what leaves the pan tells you whether you were right.
+
+#### 3. Read the shape of the derivative
+
+Evaporation and decomposition leave different shapes in the DTG (the derivative, −dm/dT). Because evaporation is limited by the pan area and the vapour pressure rises exponentially, the DTG of a volatilizing sample rises exponentially and then drops to zero the moment the pan is empty: a cliff. Decomposition slows down as the reactant is used up, so its DTG is a rounded, more nearly symmetric peak [@Barry2013]. The distinction is easiest to see in a single, well-separated event, and it blurs when both processes run at once.
+
+#### 4. Change the sample mass
+
+The thermal stress test (@sec-tga) is the most reliable single check for *slow* decomposition, because it does not depend on how the two activation energies compare. A larger sample stays in the pan longer and reaches higher temperatures before it has all evaporated, so a precursor that decomposes slowly leaves more residue as the sample mass increases. A precursor that does not decompose leaves the same, near-zero residue at every mass [@Barry2013; @Barry2022]. Changing the ramp rate is less reliable: whether a slower ramp raises or lowers the residue depends on whether decomposition or evaporation speeds up faster with temperature.
+
+The step also moves to higher temperature as the sample gets larger, with or without decomposition. On its own, that shift is the pan-area effect, not a sign of trouble.
+
+#### 5. Hold the temperature
+
+At constant temperature, evaporation from a fixed area gives a constant rate: mass falls in a straight line until the pan is empty. Decomposition bends the line, because its rate falls as the reactant is consumed, and the run ends on a plateau at the residual mass rather than at zero. A conversion like carbodiimide loss levels off at the mass of the product. Holds at several temperatures give decomposition rate constants, and from those an activation energy and a half-life at the source temperature [@Barry2022].
+
+Half-lives turn a TGA result into a process decision. A copper(I) guanidinate dimer has a half-life of 1.41 days at 165 °C (k = 0.49 day^−1^); after a week at that temperature, only 3 % of the loaded precursor would be intact. Its redesigned iminopyrrolidinate analogue, [Cu(Me~2~-^t^Bu-ip)]~2~, showed no measurable decomposition at the same temperature [@Barry2013]. Simulation 2.10 plots these numbers.
+
+#### What a TGA cannot see
+
+TGA weighs what stays in the pan, so it is blind to some decomposition that matters:
+
+- **Decomposition after evaporation**, in the gas phase or on the hot walls of a delivery line.
+- **Surface-catalysed decomposition** on the substrate, which can happen well below any temperature at which the pure precursor decomposes (@sec-au-120).
+- **Slow decomposition over days or weeks** in a heated source. A ramp lasts about half an hour; a bubbler runs for weeks (@sec-decomposition-testing, [@Kim2022]).
+
+When the mass-loss evidence is ambiguous, identify what leaves the pan. TGA coupled to a mass spectrometer or an FTIR identifies evolved gases as they form, and for air-sensitive precursors the balance can be housed in a glovebox so the sample never sees air. Condensing the off-gas and running its NMR spectrum is a simple alternative [@Brazeau2006].
+
+| What you see | Most likely reading | Next experiment |
+|---|---|---|
+| One step, DTG cliff, ≈0 % residue at every mass | Clean volatilization | DSC for T~D~ (@sec-fom); long-term ageing |
+| Residue grows with sample mass | Slow decomposition during the run | Isothermal holds; NMR thermolysis at the source temperature |
+| Residue ≈ %m~M~ (or the oxide or nitride), independent of mass | Decomposes before it evaporates | Not an ALD precursor at this source temperature; consider redesign or CVD |
+| Two steps, first step = mass of a ligand or fragment | Ligand loss, then a new compound evaporates | Identify the off-gas (TG-MS, TG-FTIR, NMR of the condensate) |
+| Step moves to higher T with larger samples, residue unchanged | Pan-area effect on evaporation | None needed |
+
+: Reading a TGA trace for decomposition. {#tbl-tga-diagnosis}
+
+The simulation below hands you a series of unknown precursors and a fixed amount of each. Design your own experiments, then commit to a diagnosis before the answer is revealed.
+
+::: {.sim-box}
+[Simulation 2.11: Diagnose the unknown precursor]{.sim-title}
+
+```{ojs}
+//| echo: false
+tgaLab = {
+  // ---- Model (see Assumptions) ----
+  const R = 8.314, kEff = 0.1, BUDGET = 150, ISO_MIN = 120;
+  const pTorr = (s, T) => 750.06 * Math.exp(-s.H * 1000 / (R * T) + s.S / R);
+  const kdec = (s, T) => (Math.LN2 / 60) * Math.exp(-s.Ea * 1000 / R * (1 / T - 1 / (s.Td + 273.15)));
+  function simulate(u, m0, prog) {
+    const sp = u.species, m = sp.map((_, i) => (i === 0 ? m0 : 0));
+    let res = 0;
+    const tot = () => 100 * (m.reduce((a, b) => a + b, 0) + res) / m0;
+    const step = (T, dt) => {
+      const mm = m.slice();
+      sp.forEach((s, i) => {
+        if (mm[i] <= 0) return;
+        const ev = Math.min(mm[i], kEff * pTorr(s, T) * Math.sqrt(s.M / T) * dt);
+        const dec = (mm[i] - ev) * (1 - Math.exp(-kdec(s, T) * dt));
+        m[i] -= ev + dec;
+        if (s.to === "res") res += s.y * dec; else m[s.to] += s.y * dec;
+      });
+    };
+    const pts = [{x: prog.type === "ramp" ? 25 : 0, w: 100, d: 0}];
+    if (prog.type === "ramp") {
+      const dT = 0.5;
+      for (let Tc = 25 + dT; Tc <= 450; Tc += dT) {
+        step(Tc + 273.15, dT / prog.beta);
+        const w = tot();
+        pts.push({x: Tc, w, d: Math.max(0, (pts[pts.length - 1].w - w) / dT)});
+      }
+    } else {
+      const dt = 0.25;
+      for (let t = dt; t <= ISO_MIN + 1e-9; t += dt) { step(prog.T + 273.15, dt); pts.push({x: t, w: tot()}); }
+    }
+    const at = f => { const p = pts.find(d => d.w <= 100 - f); return p ? p.x : null; };
+    return {pts, x1: at(1), x50: at(50), res: pts[pts.length - 1].w};
+  }
+
+  // ---- The unknowns (fictional compounds; parameters hidden until the reveal) ----
+  const DX = {
+    clean: "Clean volatilization",
+    slow: "Slow decomposition during the run",
+    fast: "Decomposes before it evaporates",
+    step: "Stepwise conversion: loses a ligand fragment, then the product evaporates"
+  };
+  const UNKNOWNS = [
+    {metal: "Al", M: 300, pay: 9.0, dx: "clean",
+     species: [{H: 65, S: 145, M: 300, Td: 450, Ea: 150, to: "res", y: 0.09}],
+     why: "One smooth step, a DTG that rises exponentially and stops abruptly, and essentially zero residue at every sample mass. A larger sample shifts the step to higher temperature only because evaporation is limited by the pan area. An isothermal run loses mass in a straight line until the pan is empty."},
+    {metal: "Zr", M: 500, pay: 18.2, dx: "clean",
+     species: [{H: 100, S: 160, M: 500, Td: 500, Ea: 150, to: "res", y: 0.2}],
+     why: "This one is not very volatile, so it needs 200–300 °C to leave the pan, but a high temperature is not the same as decomposition. The residue stays at zero for every sample mass and ramp rate, and isothermal runs are linear. It is a clean, low-volatility precursor: the source must be hot, but the molecule survives the trip."},
+    {metal: "Cu", M: 250, pay: 25.4, dx: "slow",
+     species: [{H: 70, S: 150, M: 250, Td: 95, Ea: 60, to: "res", y: 0.254}],
+     why: "At 10 mg the trace looks almost clean (about 2 % residue), but the residue grows with sample mass: this is the thermal stress test failing. Here decomposition has a lower activation energy than evaporation, so a slower ramp also raises the residue. An isothermal hold ends on a non-zero plateau instead of reaching zero."},
+    {metal: "Ni", M: 280, pay: 21.0, dx: "slow",
+     species: [{H: 70, S: 150, M: 280, Td: 110, Ea: 170, to: "res", y: 0.21}],
+     why: "The 10 mg trace has under 2 % residue; at 60 mg it is over 10 %. Residue that grows with sample mass is the signature of slow decomposition. A trap: decomposition here has a higher activation energy than evaporation, so a slower ramp gives a cleaner-looking trace. Changing the ramp rate can mislead; changing the sample mass does not."},
+    {metal: "Sn", M: 400, pay: 29.7, dx: "fast",
+     species: [{H: 115, S: 165, M: 400, Td: 170, Ea: 130, to: "res", y: 0.297}],
+     why: "The residue is about 30 % at every mass and ramp rate, which matches the tin content of the molecule: the payload stayed in the pan and the ligands left. The DTG is a rounded, nearly symmetric peak rather than a cliff, because the rate falls as the reactant is used up, not when the pan runs dry. This compound decomposes before it develops a useful vapour pressure. It might serve as a CVD precursor, but not for ALD at this source temperature."},
+    {metal: "Al", M: 450, pay: 6.0, dx: "step",
+     species: [{H: 100, S: 165, M: 450, Td: 115, Ea: 120, to: 1, y: 0.72},
+               {H: 105, S: 160, M: 324, Td: 430, Ea: 150, to: "res", y: 0.083}],
+     why: "Two steps with a flat plateau between them, and zero final residue. The first step is about 28 % of the starting mass: 126 g mol⁻¹ out of 450, exactly one iPrN=C=NiPr carbodiimide from an aluminium tris(amidinate). The product then evaporates cleanly. A zero residue does not prove a clean precursor: the molecule that reaches the reactor is not the one you loaded. An isothermal hold at 130–150 °C levels off near 70 %, the mass of the product."}
+  ];
+
+  // ---- State ----
+  let order = [], cur = null, runs = [], left = BUDGET, done = false, showDTG = false;
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const COLORS = ["#000000", "#E91C24", "#8C8C8C", "#4D4D4D", "#F08A8E", "#BFBFBF", "#7A0E12", "#2B2B2B"];
+  const DASH = [null, null, null, "6,3", "6,3", "6,3", "2,2", "2,2"];
+
+  // ---- DOM ----
+  const el = (tag, attrs = {}, ...kids) => {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "style") e.style.cssText = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+    }
+    kids.flat().forEach(k => e.append(k instanceof Node ? k : document.createTextNode(String(k))));
+    return e;
+  };
+  const root = el("div", {class: "tga-lab"});
+  const card = el("div", {class: "tga-card"});
+  const controls = el("div", {class: "tga-controls"});
+  const plots = el("div");
+  const table = el("div");
+  const verdict = el("div", {class: "tga-verdict"});
+
+  // controls
+  const typeSel = el("select", {}, el("option", {value: "ramp"}, "Ramp (10 °C min⁻¹ is standard)"), el("option", {value: "iso"}, `Isothermal hold (${ISO_MIN} min)`));
+  const mass = el("input", {type: "range", min: 5, max: 80, step: 1, value: 10});
+  const massOut = el("output", {}, "10 mg");
+  const beta = el("input", {type: "range", min: 1, max: 20, step: 0.5, value: 10});
+  const betaOut = el("output", {}, "10 °C min⁻¹");
+  const Tiso = el("input", {type: "range", min: 50, max: 250, step: 5, value: 100});
+  const TisoOut = el("output", {}, "100 °C");
+  const runBtn = el("button", {class: "btn btn-dark btn-sm"}, "Run experiment");
+  const dtgBox = el("input", {type: "checkbox"});
+  const budgetOut = el("span", {class: "tga-budget"});
+  const rowBeta = el("label", {class: "tga-row"}, el("span", {}, "Ramp rate"), beta, betaOut);
+  const rowT = el("label", {class: "tga-row"}, el("span", {}, "Hold temperature"), Tiso, TisoOut);
+  mass.oninput = () => { massOut.value = `${mass.value} mg`; syncRun(); };
+  beta.oninput = () => betaOut.value = `${beta.value} °C min⁻¹`;
+  Tiso.oninput = () => TisoOut.value = `${Tiso.value} °C`;
+  typeSel.onchange = () => { rowBeta.style.display = typeSel.value === "ramp" ? "" : "none"; rowT.style.display = typeSel.value === "iso" ? "" : "none"; };
+  rowT.style.display = "none";
+  dtgBox.onchange = () => { showDTG = dtgBox.checked; drawPlots(); };
+  const syncRun = () => { runBtn.disabled = done || +mass.value > left; budgetOut.textContent = `Sample left: ${left} mg of ${BUDGET}`; };
+  controls.append(
+    el("label", {class: "tga-row"}, el("span", {}, "Experiment"), typeSel),
+    el("label", {class: "tga-row"}, el("span", {}, "Sample mass"), mass, massOut),
+    rowBeta, rowT,
+    el("div", {class: "tga-row"}, runBtn, budgetOut),
+    el("label", {class: "tga-check"}, dtgBox, " Show DTG (derivative) on ramp runs")
+  );
+
+  runBtn.onclick = () => {
+    const m0 = +mass.value;
+    if (m0 > left || done) return;
+    const prog = typeSel.value === "ramp" ? {type: "ramp", beta: +beta.value} : {type: "iso", T: +Tiso.value};
+    const r = simulate(cur, m0, prog);
+    left -= m0;
+    runs.push({n: runs.length + 1, m0, ...prog, ...r});
+    syncRun(); drawPlots(); drawTable(); drawVerdict();
+  };
+
+  function drawCard() {
+    card.replaceChildren(
+      el("div", {class: "tga-card-title"}, `Unknown ${UNKNOWNS.indexOf(cur) + 1} · a new ${cur.metal} precursor`),
+      el("div", {}, `Molar mass ${cur.M} g mol⁻¹ · ${cur.metal} is ${cur.pay.toFixed(1)} % of the molecule by mass · you have ${BUDGET} mg to spend.`),
+      el("div", {class: "tga-hint"}, "Run experiments, then commit to a diagnosis. Try to decide before you have spent all the sample.")
+    );
+  }
+
+  function drawPlots() {
+    const ramps = runs.filter(r => r.type === "ramp"), isos = runs.filter(r => r.type === "iso");
+    const lab = r => r.pts.find(d => d.w <= 50) || r.pts[r.pts.length - 1];
+    const col = r => COLORS[(r.n - 1) % COLORS.length], dash = r => DASH[(r.n - 1) % DASH.length];
+    const payload = Plot.ruleY([cur.pay], {stroke: "#E91C24", strokeDasharray: "3,4", strokeOpacity: 0.7});
+    const payText = (x) => Plot.text([{x, y: cur.pay}], {x: "x", y: "y", text: () => `${cur.metal} content ${cur.pay.toFixed(1)} %`, fill: "#E91C24", textAnchor: "end", dy: -7});
+    const out = [];
+    if (!runs.length) out.push(el("p", {class: "tga-hint"}, "No runs yet. A sensible first experiment is the standard screen: about 10 mg at 10 °C min⁻¹."));
+    if (ramps.length) {
+      const marks = [payload, payText(445)];
+      ramps.forEach(r => {
+        marks.push(Plot.line(r.pts, {x: "x", y: "w", stroke: col(r), strokeWidth: 2.2, strokeDasharray: dash(r)}));
+        marks.push(Plot.text([lab(r)], {x: "x", y: "w", text: () => `#${r.n}`, fill: col(r), textAnchor: "start", dx: 6}));
+        if (showDTG) {
+          const dmax = d3.max(r.pts, d => d.d) || 1;
+          marks.push(Plot.line(r.pts, {x: "x", y: d => 100 * d.d / dmax, stroke: col(r), strokeWidth: 1, strokeOpacity: 0.6, strokeDasharray: "2,2"}));
+        }
+      });
+      out.push(Plot.plot({height: 330, marginLeft: 55, marginRight: 30, marginBottom: 45, marginTop: 15,
+        x: {label: "Temperature (°C) →", domain: [25, 450]}, y: {label: "↑ Mass (%)", domain: [0, 105], grid: true}, marks}));
+    }
+    if (isos.length) {
+      const marks = [payload, payText(ISO_MIN)];
+      isos.forEach(r => {
+        marks.push(Plot.line(r.pts, {x: "x", y: "w", stroke: col(r), strokeWidth: 2.2, strokeDasharray: dash(r)}));
+        marks.push(Plot.text([lab(r)], {x: "x", y: "w", text: () => `#${r.n} (${r.T} °C)`, fill: col(r), textAnchor: "end", dy: -8}));
+      });
+      out.push(Plot.plot({height: 260, marginLeft: 55, marginRight: 30, marginBottom: 45, marginTop: 15,
+        x: {label: "Time at temperature (min) →", domain: [0, ISO_MIN]}, y: {label: "↑ Mass (%)", domain: [0, 105], grid: true}, marks}));
+    }
+    plots.replaceChildren(...out);
+  }
+
+  function drawTable() {
+    if (!runs.length) { table.replaceChildren(); return; }
+    const f = (v, u) => v == null ? "—" : `${(+v).toFixed(u === "min" ? 1 : 0)} ${u}`;
+    const rows = runs.map(r => el("tr", {},
+      el("td", {}, `#${r.n}`),
+      el("td", {}, r.type === "ramp" ? `ramp ${r.beta} °C min⁻¹` : `hold ${r.T} °C`),
+      el("td", {}, `${r.m0} mg`),
+      el("td", {}, r.type === "ramp" ? f(r.x1, "°C") : f(r.x1, "min")),
+      el("td", {}, r.type === "ramp" ? f(r.x50, "°C") : f(r.x50, "min")),
+      el("td", {}, `${r.res.toFixed(1)} %`)));
+    table.replaceChildren(el("table", {class: "table table-sm tga-table"},
+      el("thead", {}, el("tr", {}, ...["Run", "Programme", "Mass", "1 % loss", "50 % loss", "Final mass"].map(h => el("th", {}, h)))),
+      el("tbody", {}, ...rows)));
+  }
+
+  function drawVerdict() {
+    if (done) return;
+    if (!runs.length) { verdict.replaceChildren(); return; }
+    const opts = Object.entries(DX).map(([k, v]) => el("label", {class: "tga-check"}, el("input", {type: "radio", name: "tga-dx", value: k}), " ", v));
+    const commit = el("button", {class: "btn btn-outline-dark btn-sm"}, "Commit diagnosis");
+    commit.onclick = () => {
+      const pick = verdict.querySelector("input[name=tga-dx]:checked");
+      if (!pick) return;
+      done = true; syncRun(); reveal(pick.value);
+    };
+    verdict.replaceChildren(el("div", {class: "tga-card-title"}, "Your diagnosis"), ...opts, commit);
+  }
+
+  function reveal(pick) {
+    const ok = pick === cur.dx;
+    const masses = new Set(runs.filter(r => r.type === "ramp").map(r => r.m0));
+    const notes = [];
+    if (ok && masses.size < 2 && cur.dx !== "fast" && cur.dx !== "step")
+      notes.push("You got it right, but with only one sample mass you could not have ruled out slow decomposition. In practice, run the stress test before you trust a clean-looking trace.");
+    if (!ok && cur.dx === "slow" && masses.size < 2)
+      notes.push("The test that catches this one is the thermal stress test: repeat the ramp at a larger sample mass and compare the residues.");
+    if (!ok && cur.dx === "step")
+      notes.push("Look for a plateau part-way down, and compare the size of the first step with the masses of the ligands or fragments the molecule could lose.");
+    if (!ok && cur.dx === "fast")
+      notes.push("Compare the final mass with the metal content of the molecule: a residue that matches it, independent of sample mass, means the payload never left the pan.");
+    if (!ok && cur.dx === "clean")
+      notes.push("A high evaporation temperature, or a step that moves to higher temperature with a bigger sample, is not decomposition. Check whether the residue changes with sample mass.");
+    const hidden = cur.species.map((sp, i) =>
+      `${i ? "product" : "precursor"}: ΔHᵥₐₚ ${sp.H} kJ mol⁻¹, ΔSᵥₐₚ ${sp.S} J K⁻¹ mol⁻¹, decomposition t½ = 1 h at ${sp.Td} °C, Eₐ ${sp.Ea} kJ mol⁻¹`).join("; ");
+    const again = el("button", {class: "btn btn-dark btn-sm"}, "Next unknown");
+    again.onclick = next;
+    verdict.replaceChildren(
+      el("div", {class: ok ? "tga-ok" : "tga-no"}, ok ? `Correct: ${DX[cur.dx]}.` : `Not quite. This one is: ${DX[cur.dx]}.`),
+      el("p", {}, cur.why),
+      ...notes.map(n => el("p", {class: "tga-hint"}, n)),
+      el("p", {class: "tga-hint"}, `Hidden model: ${hidden}. Sample used: ${BUDGET - left} mg in ${runs.length} run${runs.length > 1 ? "s" : ""}.`),
+      again);
+  }
+
+  function next() {
+    if (!order.length) order = shuffle(UNKNOWNS.slice());
+    cur = order.pop(); runs = []; left = BUDGET; done = false;
+    drawCard(); syncRun(); drawPlots(); drawTable(); drawVerdict();
+  }
+
+  root.append(card, controls, plots, table, verdict);
+  next();
+  return root;
+}
+```
+
+::: {.assumptions}
+**Assumptions.** Each unknown is fictional. Evaporation follows @eq-langmuir-vp from a pan of fixed area, with vapour pressure from @eq-cc (constant ΔH~vap~ and ΔS~vap~), so its rate does not depend on sample mass. Decomposition is first order in the remaining precursor with an Arrhenius rate constant; it sends a fixed fraction of the decomposed mass either to a non-volatile residue or, for one unknown, to a new compound with its own volatility. The evaporation prefactor (0.1 mg min^−1^ at 1 Torr, scaled by √(M/T)) gives traces that resemble atmospheric-pressure TGA but is not a property of any real instrument. The isothermal runs jump instantly to the hold temperature. Melting, sublimation of solids, gas-phase decomposition after evaporation, buoyancy and balance noise are ignored. The DTG of each run is scaled to the same height.
+
+**Things to try.** Start every unknown with the standard screen (about 10 mg at 10 °C min^−1^) and decide what you expect the second run to show before you make it. Keep enough sample for a stress test at 40–60 mg. Turn on the DTG and compare a cliff with a rounded peak. When a trace has a plateau, convert the first step into g mol^−1^ (step fraction × M) and ask which fragment has that mass. For the slow decomposers, try a slower ramp as well as a bigger sample: in one of them the slower ramp hides the problem.
+:::
+:::
+
 ### Differential scanning calorimetry
 
 TGA only sees decomposition that happens before or during evaporation. For a precursor that evaporates cleanly and passes the stress test, differential scanning calorimetry (DSC) asks the next question: at what temperature would decomposition interfere with forming a self-limiting monolayer? [@Barry2022]
@@ -1444,7 +1742,7 @@ One ploy that works reliably is to **reduce the ability to bridge**. Group 13 co
 The two calculators below turn vapour-pressure data into the numbers a process needs.
 
 ::: {.sim-box}
-[Simulation 2.11: Vapour pressure and source temperature]{.sim-title}
+[Simulation 2.12: Vapour pressure and source temperature]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -1488,7 +1786,7 @@ md`Temperature for **${pTarget} Torr**: **${(vp.Tt - 273.15).toFixed(0)} °C** �
 :::
 
 ::: {.sim-box}
-[Simulation 2.12: Vapour pressure from a stepped isotherm]{.sim-title}
+[Simulation 2.13: Vapour pressure from a stepped isotherm]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -1708,7 +2006,7 @@ d(N) &= \mathrm{GPC}_\infty\left[N + (r-1)\,n_0\left(1-e^{-N/n_0}\right)\right]
 $$ {#eq-nucleation}
 
 ::: {.sim-box}
-[Simulation 2.13: Thickness versus cycles with a nucleation transient]{.sim-title}
+[Simulation 2.14: Thickness versus cycles with a nucleation transient]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -2022,6 +2320,32 @@ The Me~3~AuPMe~3~/H~2~ plasma process gave saturating growth up to 120 °C, but 
 
 ::: {.explanation}
 In situ studies showed ligand loss during the exposure itself [@VanDaele2020]. The decomposition was catalysed by the gold surface; it would not have been predicted from TGA or DSC of the precursor (@sec-au-120).
+:::
+:::
+
+::: {.quiz}
+A new aluminium precursor (M = 450 g mol^−1^, 6.0 % Al) loses 28 % of its mass in a first TGA step at 110–180 °C, holds a plateau, then loses the rest above 230 °C with no residue. What is the best reading?
+
+- [ ] A clean precursor: there is no residue.
+- [ ] It decomposes to aluminium metal; the plateau is the metal.
+- [x] It loses a fragment of about 126 g mol^−1^ (for example a carbodiimide) and the product evaporates. The vapour that reaches the reactor is not the compound that was loaded.
+- [ ] The first step is solvent, and the second is the precursor.
+
+::: {.explanation}
+28 % of 450 g mol^−1^ is 126 g mol^−1^, the mass of ^i^PrN=C=N^i^Pr. A plateau at 72 % is far above the 6 % that aluminium (or the 11 % that Al~2~O~3~) could account for, so the plateau is a new molecule, not a residue. Zero residue does not prove a clean precursor (@sec-tga-decomposition).
+:::
+:::
+
+::: {.quiz}
+In an isothermal TGA hold, precursor A loses mass in a straight line to 0 %. Precursor B loses mass quickly at first, then more and more slowly, and levels off at 25 %. Which statement is right?
+
+- [ ] Both are evaporating; B simply has a lower vapour pressure.
+- [x] A is evaporating from a fixed pan area (constant rate). B's rate falls as it is consumed, which is the behaviour of a reaction, and its plateau is a non-volatile product.
+- [ ] A is decomposing, because its mass reaches zero.
+- [ ] B is the better precursor because some of it remains for the next run.
+
+::: {.explanation}
+Evaporation from a fixed area is zero order in sample mass, so the line is straight. A first-order decomposition gives a curve that slows down and ends on a plateau at the residual mass (@sec-tga-decomposition).
 :::
 :::
 

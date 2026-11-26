@@ -83,3 +83,21 @@ $headings-font-weight: 600;
   color: $cu-grey-dark; border: 1px solid $cu-grey; border-left: 4px solid $cu-red;
   border-radius: 3px; padding: 0.1rem 0.6rem; margin-bottom: 0.5rem;
 }
+
+/* TGA diagnosis lab (Simulation 2.11) */
+.tga-card { background: $white; border-left: 4px solid $cu-black; padding: 0.6rem 0.9rem; margin-bottom: 0.75rem; }
+.tga-card-title { font-weight: 600; margin-bottom: 0.2rem; }
+.tga-controls { display: grid; gap: 0.35rem; margin-bottom: 0.75rem; }
+.tga-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: 0; }
+.tga-row > span:first-child { width: 150px; }
+.tga-row input[type="range"] { width: 260px; accent-color: $cu-red; }
+.tga-check { display: block; margin: 0.15rem 0; }
+.tga-check input { accent-color: $cu-red; }
+.tga-budget { color: $cu-grey-dark; font-size: 0.95rem; }
+.tga-hint { color: $cu-grey-dark; font-size: 0.95rem; }
+.tga-table { font-size: 0.95rem; background: $white; margin-top: 0.5rem; }
+.tga-verdict { background: $white; padding: 0.6rem 0.9rem; margin: 0.75rem 0 0.5rem; border-top: 1px solid #d0d0d0; }
+.tga-verdict:empty { display: none; }
+.tga-verdict .btn { margin-top: 0.5rem; }
+.tga-ok { font-weight: 600; color: $cu-black; border-left: 4px solid $cu-black; padding-left: 0.5rem; margin-bottom: 0.4rem; }
+.tga-no { font-weight: 600; color: $cu-red; border-left: 4px solid $cu-red; padding-left: 0.5rem; margin-bottom: 0.4rem; }
