@@ -149,12 +149,12 @@ In practice, a process is shown to be self-limiting by measuring a saturation cu
 
 ```{ojs}
 //| echo: false
-viewof sbKa = Inputs.range([0, 5], {value: 2.7, step: 0.1, label: "log₁₀ kₐ (Torr⁻¹ s⁻¹)"})
+viewof sbKa = Inputs.range([0, 5], {value: 2.7, step: 0.1, label: html`log₁₀ k<sub>a</sub> (Torr⁻¹ s⁻¹)`})
 viewof sbP = Inputs.range([0.5, 100], {value: 10, step: 0.5, label: "Partial pressure (mTorr)"})
-viewof sbIrr = Inputs.toggle({label: "Irreversible (k_d = 0)", value: false})
-viewof sbKd = Inputs.range([-4, 1], {value: -1, step: 0.1, label: "log₁₀ k_d (s⁻¹)"})
+viewof sbIrr = Inputs.toggle({label: html`Irreversible (k<sub>d</sub> = 0)`, value: false})
+viewof sbKd = Inputs.range([-4, 1], {value: -1, step: 0.1, label: html`log₁₀ k<sub>d</sub> (s⁻¹)`})
 viewof sbGpc = Inputs.range([0.2, 2], {value: 1.1, step: 0.05, label: "GPC at full coverage (Å)"})
-viewof sbSel = Inputs.range([0, 3], {value: 0, step: 0.1, label: "Second surface: log₁₀ (kₐ / kₐ′) (0 = off)"})
+viewof sbSel = Inputs.range([0, 3], {value: 0, step: 0.1, label: html`Second surface: log₁₀ (k<sub>a</sub> / k<sub>a</sub>′) (0 = off)`})
 viewof sbLog = Inputs.toggle({label: "Logarithmic time axis", value: false})
 ```
 
@@ -210,7 +210,7 @@ viewof sbPin = Inputs.button([
   const t = sbNow.t99, th1 = sbNow.f1(t), th2 = sbNow.f2(t);
   const S = (th1 - th2) / (th1 + th2);
   const fmt = x => x < 1 ? `${(1000 * x).toPrecision(3)} ms` : `${x.toPrecision(3)} s`;
-  return md`Plateau: **${(sbNow.thEq * sbGpc).toFixed(2)} Å** (θ_eq = ${sbNow.thEq.toFixed(3)}) · Pulse for 99 % of the plateau: **${fmt(t)}** · Exposure at that point: **${(sbNow.p * t / 1e-6).toExponential(1)} L**
+  return md`Plateau: **${(sbNow.thEq * sbGpc).toFixed(2)} Å** (θ<sub>eq</sub> = ${sbNow.thEq.toFixed(3)}) · Pulse for 99 % of the plateau: **${fmt(t)}** · Exposure at that point: **${(sbNow.p * t / 1e-6).toExponential(1)} L**
 ${sbSel > 0 ? `\nAt that pulse the second surface has GPC **${(sbGpc * th2).toFixed(2)} Å**, a kinetic selectivity S = (θ₁ − θ₂)/(θ₁ + θ₂) = **${S.toFixed(2)}**.` : ""}`;
 }
 ```
