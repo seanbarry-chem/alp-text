@@ -593,19 +593,6 @@ P.plot({
 ## Check your understanding
 
 ::: {.quiz}
-Why did molecular layering remain largely unknown outside the USSR until the 2010s?
-
-- [ ] It used chemistry that did not work outside a laboratory.
-- [x] It was published mainly in Russian and developed with little contact with Western thin-film researchers.
-- [ ] It was classified military research until 2013.
-- [ ] It was a later copy of atomic layer epitaxy.
-
-::: {.explanation}
-Molecular layering predates ALE, so it was not a copy. The main barrier was language and isolation, which is exactly what the VPHA set out to address [@Ahvenniemi2017; @Malygin2015].
-:::
-:::
-
-::: {.quiz}
 What was the first industrial application of ALD?
 
 - [ ] High-k gate dielectrics in microprocessors
@@ -674,7 +661,7 @@ ASD exploits the difference in nucleation between two surfaces. Selectivity is l
 
 - @Barry2022, Chapter 1: an introduction to ALD chemistry, including the history of both lineages.
 - @Puurunen2014: the story of ALE as told by its inventor, written for the 40th anniversary. Open access.
-- @Malygin2015: the first detailed English-language account of molecular layering and of Aleskovskii and Kol'tsov.
+- @Malygin2015: a detailed English-language account of molecular layering and of Aleskovskii and Kol'tsov.
 - @Ahvenniemi2017: the VPHA reading list of early publications from both lineages. Open access.
 - @Parsons2013: how the ALD community and its conference grew within the AVS.
 - @Sundberg2014: a review of hybrid ALD/MLD materials, including the history of MLD. Open access.
