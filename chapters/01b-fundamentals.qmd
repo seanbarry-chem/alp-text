@@ -9,7 +9,7 @@ After this chapter you should be able to:
 1. Write the rate equations for adsorption and desorption, derive the Langmuir isotherm and the saturation curve from them, and explain why the two are not the same thing.
 2. Explain why a saturated half-cycle deposits only a fraction of a monolayer, and why a constant GPC across a temperature range neither proves nor is required for self-limiting growth.
 3. Classify a ligand as L or X, predict from bond polarity and the chelate effect how it will behave, and place it in a ligand family.
-4. List what a precursor and a second precursor must do, and score a candidate precursor against those requirements.
+4. List what a precursor and a second precursor must do, and explain what each requirement rules out.
 5. Read a TGA trace and a DSC trace, define T~V~ and T~D~, and calculate a thermal figure of merit.
 6. Recognize the classic organometallic reaction steps (association, dissociation, reductive elimination, oxidative addition, migratory insertion, ligand exchange) in a surface reaction.
 7. Describe how hydroxylated, metal and hydride surfaces differ as nucleation sites, and explain why defects and diffusion control the first cycles of growth.
@@ -1254,7 +1254,7 @@ $$
 \ln\frac{p}{p^\circ} = -\frac{\Delta H_\text{vap}}{RT} + \frac{\Delta S_\text{vap}}{R}
 $$ {#eq-cc}
 
-with p° = 1 bar. Simulation 2.13 in @sec-volatility-control uses this equation to find the source temperature for a given vapour pressure.
+with p° = 1 bar. Simulation 2.12 in @sec-volatility-control uses this equation to find the source temperature for a given vapour pressure.
 
 ##### Controlling intermolecular interactions
 
@@ -1362,97 +1362,6 @@ The common second precursors each bring their own chemistry:
 - **Ammonia** is the usual nitrogen source. It leaves ‖–NH~x~ groups that act as nucleation sites for the next metal pulse (@sec-surfaces). For many nitrides the metal must also be reduced, Ti(IV) to Ti(III) in TiN for example, and this needs a surface redox step such as reductive elimination (@sec-reductive-elimination).
 - **Reducing agents** are needed when the film is a metal and the metal is not noble. Molecular H~2~ often reacts only on a catalytically active metal surface, H~2~ plasma supplies atomic hydrogen, and metal reductants such as zinc vapour or diethylzinc reduce by ligand exchange [@Barry2022]. For electropositive first-row metals this is still one of the hardest problems in ALD precursor chemistry [@Knisley2013; @Emslie2013]. Noble metals are the exception: they grow with O~2~, by combustion of the ligands, because their oxides are unstable.
 
-### Scoring a precursor
-
-The scorecard below brings the requirements of this section together with the thermal parameters defined in @sec-thermolysis. Pick a starting compound, then change the numbers to see which requirement fails first.
-
-::: {.sim-box}
-[Simulation 2.11: Precursor scorecard]{.sim-title}
-
-```{ojs}
-//| echo: false
-scAnchors = [
-  {name: "Alkyl (CH₄, pKa ≈ 50)", pKa: 50, by: "CH₄", st: "ok", note: "Strong base: fast protonolysis by –OH; benign alkane by-product."},
-  {name: "Amide (HNR₂, pKa ≈ 35–40)", pKa: 37, by: "HNR₂", st: "ok", note: "Strong base: reacts with –OH at low temperature; amine by-product."},
-  {name: "Alkoxide (ROH, pKa ≈ 16–18)", pKa: 17, by: "ROH", st: "ok", note: "Moderate base: reacts with –OH; Al–O/Ti–O bonds tend to leave oxygen in the film."},
-  {name: "Cyclopentadienyl (CpH, pKa ≈ 16)", pKa: 16, by: "CpH", st: "warn", note: "Moderate base, but Cp is often retained and reacts poorly with water: usually needs O₃ or O₂."},
-  {name: "β-Diketonate (pKa ≈ 9)", pKa: 9, by: "H(β-dik)", st: "warn", note: "Weak base: often chemisorbs as the ligand rather than leaving; usually needs O₃ or O₂."},
-  {name: "Chloride (HCl, pKa ≈ −7)", pKa: -7, by: "HCl", st: "warn", note: "Reacts, but the HCl by-product is corrosive and can etch the film or passivate sites."}
-]
-scPresets = [
-  {name: "TMA (AlMe₃)", tv: -14, td: 300, mr: 0, mm: 37.4, mp: 15, anchor: 0, pyro: true, src: 20, proc: 200,
-   ref: "T_V from a literature Antoine fit; T_D ≈ 300 °C [Barry 2022]."},
-  {name: "AlCl₃", tv: 100, td: 500, mr: 0, mm: 20.2, mp: 192, anchor: 5, pyro: false, src: 120, proc: 350,
-   ref: "Approximate: sublimes, about 1 Torr near 100 °C. T_D is a lower bound: AlCl₃ is used for Al₂O₃ up to 500 °C [Barry 2022]."},
-  {name: "Candidate A (invented)", tv: 85, td: 190, mr: 4, mm: 25, mp: 60, anchor: 1, pyro: false, src: 90, proc: 200, ref: "Invented for practice."},
-  {name: "Candidate B (invented)", tv: 120, td: 135, mr: 18, mm: 22, mp: 140, anchor: 4, pyro: false, src: 125, proc: 250, ref: "Invented for practice."},
-  {name: "Candidate C (invented)", tv: 60, td: 260, mr: 1, mm: 30, mp: 35, anchor: 2, pyro: false, src: 70, proc: 220, ref: "Invented for practice."}
-]
-viewof scPreset = Inputs.select(scPresets.map(d => d.name), {label: "Start from"})
-scBase = scPresets.find(d => d.name === scPreset)
-viewof scIn = Inputs.form({
-  tv: Inputs.number({value: scBase.tv, label: "T_V, temperature for 1 Torr (°C)"}),
-  td: Inputs.number({value: scBase.td, label: "T_D, decomposition onset (°C)"}),
-  mr: Inputs.number({value: scBase.mr, label: "TGA residual mass, %m_r"}),
-  mm: Inputs.number({value: scBase.mm, label: "Payload mass fraction, %m_M"}),
-  mp: Inputs.number({value: scBase.mp, label: "Melting point (°C)"}),
-  anchor: Inputs.select(scAnchors.map((d, i) => i), {value: scBase.anchor, format: i => scAnchors[i].name, label: "Most basic ligand"}),
-  pyro: Inputs.toggle({label: "Pyrophoric", value: scBase.pyro}),
-  src: Inputs.range([-20, 250], {value: scBase.src, step: 1, label: "Source temperature (°C)"}),
-  proc: Inputs.range([25, 500], {value: scBase.proc, step: 5, label: "Deposition temperature (°C)"})
-})
-```
-
-```{ojs}
-//| echo: false
-scResult = {
-  const x = scIn, a = scAnchors[x.anchor];
-  const sigma = (x.td - x.tv) * (1 - x.mr / x.mm);
-  const rows = [
-    ["Volatile in the source", x.src >= x.tv ? "ok" : x.src >= x.tv - 30 ? "warn" : "bad",
-      x.src >= x.tv ? `≥ 1 Torr at ${x.src} °C.` : `Below 1 Torr at ${x.src} °C; usable only with long pulses or a boosted delivery. Raise the source to ${x.tv} °C?`],
-    ["Stable in the source", x.td - x.src >= 10 ? "ok" : x.td >= x.src ? "warn" : "bad",
-      x.td - x.src >= 10 ? `T_D is ${x.td - x.src} °C above the source.` : x.td >= x.src ? "Less than 10 °C of margin; check long-term stability at the source temperature." : "The source is above T_D: the precursor decomposes before it is delivered."],
-    ["Thermal range, σ", sigma > 100 ? "ok" : sigma > 0 ? "warn" : "bad", `σ = ${sigma.toFixed(0)} °C (see the figure of merit in the thermolysis section).`],
-    ["Clean volatilization", x.mr <= 2 ? "ok" : x.mr < x.mm ? "warn" : "bad",
-      x.mr <= 2 ? "Little or no TGA residue." : x.mr < x.mm ? "Some of the payload stays behind: slow decomposition during evaporation." : "More residue than the payload alone can explain: the compound does not volatilize intact."],
-    ["Physical state in the source", x.mp < x.src ? "ok" : "warn",
-      (x.mp < x.src ? "Liquid in the source: steady delivery." : "Solid in the source: delivery can drift as the particles shrink.") + (x.mp > 25 ? " Ships and loads as a solid." : " Liquid at room temperature.")],
-    ["Deposition temperature", x.proc <= x.td ? "ok" : "warn",
-      x.proc <= x.td ? "Below T_D, though a reactive surface can still catalyse decomposition." : "Above T_D: expect a CVD component unless the surface reaction outruns decomposition. Check with a saturation curve."],
-    ["Anchor ligand", a.st, `${a.note} By-product with –OH: ${a.by}.`],
-    ["Handling", x.pyro ? "warn" : "ok", x.pyro ? "Pyrophoric: needs air-free handling and delivery." : "Not pyrophoric."]
-  ];
-  return {rows, sigma};
-}
-{
-  const sym = {ok: ["✓", "#000"], warn: ["!", "#4D4D4D"], bad: ["✗", "#E91C24"]};
-  return html`<table class="table" style="font-size:0.95rem"><thead><tr><th>Requirement</th><th></th><th>Comment</th></tr></thead><tbody>
-    ${scResult.rows.map(([k, s, c]) => html`<tr><td>${k}</td><td style="font-weight:700;color:${sym[s][1]};font-size:1.15rem">${sym[s][0]}</td><td>${c}</td></tr>`)}
-  </tbody></table><div class="map-ref">${scBase.ref}</div>`;
-}
-```
-
-```{ojs}
-//| echo: false
-Plot.plot({
-  height: 220, marginLeft: 210, marginBottom: 40,
-  x: {label: "Figure of merit σ (°C) →", grid: true},
-  y: {label: null},
-  marks: [
-    Plot.barX([...scPresets.filter(d => d.name !== scPreset).map(d => ({name: d.name, s: (d.td - d.tv) * (1 - d.mr / d.mm)})),
-               {name: `${scPreset} (as edited)`, s: scResult.sigma}],
-      {y: "name", x: "s", fill: d => d.name.endsWith("(as edited)") ? "#E91C24" : "#8C8C8C", sort: {y: "x", reverse: true}}),
-    Plot.ruleX([0])
-  ]
-})
-```
-
-::: {.assumptions}
-**Assumptions.** A checklist, not a prediction. The thresholds (a 10 °C stability margin, σ > 100 °C, residue ≤ 2 %) are rules of thumb for ranking candidates, and every "✓" still needs a saturation curve in a reactor. σ is the figure of merit of @eq-fom; it uses T~V~ and T~D~ from separate measurements and can mislead when both terms are negative (see the text). Values for TMA and AlCl~3~ are approximate; the candidates are invented. Surface chemistry, film purity and cost are not scored.
-:::
-:::
-
 ## Thermolysis and thermal characterization {#sec-thermolysis}
 
 [Applies to: ALD · MLD · ALE · ASD]{.applies}
@@ -1478,7 +1387,7 @@ Thermogravimetric analysis (TGA) follows the mass of a sample on a microbalance 
 
 None of these is proof, but a trace with all three is encouraging [@Barry2022]. Three refinements turn the screening run into a better test:
 
-- **Change the ramp rate.** At a slower ramp, the sample spends longer at each temperature. A compound with a slow decomposition leaves more residue; one that does not decompose simply loses its mass at a lower apparent onset temperature and over a steeper step. This is one reason not to trust the "onset" of a TGA trace as a material property: it depends on ramp rate and sample mass [@Barry2022]. (Whether a slower ramp raises the residue also depends on how steeply decomposition speeds up with temperature compared with evaporation; Simulation 2.12 lets you explore this.)
+- **Change the ramp rate.** At a slower ramp, the sample spends longer at each temperature. A compound with a slow decomposition leaves more residue; one that does not decompose simply loses its mass at a lower apparent onset temperature and over a steeper step. This is one reason not to trust the "onset" of a TGA trace as a material property: it depends on ramp rate and sample mass [@Barry2022]. (Whether a slower ramp raises the residue also depends on how steeply decomposition speeds up with temperature compared with evaporation; Simulation 2.11 lets you explore this.)
 - **Change the sample mass (the thermal stress test).** The evaporation rate is set by the pan area, not by the sample mass, so a larger sample is still in the pan at higher temperatures. Repeating the ramp at several masses exposes slow decomposition: in one example, the residue rose from 2 % for about 10 mg to 14 % for about 60 mg [@Barry2022]. A precursor like that would be a risk in a source held at moderate temperature for days or weeks.
 - **Run it isothermally.** An isothermal run gives the delivery rate at one temperature. Because the purge gas sweeps vapour away, evaporation never reaches equilibrium (Le Chatelier's principle again), so a TGA can overestimate the vapour pressure that would build up in a closed source. For ranking similar precursors, and as a model of a pulse that also removes vapour, it is still very useful [@Barry2022].
 
@@ -1491,7 +1400,7 @@ $$ {#eq-langmuir-vp}
 where α corrects for non-ideal behaviour (α = 1 in vacuum). In practice, the whole prefactor k is calibrated against a standard of known vapour pressure [@Barry2022]. A plot of ln p~vap~ against 1/T then follows the Clausius–Clapeyron equation (@eq-cc): its slope gives ΔH~vap~, and reading off 1 Torr gives T~V~. If several related precursors give parallel lines, they share their volatilization thermodynamics; one that does not is worth a closer look [@Barry2022].
 
 ::: {.sim-box}
-[Simulation 2.12: TGA curve reader]{.sim-title}
+[Simulation 2.11: TGA curve reader]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -1583,7 +1492,7 @@ $$ {#eq-fom}
 
 Here %m~r~ is the TGA residual mass and %m~M~ the mass percentage of the payload atom in the precursor. The second factor estimates how much of the payload failed to volatilize, and shrinks the thermal range accordingly [@Barry2022].
 
-σ is a ranking tool, not a verdict. It can go negative in two ways: T~V~ above T~D~ (the compound decomposes before it evaporates, so it is a poor ALD precursor, though it might work for CVD), or a residue larger than the payload alone can explain. If **both** terms are negative, σ comes out positive for a truly terrible precursor [@Barry2022]. Use it to compare candidates that already look reasonable, and look at the data behind the number. Simulation 2.11 uses σ alongside the other requirements.
+σ is a ranking tool, not a verdict. It can go negative in two ways: T~V~ above T~D~ (the compound decomposes before it evaporates, so it is a poor ALD precursor, though it might work for CVD), or a residue larger than the payload alone can explain. If **both** terms are negative, σ comes out positive for a truly terrible precursor [@Barry2022]. Use it to compare candidates that already look reasonable, and look at the data behind the number.
 
 ### Decomposition testing {#sec-decomposition-testing}
 
@@ -1610,7 +1519,7 @@ One ploy that works reliably is to **reduce the ability to bridge**. Group 13 co
 The two calculators below turn vapour-pressure data into the numbers a process needs.
 
 ::: {.sim-box}
-[Simulation 2.13: Vapour pressure and source temperature]{.sim-title}
+[Simulation 2.12: Vapour pressure and source temperature]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -1654,7 +1563,7 @@ md`Temperature for **${pTarget} Torr**: **${(vp.Tt - 273.15).toFixed(0)} °C** �
 :::
 
 ::: {.sim-box}
-[Simulation 2.14: Vapour pressure from a stepped isotherm]{.sim-title}
+[Simulation 2.13: Vapour pressure from a stepped isotherm]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -1871,7 +1780,7 @@ Adsorbed species do not have to stay where they land. Hopping between sites is t
 The simulation below puts these ideas together on two surfaces that differ only in their defect density. It is written so that the same model can describe a growth and a non-growth surface in area-selective deposition.
 
 ::: {.sim-box}
-[Simulation 2.15: Stochastic nucleation on clean and defect-rich surfaces]{.sim-title}
+[Simulation 2.14: Stochastic nucleation on clean and defect-rich surfaces]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -1994,7 +1903,7 @@ d(N) &= \mathrm{GPC}_\infty\left[N + (r-1)\,n_0\left(1-e^{-N/n_0}\right)\right]
 $$ {#eq-nucleation}
 
 ::: {.sim-box}
-[Simulation 2.16: Thickness versus cycles with a nucleation transient]{.sim-title}
+[Simulation 2.15: Thickness versus cycles with a nucleation transient]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -2353,7 +2262,7 @@ Hydrogen bonded to a less electronegative element carries a partial negative cha
 :::
 
 ::: {.quiz}
-In Simulation 2.15, increasing the capture (diffusion) length while keeping everything else fixed mainly does what?
+In Simulation 2.14, increasing the capture (diffusion) length while keeping everything else fixed mainly does what?
 
 - [ ] Increases the number of nuclei, because species move to more sites.
 - [x] Decreases the number of nuclei and makes islands larger, because more of the arriving species join existing islands instead of starting new ones.
