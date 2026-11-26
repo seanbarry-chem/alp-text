@@ -12,7 +12,7 @@ After this chapter you should be able to:
 4. List what a precursor and a second precursor must do, and explain what each requirement rules out.
 5. Read a TGA trace and a DSC trace, define T~V~ and T~D~, and calculate a thermal figure of merit.
 6. Recognize the classic organometallic reaction steps (association, dissociation, reductive elimination, oxidative addition, migratory insertion, ligand exchange) in a surface reaction.
-7. Describe how hydroxylated, metal and hydride surfaces differ as nucleation sites, and explain why defects and diffusion control the first cycles of growth.
+7. Describe how hydroxylated, metal and hydride surfaces differ as nucleation sites, and explain why defects control the first cycles of growth.
 :::
 
 This chapter collects the ideas that every atomic layer process depends on. ALD, MLD, ALE and ASD all use self-limiting gas–surface reactions, all use the same families of precursors, and all fail in the same ways when a precursor decomposes or a surface does not cooperate. The later chapters on each process link back here rather than repeating this material. Each section starts with a line saying which processes it applies to.
@@ -1694,14 +1694,6 @@ A film that wets the substrate (small θ) nucleates easily and can grow layer by
 
 This is why selectivity in deposition is best described by *relative nucleation rates* on different surfaces [@Gladfelter1993], and it is the physical basis of inherent area-selective deposition: a long nucleation delay on the non-growth surface and none on the growth surface give a window of cycles in which film grows only where it is wanted (@sec-history-asd).
 
-### Diffusion and dynamic processes {#sec-diffusion}
-
-Adsorbed species do not have to stay where they land. Hopping between sites is thermally activated with a barrier smaller than the desorption energy, so a species can often diffuse a long way before it desorbs or reacts. Diffusion changes nucleation in several ways:
-
-- **Capture.** A species that lands within a diffusion length of an existing island is likely to join it rather than start a new one. Each island has a *capture zone*, and the density of nuclei falls as the diffusion length grows (for example with temperature).
-- **Ripening and coalescence.** Small islands, with more of their atoms at an edge, are less stable than large ones and can shrink in favour of them; touching islands merge. Both change the morphology long after the nuclei formed, as in the gold nanostructures above.
-- **Reorganization of the monolayer.** Chemisorbed fragments can rearrange into a denser layer, raising the coverage, or react with each other and leave, lowering it. This is another reason to think of ALD in terms of kinetic rather than thermodynamic stability [@Barry2022].
-
 ### Initial growth and growth modes {#sec-growth-modes}
 
 The first cycles on a new substrate rarely look like the steady state. The substrate's own surface chemistry sets how many reactive sites are available at first. Puurunen and Vandervorst classified the behaviour as **linear**, **substrate-enhanced** or **substrate-inhibited** growth, and further divided substrate-inhibited growth into two types, the second of which involves island growth [@Puurunen2004].
@@ -2071,19 +2063,6 @@ Which hydrogen-terminated surface is expected to react with TMA as a *hydride* (
 
 ::: {.explanation}
 Hydrogen bonded to a less electronegative element carries a partial negative charge. Noble metals, W and Pb polarize the bond the other way, so their surface hydrogens are protic [@Barry2022].
-:::
-:::
-
-::: {.quiz}
-During the first cycles of growth, what does a longer surface diffusion (capture) length mainly do, with everything else fixed?
-
-- [ ] Increases the number of nuclei, because species move to more sites.
-- [x] Decreases the number of nuclei and makes islands larger, because more of the arriving species join existing islands instead of starting new ones.
-- [ ] Removes the difference between clean and defect-rich surfaces.
-- [ ] Has no effect, because nucleation depends only on the defect density.
-
-::: {.explanation}
-Each island collects material from its capture zone. Longer diffusion lengths mean larger zones, fewer independent nucleation events and a coarser film (@sec-diffusion).
 :::
 :::
 
