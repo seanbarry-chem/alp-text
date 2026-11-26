@@ -1554,6 +1554,7 @@ tgaLab = {
   const Tiso = el("input", {type: "range", min: 50, max: 250, step: 5, value: 100});
   const TisoOut = el("output", {}, "100 °C");
   const runBtn = el("button", {class: "btn btn-dark btn-sm"}, "Run experiment");
+  const resetBtn = el("button", {class: "btn btn-outline-dark btn-sm"}, "Reset");
   const dtgBox = el("input", {type: "checkbox"});
   const budgetOut = el("span", {class: "tga-budget"});
   const rowBeta = el("label", {class: "tga-row"}, el("span", {}, "Ramp rate"), beta, betaOut);
@@ -1569,7 +1570,7 @@ tgaLab = {
     el("label", {class: "tga-row"}, el("span", {}, "Experiment"), typeSel),
     el("label", {class: "tga-row"}, el("span", {}, "Sample mass"), mass, massOut),
     rowBeta, rowT,
-    el("div", {class: "tga-row"}, runBtn, budgetOut),
+    el("div", {class: "tga-row"}, runBtn, resetBtn, budgetOut),
     el("label", {class: "tga-check"}, dtgBox, " Show DTG (derivative) on ramp runs")
   );
 
@@ -1678,10 +1679,18 @@ tgaLab = {
       again);
   }
 
+  // Reset: clear all runs and the diagnosis, refill the sample, keep the same unknown
+  function restart() {
+    runs = []; left = BUDGET; done = false;
+    verdict.replaceChildren();
+    drawCard(); syncRun(); drawPlots(); drawTable(); drawVerdict();
+  }
+  resetBtn.onclick = restart;
+
   function next() {
     if (!order.length) order = shuffle(UNKNOWNS.slice());
-    cur = order.pop(); runs = []; left = BUDGET; done = false;
-    drawCard(); syncRun(); drawPlots(); drawTable(); drawVerdict();
+    cur = order.pop();
+    restart();
   }
 
   root.append(card, controls, plots, table, verdict);
