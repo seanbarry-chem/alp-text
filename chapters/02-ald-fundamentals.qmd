@@ -6,12 +6,30 @@ title: "Atomic Layer Deposition"
 ## Learning outcomes
 After this chapter you should be able to:
 
-1. State the operational definition of ALD and design an experiment that tests it.
-2. Write the two half-reactions of the TMA/H~2~O model process and explain how they alternate in one cycle.
-3. Explain why the GPC of TMA/H~2~O is a fraction of a monolayer, using the fundamentals in @sec-saturation.
+1. State the operational definition of ALD, design an experiment that tests it, and write the half-reactions of the TMA/H~2~O model process.
+2. Compare thermal and plasma-enhanced ALD: what each plasma species does, how the three reactor configurations differ, and what a plasma costs.
+3. Convert a GPC into a fraction of a monolayer and an areal density of metal atoms, and explain why Al~2~O~3~ grows at about a third of a monolayer per cycle while W grows at about one.
+4. Estimate how many cycles a film needs once a growth delay and island growth are taken into account.
+5. Explain reaction-, diffusion- and recombination-limited growth in high-aspect-ratio structures, read a saturation profile, and explain how seams and voids form during gap fill.
+6. Lay out the steps for developing and characterizing a new ALD recipe.
+7. Walk through the surface chemistry of five ALD processes and of a supercycle, and name the main limitations of ALD.
 :::
 
-## What makes a process ALD? {#sec-what-makes-ald}
+This chapter is about ALD as a process: a recipe running in a reactor, a film growing on a substrate. The chemistry that ALD shares with the other atomic layer processes is in Chapter 2, and this chapter links to it rather than repeating it.
+
+::: {.callout-note appearance="simple"}
+## Where the fundamentals are
+- **Saturation and dose:** rate equations, the Langmuir isotherm and the saturation curve (@sec-ka-kd to @sec-saturation-curve); dose estimates (@sec-dose).
+- **Why GPC is a fraction of a monolayer:** steric crowding by TMA fragments (@sec-steric).
+- **Process windows:** @sec-process-windows.
+- **Ligands, precursors and second precursors:** @sec-ligands and @sec-precursors; thermal testing in @sec-thermolysis.
+- **Surface reaction steps** (association, reductive elimination, migratory insertion and the rest): @sec-mechanisms.
+- **Surfaces, nucleation and growth modes:** @sec-surfaces and @sec-growth-modes.
+:::
+
+## The model system: trimethylaluminum and water {#sec-tma-model}
+
+### What makes a process ALD? {#sec-what-makes-ald}
 
 Atomic layer deposition builds a film by exposing a surface to two (or more) reactants **one at a time**, with a purge or evacuation between them. Each exposure is a gas–surface reaction that stops by itself once the available surface sites are used up [@George2010; @Johnson2014].
 
@@ -21,9 +39,17 @@ The defining property is **self-limitation**, not the cycle structure. Plenty of
 
 Any other characteristic (conformality, digital thickness control, low pinhole density) follows from this property. None of them can stand in for testing it.
 
-## The model system: TMA/H~2~O → Al~2~O~3~ {#sec-tma-model}
+### Trimethylaluminum as a precursor
 
-The trimethylaluminum (TMA)/water process is the most-studied ALD chemistry and is the usual reference point [@Puurunen2005]. In simplified form, the two half-reactions on a hydroxylated surface (asterisks denote surface species) are:
+The TMA/water process is the most-studied ALD chemistry and the usual reference point [@Puurunen2005]. Much of its success comes from the precursor itself.
+
+- **It is easy to make.** On the laboratory scale, TMA comes from a salt metathesis between AlCl~3~ and methyllithium in a non-protic solvent such as diethyl ether, which does not dissolve the LiCl by-product; precipitation of the salt drives the reaction to completion. Industrially, it is made from aluminum metal, methyl chloride and sodium, with NaCl as the by-product [@Barry2022].
+- **It is a dimer that reacts as a monomer.** Three-coordinate aluminum is electron-poor, so TMA exists mainly as Al~2~Me~6~ (@sec-tma-dmai). At 100 °C and low pressure, the gas phase holds about 80 % dimer and 20 % monomer. The monomer is the species that chemisorbs, so even this "textbook" ALD precursor depends on a gas-phase equilibrium before it reaches the surface [@Barry2022].
+- **It reacts in two steps.** The Lewis-acidic monomer first physisorbs through a lone pair on a surface oxygen; a methyl group then takes the hydroxyl proton and leaves as methane (@sec-hydroxyl-reaction). Methane is swept away, so the step cannot reverse. On bare silica, TMA tends to react with two hydroxyls; on a growing alumina surface, it tends to react with one [@Barry2022].
+
+### The two half-reactions
+
+In simplified form, the two half-reactions on a hydroxylated surface (asterisks denote surface species) are:
 
 $$
 \text{A:}\quad \|\!-\!\text{OH}^* + \text{Al(CH}_3)_3 \rightarrow \|\!-\!\text{O–Al(CH}_3)_2^* + \text{CH}_4
@@ -242,21 +268,386 @@ cycleFigure = {
 
 Two points are worth stating early, because students often get them wrong:
 
-- **GPC is a fraction of a monolayer.** For TMA/H~2~O, a typical GPC is about 1 Å, which is well below the thickness of one "layer" of Al~2~O~3~. The amount of metal adsorbed per cycle is limited by **steric hindrance** from the ligands that remain after chemisorption and by the **number of reactive sites**. Which of the two dominates depends on the chemistry and the temperature [@Puurunen2005] (see @sec-steric).
-- **Eqs. [-@eq-tma]–[-@eq-water] are idealized.** In reality, TMA can react with one or two hydroxyls, and it can also dissociate onto Al–O bridges. The ratio between these pathways sets how many methyl groups survive into step B. This is why the hydroxyl density, and hence the temperature, controls the GPC.
+- **GPC is a fraction of a monolayer.** For TMA/H~2~O, a typical GPC is about 1 Å, which is well below the thickness of one "layer" of Al~2~O~3~. The amount of metal adsorbed per cycle is limited by **steric hindrance** from the ligands that remain after chemisorption and by the **number of reactive sites**. Which of the two dominates depends on the chemistry and the temperature [@Puurunen2005] (@sec-steric, @sec-gpc-monolayer).
+- **Eqs. [-@eq-tma]–[-@eq-water] are idealized.** In reality, TMA can react with one or two hydroxyls, and it can also dissociate onto Al–O bridges. The ratio between these pathways sets how many methyl groups survive into step B. This is why the hydroxyl density, and hence the temperature, controls the GPC (@sec-process-alumina).
 
-## Where the fundamentals are
+## Thermal and plasma-enhanced ALD {#sec-thermal-peald}
 
-The ideas that ALD shares with the other atomic layer processes are developed in @sec-saturation to @sec-surfaces, and this chapter does not repeat them. For ALD in particular:
+In **thermal ALD**, the energy that drives each half-reaction comes from the heated substrate and from the chemical reactivity of the co-reactant. Water, ammonia and hydrogen sulfide react by proton transfer; ozone is more aggressive and burns ligands off (@sec-process-alumina). Thermal ALD needs a temperature high enough for both half-reactions to finish within the pulse, and low enough that the precursor does not decompose (@sec-ald-window).
 
-- **Saturation and dose.** The rate equations, the Langmuir isotherm and the saturation curve are in @sec-ka-kd to @sec-saturation-curve; estimating the dose needed for a planar surface or a high-aspect-ratio structure is in @sec-dose.
-- **Why GPC is a fraction of a monolayer.** Steric crowding by the TMA fragments, with a simulation of the TMA half-cycle and a worked conversion from GPC to coverage, is in @sec-steric.
-- **The ALD window.** What the window means, and where the idea breaks down, is in @sec-ald-window.
-- **Ligands, precursors and second precursors** are in @sec-ligands and @sec-precursors; thermal testing of precursors is in @sec-thermolysis.
-- **Surface mechanisms**, including the TMA/O~3~ chemistry and the redox steps behind TiN and Cu, are in @sec-mechanisms.
-- **Nucleation and initial growth**, including correcting a GPC estimate for a nucleation delay, are in @sec-surfaces and @sec-growth-modes.
+In **plasma-enhanced ALD (PEALD)**, one half-cycle uses a plasma instead: an O~2~, N~2~, NH~3~ or H~2~ plasma replaces water, ammonia or a thermal reducing agent. The plasma supplies reactive species whose reactivity does not depend on the substrate temperature [@Profijt2011].
 
-<!-- TODO: ALD-specific material to come here: process case studies (Barry 2022, Chapter 7), metal ALD, plasma ALD, conformality and reactor design. -->
+<!-- Check against Bath L1 and L4: these lectures were not available when this section was written. -->
+
+### What a plasma delivers
+
+A plasma contains four kinds of species, and each does something different at the surface [@Profijt2011]:
+
+- **Radicals** (O, H, N) do most of the chemistry, because they far outnumber the charged species. In an O~2~ inductively coupled plasma at 100 mTorr, O atoms reach about 10^14^ cm^−3^, against about 10^10^ cm^−3^ for electrons. Radicals can also react with surface groups that are inert to the thermal co-reactant, and they can recombine on surfaces, which limits how deep they reach into a structure (@sec-recombination).
+- **Ions** gain energy as they cross the sheath between the plasma and the surface. Sheath potentials are usually below 50 V, but can reach a few hundred volts. Modest ion energies help by speeding up surface reactions and diffusion; higher ones break bonds and displace atoms.
+- **Electrons** sustain the plasma. Their temperature is a few eV while the gas stays near room temperature, which is what lets a plasma dissociate molecules without heating the substrate.
+- **Photons**, including vacuum UV up to about 10 eV, can create defects in oxides with smaller band gaps. The ~9.5 eV emission from an O~2~ plasma degraded the silicon surface passivation of Al~2~O~3~ films; a 400 °C anneal in N~2~ partly recovered it, and shorter plasma exposures helped.
+
+### PEALD configurations {#sec-peald-configs}
+
+Where the plasma is made, relative to the substrate, decides which of these species arrive. Three configurations are used [@Profijt2011]:
+
+| Configuration | Where the plasma is | What reaches the substrate | Strengths | Weaknesses |
+|:---|:---|:---|:---|:---|
+| **Radical-enhanced** | A source attached to a thermal reactor, far from the substrate | Radicals only; ions and electrons are lost on the walls of the tubing on the way | Little ion or photon damage; simple retrofit | Radical flux falls by recombination in the tubing, especially if it is metal; long exposures may be needed |
+| **Direct** | Between two parallel electrodes (capacitively coupled, usually 13.56 MHz), with the substrate on the grounded electrode | Radicals, ions, electrons and photons at high flux | High fluxes, short plasma steps, good uniformity over whole wafers | Ion bombardment and photons can damage the film or the interface |
+| **Remote** | In a separate source, usually inductively coupled, upstream of the substrate | Mainly radicals, plus a reduced flux of low-energy ions and photons | Much higher radical flux than radical-enhanced ALD; plasma and substrate conditions can be set independently; room for in situ diagnostics | More complex reactor |
+
+: The three PEALD reactor configurations [@Profijt2011]. {#tbl-peald-configs}
+
+A grid or mesh between the plasma and the substrate (a "triode" arrangement) is a compromise: it lowers the ion energy, ion flux and photon flux at the cost of some radical density [@Profijt2011]. For an O~2~ inductively coupled plasma at 500 W, modelled ion energies were about 15 eV at 10 mTorr and 11 eV at 100 mTorr [@Profijt2011], low enough to modify a surface without sputtering it. Biasing the substrate raises the ion energy on purpose, as a knob for film density, stress and crystallinity.
+
+### Plasma–surface interaction: what a plasma buys and what it costs
+
+The benefits of a plasma step are [@Profijt2011]:
+
+- **Lower temperatures.** Al~2~O~3~ from TMA and an O~2~ plasma can be grown anywhere from 25 to 400 °C. The thermal water process struggles at low temperature because water is hard to purge: about 30 s purges were needed at 58 °C and up to 180 s at 33 °C, whereas the plasma process keeps short purges even at room temperature.
+- **More materials.** Metals such as Ta and Ti, and some nitrides, have no good thermal co-reactant but can be grown with H~2~ or N~2~/H~2~ plasmas.
+- **Better films.** Plasma films are often denser and cleaner. TiN from TiCl~4~ and an H~2~/N~2~ plasma had a resistivity of about 72 μΩ cm when grown at 400 °C and 209 μΩ cm at 100 °C.
+
+The costs are equally specific [@Profijt2011]:
+
+- **Damage.** Ions and VUV photons can damage underlying layers and interfaces. Remote-plasma HfO~2~ was amorphous with a better interface than direct-plasma HfO~2~, which was partly crystalline.
+- **Conformality.** Radicals recombine when they hit a wall, so a plasma half-cycle can run out of radicals deep in a trench. This is recombination-limited growth (@sec-recombination).
+- **Complexity.** Plasma reactors cost more and are harder to scale. Thermal ALD remains the first choice unless the plasma adds something essential.
+
+A plasma also changes the chemistry, not just the rate. An O~2~ plasma removes ligands by combustion, much as ozone does, so the TMA/O~3~ mechanism in @sec-migratory-insertion is also a reasonable picture of TMA with an O~2~ plasma [@Barry2022]. The Me~3~AuPMe~3~ process shows how much the choice of plasma matters: an O~2~ plasma leaves phosphorus oxide that a water pulse must remove, while an H~2~ plasma removes both ligands directly (@sec-process-au).
+
+## Growth per cycle and initial growth {#sec-gpc}
+
+The growth per cycle (GPC) is reported in Å, not as a "growth rate", because it is an amount per cycle, not per unit time [@Barry2022]. Thickness is the easiest form to measure, but it is not the most informative. Two derived quantities say more about the chemistry:
+
+$$
+V = \frac{M}{\rho\,N_\text{A}}, \qquad
+\text{fraction of a monolayer} = \frac{\mathrm{GPC}}{V^{1/3}}, \qquad
+\text{metal atoms per area per cycle} = \frac{\mathrm{GPC}}{V}
+$$ {#eq-gpc-ml}
+
+Here M is the molar mass of the film per metal atom (AlO~1.5~ for alumina, W for tungsten), ρ is the film density, and V is the volume per metal atom (@eq-val).
+
+### Why growth is usually less than one monolayer per cycle {#sec-gpc-monolayer}
+
+**Al~2~O~3~.** With ρ ≈ 3.0 g cm^−3^, V ≈ 28 Å^3^ per Al and one layer is about 3 Å thick. A GPC of 1.1 Å is about a third of a monolayer, or about 4 Al atoms per nm^2^ per cycle [@Barry2022] (@sec-steric). The reason is what stays on the surface after the TMA half-reaction. Each aluminum keeps one or two methyl groups, and these fragments take up much more room than the aluminum they carry. The half-reaction saturates when the methyls have covered or used up the reachable hydroxyls, long before the surface holds a full layer of aluminum.
+
+**W.** Tungsten from WF~6~ and Si~2~H~6~ shows the opposite case. The two half-reactions are self-limiting above about 400 K, and the GPC is about 2.5 Å [@Klaus2000]. With bulk tungsten (ρ = 19.3 g cm^−3^, M = 183.84 g mol^−1^), V ≈ 15.8 Å^3^ and one atomic layer is about 2.5 Å thick: roughly **one monolayer per cycle**. Two things are different. First, the disilane plays a purely sacrificial role: it strips fluorine from the surface tungsten and leaves without becoming part of the film [@Klaus2000]. Second, the ligands left after the WF~6~ step are fluorides, which are far smaller than methyl groups, so steric crowding barely limits the coverage.
+
+The comparison carries a general rule. The GPC is set by **what remains on the surface at the end of each half-reaction**: how many reactive sites the co-reactant regenerates, and how much room the precursor fragments occupy. The name "atomic layer" deposition does not promise one layer per cycle. When a process does give one, it is because its fragments are small and its surface is fully regenerated, not because of the cycle structure.
+
+### Growth delay and lateral growth of nuclei {#sec-growth-delay}
+
+On a new substrate, the first cycles rarely run at the steady-state GPC. The substrate offers different sites from the growing film, so growth can be enhanced, inhibited or delayed (@sec-growth-modes). Two pictures are useful.
+
+- **A growth delay.** If the substrate has few sites for the precursor, almost nothing deposits for some number of cycles, n~d~, until enough nuclei have formed. After that, growth is linear. Extrapolating the linear part of a thickness–cycle plot back to zero thickness gives n~d~ (Simulation 2.14).
+- **Island growth.** If the film nucleates at discrete sites and then grows from them, each nucleus grows outward as well as upward. A nucleus that adds roughly one GPC in every direction per cycle has a radius of about N·GPC after N cycles. Neighbouring islands touch when that radius reaches half the spacing between nuclei, L, so a closed film needs about L/(2 GPC) cycles, and its thickness at that point is already about L/2. Gold from Me~3~AuPMe~3~ is a clear example: it forms discrete nanoparticles in its first cycles rather than a continuous film [@Griffiths2016] (@sec-nucleation-energetics).
+
+The second picture explains why sparse nucleation is so costly. Nuclei 10 nm apart give a film that is about 5 nm thick before it closes, however small the GPC. Dense nucleation, from a well-chosen substrate pretreatment or a more reactive precursor, is the only way to get thin closed films. The calculator below combines these effects with the conversions in @eq-gpc-ml.
+
+::: {.sim-box}
+[Simulation 3.2: GPC and thickness calculator]{.sim-title}
+
+```{ojs}
+//| echo: false
+gpcPresets = ({
+  "Al₂O₃ from TMA/H₂O": {gpc: 1.1, rho: 3.0, M: 50.98, metal: "Al"},
+  "W from WF₆/Si₂H₆": {gpc: 2.5, rho: 19.3, M: 183.84, metal: "W"}
+})
+viewof gpcPick = Inputs.select(Object.keys(gpcPresets), {label: "Starting values"})
+```
+
+```{ojs}
+//| echo: false
+viewof gpcIn = Inputs.form({
+  gpc: Inputs.range([0.1, 5], {value: gpcPresets[gpcPick].gpc, step: 0.05, label: "GPC (Å)"}),
+  rho: Inputs.range([1, 22], {value: gpcPresets[gpcPick].rho, step: 0.1, label: "Film density (g cm⁻³)"}),
+  M: Inputs.range([10, 300], {value: gpcPresets[gpcPick].M, step: 0.01, label: "Molar mass per metal atom (g mol⁻¹)"}),
+  target: Inputs.range([1, 100], {value: 20, step: 0.5, label: "Target thickness (nm)"}),
+  delay: Inputs.range([0, 100], {value: 0, step: 1, label: "Growth delay, n_d (cycles)"}),
+  islands: Inputs.toggle({label: "Film starts as islands", value: false}),
+  L: Inputs.range([1, 50], {value: 10, step: 0.5, label: "Spacing between nuclei, L (nm)"}),
+  tc: Inputs.range([0.5, 60], {value: 4, step: 0.5, label: "Cycle time (s)"})
+})
+```
+
+```{ojs}
+//| echo: false
+gc = {
+  const {gpc, rho, M, target, delay, islands, L, tc} = gpcIn;
+  const V = M / (rho * 0.60221);                 // Å³ per metal atom
+  const ml = Math.cbrt(V);
+  const frac = gpc / ml, areal = 100 * gpc / V;  // nm⁻² per cycle
+  const nLin = Math.ceil(10 * target / gpc);
+  const nClose = islands ? Math.ceil(10 * L / (2 * gpc)) : 0;
+  const tClose = islands ? L / 2 : 0;            // nm, thickness when the film closes
+  const N = delay + nLin;
+  const hours = N * tc / 3600, rate = 0.1 * gpc * 3600 / tc;   // nm h⁻¹ at steady state
+  const nMax = Math.max(N, delay + nClose) * 1.15;
+  const pts = d3.range(0, Math.ceil(nMax) + 1).map(n => ({n, d: 0.1 * gpc * Math.max(0, n - delay)}));
+  return {V, ml, frac, areal, nLin, nClose, tClose, N, hours, rate, pts};
+}
+
+Plot.plot({
+  height: 300, marginLeft: 60, marginBottom: 45, marginTop: 20,
+  x: {label: "Cycle number →"},
+  y: {label: "↑ Thickness (nm)", grid: true},
+  marks: [
+    Plot.ruleY([gpcIn.target], {stroke: "#8C8C8C", strokeDasharray: "4,3"}),
+    gpcIn.islands ? Plot.rectX([{x1: 0, x2: gpcIn.delay + gc.nClose}], {x1: "x1", x2: "x2", y1: 0, y2: gc.tClose, fill: "#E91C24", fillOpacity: 0.08}) : null,
+    gpcIn.islands ? Plot.text([{x: gpcIn.delay + gc.nClose, y: gc.tClose}], {x: "x", y: "y", text: () => "islands touch", textAnchor: "end", dy: -6, fill: "#E91C24"}) : null,
+    Plot.line(gc.pts, {x: "n", y: "d", stroke: "#000", strokeWidth: 2}),
+    Plot.dot([{n: gc.N, d: gpcIn.target}], {x: "n", y: "d", r: 5, fill: "#E91C24"})
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+md`One monolayer ≈ **${gc.ml.toFixed(2)} Å**, so the GPC is **${(100 * gc.frac).toFixed(0)} %** of a monolayer, or **${gc.areal.toFixed(1)}** metal atoms nm⁻² per cycle.
+
+**${gc.N}** cycles for ${gpcIn.target} nm (${gpcIn.delay} of them in the delay) · **${gc.hours < 1 ? (60 * gc.hours).toFixed(0) + " min" : gc.hours.toFixed(1) + " h"}** at ${gpcIn.tc} s per cycle · steady-state throughput **${gc.rate.toFixed(0)} nm h⁻¹**.
+
+${gpcIn.islands ? (gc.tClose > gpcIn.target ? `**The film is not closed at the target thickness**: islands ${gpcIn.L} nm apart touch only after about ${gc.nClose} cycles, at about ${gc.tClose.toFixed(1)} nm.` : `Islands ${gpcIn.L} nm apart close after about **${gc.nClose}** cycles (≈ ${gc.tClose.toFixed(1)} nm); below that thickness the film has gaps.`) : ""}`
+```
+
+::: {.assumptions}
+**Assumptions.** One monolayer is taken as the cube root of the volume per metal atom (@eq-val), using the bulk density of the film; the Al~2~O~3~ density of 3.0 g cm^−3^ is typical of amorphous ALD alumina. The growth delay is a sharp switch from zero to the steady-state GPC. Island growth assumes nuclei on a square grid of spacing L, each growing equally in every direction by one GPC per cycle; real islands are randomly spaced, nucleate over many cycles, and often grow laterally at a different rate from vertically. The cycle time includes both pulses and both purges.
+
+**Things to try.** Switch to W and compare the monolayer fraction with Al~2~O~3~. Add a 30-cycle delay to a 2 nm target and see what fraction of the run is delay. Turn on island growth with L = 10 nm and set a 3 nm target: the calculator says the film will not be closed. Halve the GPC and notice that the closure thickness does not change, only the number of cycles needed to reach it. Finally, use the throughput readout to see why a few seconds per cycle limits ALD to roughly 100 nm per hour (@sec-ald-limitations).
+:::
+:::
+
+## Uniformity and conformality {#sec-conformality}
+
+ALD's reputation rests on films that are uniform across a wafer and conformal inside three-dimensional structures. Both follow from saturation: if every part of the surface receives enough precursor to saturate, every part gets the same GPC. Both fail in the same way: some part of the surface does not get enough.
+
+<!-- Check against Bath L6: this lecture was not available when this section was written. -->
+
+### Sub-saturation and soft saturation
+
+Two kinds of incomplete saturation are worth telling apart.
+
+- **Sub-saturation.** The dose is simply too small. The surface nearest the precursor inlet saturates first, so the film is thickest there and thins along the gas flow, across a wafer or down a trench. More dose fixes it.
+- **Soft saturation.** The GPC rises quickly with dose and then keeps creeping upward for a long time instead of levelling off. This happens when the surface offers two (or more) kinds of site with very different reaction probabilities, or when a slow reaction runs alongside the fast one. A saturation curve measured over a short range of doses looks flat, but a longer dose still adds growth, and a reactor-scale profile can look uniform while the slow component is still changing [@YanguasGil2021].
+
+Soft saturation is a trap for process development, because it passes the saturation test (@sec-what-makes-ald) unless the dose range is wide enough. It also hides decomposition: slow ligand loss on the gold surface added growth at long exposures in a process whose saturation curves looked flat (@sec-au-120).
+
+### Measuring conformality: lateral high-aspect-ratio structures
+
+The usual measure of conformality is a cross-section of a vertical trench or hole, imaged by SEM or TEM. That works up to aspect ratios of a few tens, but it shows only whether the bottom was reached, not *how* the coating falls off with depth.
+
+**Lateral high-aspect-ratio (LHAR)** test structures solve this. A thin horizontal channel, held open by pillars under a membrane roof, runs parallel to the wafer surface. In the PillarHall design the gap is typically 500 nm high (100 and 2000 nm versions exist) and up to 5 mm long, so aspect ratios reach about 10 000:1 [@Yim2020]. Because the channel is deeper than any process can coat, the film always ends somewhere inside. After the roof is removed, the thickness can be mapped along the channel from above. This **saturation profile** has a plateau of constant thickness near the entrance, a knee, and an adsorption front where the film thins to zero. Its key numbers are the **penetration depth at half thickness, PD~50%~**, and the slope of the front. From the slope, the sticking coefficient of each reactant can be extracted. For TMA/H~2~O at 300 °C, the values were about 4 × 10^−3^ for TMA and 3 × 10^−4^ for water [@Yim2020]. Comparing processes, geometries and models is the subject of a dedicated review [@Cremers2019].
+
+### Reaction-, diffusion- and recombination-limited growth {#sec-recombination}
+
+Inside a narrow feature, molecules collide with the walls far more often than with each other (the Knudsen regime). They advance by bouncing from wall to wall, and at each collision they react with some probability. Three regimes follow:
+
+- **Reaction-limited.** If the sticking probability s is small, a molecule bounces many times before reacting, so it explores the whole feature. Coverage rises everywhere at nearly the same rate. Conformality is easy, but saturation needs a large exposure, set by 1/s.
+- **Diffusion-limited.** If s is large, molecules react near the entrance. The top saturates first, and a sharp **saturation front** moves down the feature as the dose accumulates. The front advances as the square root of the exposure, so the exposure needed to coat a feature grows roughly with the square of its aspect ratio [@Gordon2003]. Doses that saturate a planar witness wafer can badly undercoat a deep structure.
+- **Recombination-limited.** A plasma half-cycle adds a loss that never stops: radicals recombine on *every* wall collision with probability r, whether or not the wall is already saturated. The radical density therefore decays with depth even after the top is fully reacted. Conformality then depends strongly on r, and surfaces with high recombination probabilities, such as many metals, are especially hard to coat [@Knoops2010]. Simulations suggest that conformal coverage at an aspect ratio of 10 can need exposures about ten times longer than on a flat surface, and that higher aspect ratios quickly become impractical when r is high [@Profijt2011]. When r is low, plasma ALD can still go deep: extended O~2~ plasma exposures grew SiO~2~ and TiO~2~ to aspect ratios of about 900, with recombination probabilities of (6 ± 2) × 10^−5^ and (7 ± 4) × 10^−5^ [@Arts2019].
+
+A single number tells the first two regimes apart. In the simple diffusion–reaction model used below, the dimensionless group AR·√(1.5 s) (a form of the Thiele modulus) compares the depth of the feature with the distance a molecule travels before it reacts. Well below 1, growth is reaction-limited; well above 1, it is diffusion-limited. For radicals, the corresponding length is about h/√(1.5 r), where h is the width of the feature: once the feature is much deeper than this, the radical supply to the bottom falls off exponentially.
+
+::: {.sim-box}
+[Simulation 3.3: Penetration depth in a high-aspect-ratio channel]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof penLogAR = Inputs.range([1, 4], {value: 2, step: 0.05, label: "Aspect ratio, L/h", format: x => Math.round(10 ** x).toLocaleString()})
+viewof penLogS = Inputs.range([-5, 0], {value: -2.4, step: 0.05, label: "Sticking probability, s", format: x => (10 ** x).toExponential(1)})
+viewof penLogDose = Inputs.range([0, 9], {value: 4, step: 0.05, label: "Dose (impingements per site at the entrance)", format: x => (10 ** x).toExponential(1)})
+viewof penRad = Inputs.toggle({label: "Plasma radicals: add wall recombination", value: false})
+viewof penLogR = Inputs.range([-6, -2], {value: -4.2, step: 0.05, label: "Recombination probability, r", format: x => (10 ** x).toExponential(1)})
+```
+
+```{ojs}
+//| echo: false
+pen = {
+  // Quasi-steady diffusion–reaction model; see Assumptions.
+  const profile = (AR, s, r, Lam, N = 400) => {
+    const dx = AR / N, th = new Float64Array(N + 1), n = new Float64Array(N + 1);
+    const cp = new Float64Array(N + 1), dp = new Float64Array(N + 1);
+    const solve = () => {
+      cp[0] = 0; dp[0] = 1;
+      for (let i = 1; i <= N; i++) {
+        const k = s * (1 - th[i]) + r, a = i === N ? 2 : 1, c = i === N ? 0 : 1;
+        const b = -(2 + 1.5 * k * dx * dx), m = b - a * cp[i - 1];
+        cp[i] = c / m; dp[i] = -a * dp[i - 1] / m;
+      }
+      n[N] = dp[N];
+      for (let i = N - 1; i >= 0; i--) n[i] = dp[i] - cp[i] * n[i + 1];
+    };
+    let tau = 0, it = 0;
+    while (tau < Lam && it < 6000) {
+      solve();
+      let rmax = 0;
+      for (let i = 0; i <= N; i++) rmax = Math.max(rmax, s * n[i] * (1 - th[i]));
+      const dt = Math.min(Lam - tau, rmax > 0 ? 0.25 / rmax : Lam);
+      for (let i = 0; i <= N; i++) th[i] = 1 - (1 - th[i]) * Math.exp(-s * n[i] * dt);
+      tau += dt; it++;
+    }
+    const pts = Array.from(th, (v, i) => ({x: i * dx, th: v}));
+    const p = pts.find(q => q.th < 0.5 * th[0]);
+    return {pts, pd50: p ? p.x : null};
+  };
+  const AR = 10 ** penLogAR, s = 10 ** penLogS, Lam = 10 ** penLogDose, r = penRad ? 10 ** penLogR : 0;
+  const runs = [Lam / 10, Lam / 3, Lam].map(L => ({L, ...profile(AR, s, r, L)}));
+  const phi = AR * Math.sqrt(1.5 * s), lr = r > 0 ? 1 / Math.sqrt(1.5 * r) : Infinity;
+  const need = 0.75 * AR * AR + 4.6 * (isFinite(lr) ? Math.cosh(Math.min(AR / lr, 300)) : 1) / s;
+  const regime = isFinite(lr) && AR > 2 * lr ? "recombination-limited" : phi < 0.5 ? "reaction-limited" : phi > 2 ? "diffusion-limited" : "between reaction- and diffusion-limited";
+  return {AR, s, r, Lam, runs, phi, lr, need, regime};
+}
+
+Plot.plot({
+  height: 320, marginLeft: 55, marginBottom: 45, marginTop: 20,
+  x: {label: "Depth into the channel, x/h →", domain: [0, pen.AR]},
+  y: {label: "↑ Coverage after one half-cycle (θ)", domain: [0, 1.02], grid: true},
+  color: {legend: true, domain: ["dose ÷ 10", "dose ÷ 3", "dose"], range: ["#BFBFBF", "#8C8C8C", "#000000"]},
+  marks: [
+    ...pen.runs.map((rn, i) => Plot.line(rn.pts, {x: "x", y: "th", stroke: () => ["dose ÷ 10", "dose ÷ 3", "dose"][i], strokeWidth: i === 2 ? 2.5 : 1.5})),
+    pen.runs[2].pd50 != null ? Plot.ruleX([pen.runs[2].pd50], {stroke: "#E91C24", strokeDasharray: "4,3"}) : null,
+    pen.runs[2].pd50 != null ? Plot.text([{x: pen.runs[2].pd50, y: 1.0}], {x: "x", y: "y", text: () => "PD₅₀", fill: "#E91C24", textAnchor: "start", dx: 4}) : null
+  ]
+})
+```
+
+```{ojs}
+//| echo: false
+md`**${pen.regime[0].toUpperCase() + pen.regime.slice(1)}** · AR·√(1.5 s) = **${pen.phi < 100 ? pen.phi.toFixed(2) : pen.phi.toExponential(1)}**${isFinite(pen.lr) ? ` · radical decay length ≈ **${pen.lr.toFixed(0)} h**` : ""}
+
+${pen.runs[2].pd50 != null ? `PD₅₀ = **${pen.runs[2].pd50.toFixed(0)} h** (${(100 * pen.runs[2].pd50 / pen.AR).toFixed(0)} % of the way to the end)` : `No PD₅₀: coverage stays above half everywhere`} · coverage at the end of the channel **${(100 * pen.runs[2].pts[pen.runs[2].pts.length - 1].th).toFixed(0)} %**
+
+Rough dose to coat the whole channel: **${pen.need.toExponential(1)}** impingements per site (≈ ${(pen.need / 3240).toPrecision(2)} Pa s of TMA at 300 °C)`
+```
+
+::: {.assumptions}
+**Assumptions.** A one-dimensional diffusion–reaction model of a single half-cycle in a dead-end slit of height h, in the Knudsen regime. The gas density along the channel is found from the steady-state diffusion equation at each moment (gas transport is much faster than the change in coverage); the walls consume molecules at a rate proportional to s(1 − θ), and, for radicals, at a further rate proportional to r. Adsorption is irreversible, first-order Langmuir with one kind of site. The dose is the number of molecules that strike each surface site at the entrance during the pulse; the conversion to Pa s assumes TMA monomer (72 g mol^−1^) at 300 °C and 4 reactive sites nm^−2^. The coating estimate adds the diffusion-limited exposure (0.75 AR^2^) to the dose that saturates the most poorly supplied point to 99 %. Every cycle repeats the same profile; real profiles also depend on the co-reactant's own half-cycle, on reversible adsorption, and on the transition to molecular flow in wider channels [@Cremers2019; @Yim2020].
+
+**Things to try.** Start with TMA (s ≈ 4 × 10^−3^, @Yim2020) at AR = 100 and raise the dose until the channel is coated; then multiply AR by 10 and see the required dose rise by about 100. Compare water (s ≈ 3 × 10^−4^): the front is less sharp because growth is closer to the reaction-limited regime. Set s = 10^−5^ and watch the three curves rise together instead of moving as a front. Then turn on radicals with s = 0.01 and r = 6 × 10^−5^ (O on SiO~2~, @Arts2019) at AR = 1000; raise r to 10^−3^, typical of a surface that recombines radicals strongly, and see how the required dose explodes.
+:::
+:::
+
+### Gap fill: seams and voids
+
+Many applications do not just coat a trench; they fill it. A perfectly conformal process fills a trench from both sidewalls at the same rate, so the two growth fronts meet on the centreline and leave a **seam**: a plane where two film surfaces have grown into each other. A seam can be a weak point for later etching, polishing or electrical performance.
+
+Any loss of conformality makes things worse. If growth is even slightly faster near the opening than deeper down (a "bread-loaf" profile, from sub-saturation, diffusion limitation or radical recombination), the opening closes first. This premature **pinch-off** traps a **void** below it [@Talukdar2019]. A trench that is wider at the bottom than at the top (a re-entrant profile) pinches off even with a perfectly conformal process.
+
+Gap fill therefore asks for something different from conformality: growth that is *slower* at the top than at the bottom. One way to get it is a growth inhibitor that reaches the top of the feature more easily than the bottom, so it suppresses growth near the opening and lets the bottom fill first. This approach eliminated pinch-off in deep trenches filled by CVD [@Talukdar2019]. The same idea, using inhibitors that are themselves self-limiting, links gap fill to area-selective deposition. Alternating deposition with a short etch that removes more material near the opening than inside is another route.
+
+## Developing an ALD process {#sec-process-development}
+
+A new ALD recipe is developed in a fairly standard order. The ten steps below follow a widely used guide [@Vos2019]; the right-hand column points to where each check is discussed in this book.
+
+| Step | What to establish | Watch out for | In this book |
+|:---|:---|:---|:---|
+| 1. Reactant selection | A precursor and co-reactant that supply the right elements, react with each other's surface groups, and are volatile, thermally stable, available and safe | How the precursor will be delivered in *your* reactor | @sec-precursors, @sec-second-precursors, @sec-thermolysis |
+| 2. Composition | The film contains what it should (XPS, RBS; refractive index or conductivity as quick checks) | If it is far off, go back to step 1 rather than tuning | @sec-process-alumina to @sec-process-sno2 |
+| 3. Thickness control | Linear growth: GPC from the slope of thickness against cycles, using films thicker than about 15 nm | Nucleation effects in the first cycles distort a GPC from a single thin film | @sec-gpc, @sec-growth-modes |
+| 4. Saturation | A plateau for each dose and each purge, varied one at a time with the others held long; include a zero-dose point | Condensation, decomposition, impurities from short co-reactant doses, CVD from short purges, soft saturation | @sec-saturation-curve, @sec-conformality |
+| 5. Properties | The optical, electrical and structural properties the application needs | Properties follow composition, so check that first | — |
+| 6. Temperature | Saturation across a range of temperatures, not just at one | The sample may be cooler than the setpoint; condensation and decomposition at the extremes | @sec-ald-window |
+| 7. Uniformity | A thickness map over the largest substrate the reactor takes | A small coupon at the centre hides non-uniform dosing | @sec-conformality |
+| 8. Conformality | Thickness, and if possible composition, along trenches or LHAR structures of known aspect ratio | Often skipped | @sec-recombination |
+| 9. Nucleation | Growth in the first cycles on the substrates that matter | Crystallization at greater thickness can change the GPC later | @sec-growth-delay |
+| 10. Other aspects | Safety of reactants and by-products, film stability, reproducibility, precursor use, agreement with the literature, performance in a device | Defects and pinholes that only a device reveals | @sec-ald-limitations |
+
+: Ten steps for developing an ALD process, after @Vos2019. {#tbl-ten-steps}
+
+<!-- Check the order and emphasis against Bath L1. -->
+
+Two habits make the steps work. First, change one variable at a time from a reference recipe that has long doses and long purges, so that every curve answers one question. Second, keep a reference process (TMA/H~2~O is the usual choice) that is run regularly on the same reactor. If the reference drifts, the problem is the reactor, not the new chemistry.
+
+## ALD processes: worked mechanisms {#sec-ald-processes}
+
+The five processes below come from Chapter 7 of @Barry2022. Each is chosen to show one kind of surface chemistry. The individual reaction steps are defined in @sec-mechanisms; here the emphasis is on how they combine into a working cycle, and on what limits each process.
+
+| Process | Precursor + co-reactant | Change in metal oxidation state | Key steps | What limits it |
+|:---|:---|:---|:---|:---|
+| Al~2~O~3~ | TMA + H~2~O, O~3~ or O~2~ plasma | None (Al^3+^) | Brønsted acid–base; combustion with O~3~ | Dehydroxylation at high *T*; carbon-containing groups with O~3~ |
+| TiN | TiCl~4~ or Ti(NMeEt)~4~ + NH~3~ | Ti(IV) → Ti(III) | Ligand exchange; reductive elimination | Chloride or carbon impurities; the reduction step is hard to see |
+| Cu | Cu(dmae)~2~ + ZnEt~2~ or H~2~; CuCl + Zn | Cu(II) → Cu(0) | Comproportionation; ligand exchange; reductive elimination | β-H elimination turns ALD into CVD at higher *T* |
+| Au | Me~3~AuPMe~3~ + O~2~ plasma/H~2~O or H~2~ plasma | Au(III) → Au(0) | Dissociation at the surface; combustion or hydrogenation | P and C impurities; ligand loss above 100 °C; island growth |
+| SnO~2~ | Sn(II) stannylene + H~2~O~2~ | Sn(II) → Sn(IV) | Brønsted acid–base; oxidative addition | Phase purity (SnO vs SnO~2~) |
+
+: Five ALD processes and the chemistry that drives them [@Barry2022]. {#tbl-ald-processes}
+
+### Alumina {#sec-process-alumina}
+
+**TMA and water.** Allowing for TMA reacting at one or two hydroxyls, the cycle can be written as two balanced half-reactions (@eq-tma-stoich): three surface –OH groups and two TMA give one dimethyl and one monomethyl fragment, and three water molecules restore the three –OH groups. The chemistry is pure Brønsted acid–base. The one complication is temperature: neighbouring hydroxyls condense, 2 ‖–OH → ‖–O–‖ + H~2~O, so the surface carries fewer sites as it gets hotter, and the GPC falls [@Barry2022].
+
+**TMA and ozone.** Ozone, or the O atom it releases, does not simply swap methyls for hydroxyls. It inserts into Al–C and C–H bonds to give methoxy groups, which go on to formates and bicarbonates and finally release CO and CO~2~ to leave surface –OH. Ethene appears early in the ozone pulse from a minor route [@Barry2022; @Goldstein2008] (@sec-migratory-insertion). Once hydroxyls are back, the next TMA pulse reacts by the ordinary acid–base route, which is why the ozone process shows a similar temperature dependence to the water process. An O~2~ plasma combusts the methyls in much the same way [@Barry2022], and lets the process run down to room temperature (@sec-thermal-peald).
+
+The lesson of alumina is that one precursor can give the same film by two very different routes. The choice of co-reactant changes the impurities (carbon-containing groups with ozone, hydrogen with water), the lowest usable temperature, and whether the substrate is oxidized.
+
+### Titanium nitride {#sec-process-tin}
+
+TiN contains Ti(III), but Ti(IV) precursors are much more stable in a heated source, so something in the cycle must reduce the metal [@Barry2022]. Compare two processes from the same precursor:
+
+- **TiO~2~ from TiCl~4~ and water** keeps titanium as Ti(IV) throughout: 2 ‖–OH + TiCl~4~ → (‖–O)~2~TiCl~2~ + 2 HCl, then water replaces the chlorides with hydroxyls and releases HCl [@Barry2022].
+- **TiN from TiCl~4~ and NH~3~** is usually summarized as TiCl~4~ + 2 NH~3~ → TiN + 4 HCl + H~2~ + ½ N~2~, the most thermodynamically favourable combination of products. The first film may in fact be Ti~3~N~4~, with titanium still Ti(IV), which is reduced in later cycles [@Barry2022].
+
+The reduction is thought to happen by **reductive elimination** at the surface (@sec-reductive-elimination): nitrogen leaves as N~2~ (2 ‖–Ti~3~N~4~ → 2 ‖–Ti~3~N~3~ + N~2~), or a surface amide passes a hydrogen to a neighbouring titanium, which then eliminates H~2~. The clearest evidence comes from the amide precursor Ti(NMeEt)~4~ with NH~3~, where a chemisorbed imine and the free amine were both detected [@Barry2022]. With an H~2~/N~2~ plasma instead of ammonia, TiCl~4~ gives TiN whose resistivity improves strongly with deposition temperature, from about 209 μΩ cm at 100 °C to 72 μΩ cm at 400 °C [@Profijt2011].
+
+The lesson of TiN: when the oxidation state changes between precursor and film, look for the step that moves the electrons. It is rarely written in the overall equation.
+
+### Copper {#sec-process-cu}
+
+Copper shows the three ways a metal can be reduced at a surface [@Barry2022]:
+
+1. **Simple reduction.** CuCl saturates a copper surface as a chloride layer, and zinc vapour (zinc melts at 420 °C and is volatile enough at about 435 °C) strips the chlorides: 2 ‖–CuCl + Zn → 2 ‖–Cu + ZnCl~2~.
+2. **Comproportionation, ligand exchange and reductive elimination.** Cu(dmae)~2~ (dmae = dimethylaminoethoxide) loses one ligand to a copper surface, and the Cu(II) adatom comproportionates with a surface Cu(0) to give two Cu(I) centres. Diethylzinc then exchanges the remaining dmae for ethyl groups, and two surface Cu–Et groups eliminate butane, leaving Cu(0). With H~2~ instead of ZnEt~2~, the surface Cu(dmae) forms a copper hydride that eliminates H~2~.
+3. **β-hydrogen elimination.** If the surface is hot enough, Cu(dmae) eliminates a β-hydrogen by itself, forming a hydride that reductively eliminates. Nothing limits this route, so Cu(dmae)~2~ gives ALD at low temperature and CVD at higher temperature (@sec-migratory-insertion).
+
+Two design rules follow. A precursor must not carry two ligands that could reductively eliminate from it, because it would then decompose continuously; the elimination has to be set up *after* chemisorption, by the co-reactant. And Cu(I) precursors must resist disproportionation, 2 CuL → Cu^0^ + CuL~2~, which never stops once it starts. Nitrogen-based ligands suppress it; Cu(I) β-diketonates are good CVD precursors precisely because they do not [@Barry2022].
+
+### Gold {#sec-process-au}
+
+Me~3~AuPMe~3~ **dissociates** on a gold surface, putting an AuMe~3~ fragment on one site and a PMe~3~ ligand on another [@Barry2022] (@sec-assoc-dissoc). The phosphine binds strongly, so it both blocks sites and threatens to stay in the film. The three processes for gold differ in how they deal with it:
+
+- **O~2~ plasma, then water.** The plasma combusts the ligands to CO, CO~2~, water and P~2~O~5~. The P~2~O~5~ stays in the film unless a water pulse converts it to volatile phosphoric acid, so a three-step cycle is needed for pure gold [@Griffiths2016].
+- **Ozone** also works as the oxidizing step [@Barry2022].
+- **H~2~ plasma.** Hydrogen removes the methyls as methane and breaks the phosphine down to methane and smaller phosphines, giving purer films [@Barry2022; @VanDaele2019].
+
+Gold is also the cautionary example for process windows: above 100 °C, ligands leave the gold surface during the precursor pulse and growth becomes CVD-like (@sec-au-120). And because gold interacts weakly with oxides, the first cycles give isolated nanoparticles rather than a film (@sec-growth-delay).
+
+### Tin oxide {#sec-process-sno2}
+
+Tin oxide comes in two forms, SnO and SnO~2~, and a process has to pick one. For SnO~2~, an oxidizing co-reactant helps. Hydrogen peroxide, with its O–O single bond, is one choice [@Barry2022]. With a tin(II) N-heterocyclic stannylene as the precursor, the cycle has two steps:
+
+1. The stannylene binds two surface hydroxyls and releases its ligand as the doubly protonated diamine, a Brønsted acid–base reaction.
+2. H~2~O~2~ adds across the surface tin by **oxidative addition** (@sec-reductive-elimination), breaking the O–O bond and oxidizing Sn(II) to Sn(IV). The tin is left with two –OH groups, which can bridge to neighbouring tin or react with the next stannylene pulse.
+
+Tin oxide is the mirror image of TiN and copper: the metal is *oxidized* during the cycle, and the co-reactant is chosen to supply the oxidizing power.
+
+### Nanolaminates and supercycles {#sec-supercycles}
+
+Because ALD builds a film cycle by cycle, two processes can be interleaved. A **supercycle** repeats a block of m cycles of process A and n cycles of process B. With large m and n, the result is a **nanolaminate** of distinct layers; with small m and n, a mixed or doped film; after annealing, often a single ternary phase.
+
+To a first approximation, the composition follows from the metal atoms deposited per cycle (@eq-gpc-ml) in each subcycle:
+
+$$
+x_\text{A} = \frac{m\,\Gamma_\text{A}}{m\,\Gamma_\text{A} + n\,\Gamma_\text{B}}
+$$ {#eq-supercycle}
+
+where Γ~A~ and Γ~B~ are the metal atoms per area per cycle for the two processes *as they grow on each other*. That last condition is where the simple rule fails. Each subcycle starts on the other material, so it can show a growth delay or enhancement (@sec-growth-delay), and one precursor can react with the surface groups left by the other.
+
+**SrTiO~3~** shows both sides. SrO/TiO~2~ nanolaminates grown at 300 °C from Sr(^i^Pr~3~Cp)~2~ and Ti(NEtMe)~4~ crystallized to SrTiO~3~ on annealing, and the composition varied linearly with the Sr:Ti subcycle ratio, but only once each sublayer was thick enough to grow in its steady state. Growth still differed between bare silicon and ruthenium electrodes [@Riedel2011]. With the same strontium precursor and Cp\*Ti(OMe)~3~, the reactivity of the strontium precursor on ruthenium tended to give strontium-rich films; a more reactive titanium precursor suppressed this, and tuning the subcycle ratio gave stoichiometric SrTiO~3~ [@KimSK2013]. In practice, @eq-supercycle gives the starting ratio, and a calibration series against measured composition gives the recipe.
+
+## Limitations of ALD {#sec-ald-limitations}
+
+ALD's strengths come from self-limitation, and so do most of its limitations.
+
+- **Speed.** A GPC of about 1 Å and a cycle time of a few seconds give roughly 100 nm per hour (Simulation 3.2). ALD wins when films are thin, structures are three-dimensional, or many wafers are coated at once in a batch reactor. Spatial ALD, which separates the reactants in space instead of time, attacks the cycle time directly.
+- **Chemistry.** Every film needs a precursor that is volatile, thermally stable and self-limiting, and a co-reactant that completes the reaction (@sec-precursors). For many elements, and for many oxidation states, such a pair does not yet exist. Electropositive metals that need strong reducing agents are a persistent gap.
+- **Impurities.** Ligands that are not removed completely leave C, H, N or Cl in the film. Lower temperatures make this worse, which is part of the reason plasma processes help (@sec-thermal-peald).
+- **Nucleation.** Growth delays and island growth on unfavourable substrates make thin films discontinuous and rough (@sec-growth-delay). The same effect is the basis of area-selective deposition, so whether it is a limitation depends on the application.
+- **Conformality has limits too.** Exposure requirements scale roughly with the square of the aspect ratio, and plasma processes add recombination losses (@sec-recombination). Very deep structures can push cycle times and precursor use to impractical levels.
+- **Decomposition and the window.** Some precursors decompose in the source or on the substrate at the temperatures needed for complete reactions, so no true ALD window exists (@sec-ald-window, @sec-thermolysis).
+- **Cost.** Precursors can be expensive, and most of each pulse is pumped away unused.
 
 ## Check your understanding
 
@@ -273,8 +664,64 @@ One pair of points cannot tell undersaturation (the GPC will plateau at longer p
 :::
 :::
 
+::: {.quiz}
+A remote O~2~ plasma process gives excellent conformality in 10:1 trenches on SiO~2~, but poor conformality in identical trenches lined with a metal. What is the most likely reason?
+
+- [ ] Ions are focused onto the trench bottom on the metal.
+- [x] O radicals recombine more readily on the metal walls, so fewer of them reach the bottom: growth becomes recombination-limited.
+- [ ] The metal makes the precursor's sticking probability smaller.
+- [ ] VUV photons cannot reach the bottom of a metal trench.
+
+::: {.explanation}
+Recombination happens on every wall collision, whether or not the wall is saturated, and many metals have high recombination probabilities (@sec-recombination).
+:::
+:::
+
+::: {.quiz}
+W ALD from WF~6~ and Si~2~H~6~ has a GPC of about 2.5 Å; Al~2~O~3~ from TMA/H~2~O has about 1.1 Å. Which statement is right?
+
+- [ ] Both are about one monolayer per cycle; tungsten atoms are just larger.
+- [ ] Al~2~O~3~ grows faster in atoms per area because its GPC is set by hydroxyl density.
+- [x] W grows at about one monolayer per cycle and Al~2~O~3~ at about a third, because small fluoride ligands crowd the surface far less than methyl groups.
+- [ ] Al~2~O~3~ is limited by the water half-reaction, W by the WF~6~ half-reaction.
+
+::: {.explanation}
+One layer of W is about 2.5 Å thick; one layer of Al~2~O~3~ about 3 Å (@eq-gpc-ml). The GPC is set by what remains on the surface after each half-reaction (@sec-gpc-monolayer).
+:::
+:::
+
+::: {.quiz}
+A metal nucleates as islands about 8 nm apart and grows by about 0.5 Å per cycle in every direction. Roughly how thick is the film when it first becomes continuous?
+
+- [ ] 0.5 Å
+- [ ] 8 nm
+- [x] About 4 nm, reached after about 80 cycles
+- [ ] It depends only on the number of cycles, not on the spacing.
+
+::: {.explanation}
+Islands touch when their radius is half the spacing: 4 nm, or 40 Å ÷ 0.5 Å per cycle = 80 cycles (@sec-growth-delay). Halving the GPC doubles the cycles but leaves the closure thickness unchanged.
+:::
+:::
+
+::: {.quiz}
+An SrTiO~3~ recipe uses one SrO cycle for every TiO~2~ cycle, but the film is strongly Sr-rich. Which explanation is consistent with what is known about this system?
+
+- [ ] Supercycle composition always equals the subcycle ratio, so the measurement must be wrong.
+- [x] The two subcycles deposit different numbers of metal atoms per cycle when growing on each other, for example because the Sr precursor is more reactive than the Ti precursor on the growing surface; the subcycle ratio has to be calibrated.
+- [ ] TiO~2~ cannot nucleate on SrO.
+- [ ] Sr evaporates from the film during the TiO~2~ cycles.
+
+::: {.explanation}
+@eq-supercycle uses atoms per cycle *as each process grows on the other*. Precursor reactivity on the growing surface shifted SrTiO~3~ composition, and a more reactive Ti precursor plus a tuned ratio corrected it [@KimSK2013].
+:::
+:::
+
 ## Further reading
 
 - @George2010: a broad overview of ALD chemistries and mechanisms.
 - @Puurunen2005: the definitive case study of TMA/H~2~O surface chemistry and of GPC-limiting factors.
 - @Johnson2014: a short, accessible review from fundamentals to applications.
+- @Profijt2011: plasma-assisted ALD, from plasma species to reactor configurations.
+- @Cremers2019: conformality, its measurement and its modelling.
+- @Vos2019: a practical guide to developing ALD recipes.
+- Chapter 7 of @Barry2022: the worked mechanisms in @sec-ald-processes, in more depth.
