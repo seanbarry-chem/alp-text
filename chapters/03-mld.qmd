@@ -1,0 +1,500 @@
+---
+title: "Molecular Layer Deposition"
+---
+
+::: {.callout-tip appearance="simple"}
+## Learning outcomes
+After this chapter you should be able to:
+
+1. Define MLD, and tell a purely organic MLD process from a hybrid (metalcone) process.
+2. Explain why a bifunctional organic precursor can react twice with a surface, and name the three design strategies that prevent it: rigid backbones, heterobifunctional precursors and ring-opening or ABC sequences.
+3. Explain why the GPC of many MLD processes falls as the temperature rises, and why purge times in MLD are often far longer than in ALD.
+4. Use QCM mass gains from the two half-cycles to tell single reactions from double reactions.
+5. Walk through the surface chemistry of five MLD processes: alucone, M(TCNE)~x~, Alq~3~, poly(*p*-phenylene terephthalamide) ("Kevlar") and PEDOT.
+:::
+
+MLD uses the same logic as ALD: two or more precursors are dosed one at a time, each reaction stops by itself, and the film grows by a fixed amount in each cycle. What changes is the size and the chemistry of what is added. At least one precursor is an organic molecule, so each cycle adds a molecular fragment rather than a fraction of a monolayer of an inorganic solid. The training, the vocabulary and often the reactor carry over directly from ALD [@Barry2022].
+
+::: {.callout-note appearance="simple"}
+## Where the fundamentals are
+- **Saturation curves and dose:** @sec-saturation-curve and @sec-dose. Every MLD half-reaction must pass the same test as an ALD half-reaction (@sec-what-makes-ald).
+- **Process windows:** @sec-process-windows. MLD windows are usually narrower than ALD windows.
+- **The TMA half-reaction:** @sec-tma-model and @sec-hydroxyl-reaction. The metal half-cycle of most metalcone processes is the same chemistry.
+- **Back-bonding and the chelate effect** (needed for the TCNE process): @sec-ligand-bonding and @sec-chelate.
+- **Ligand exchange** (needed for the Alq~3~ process): @sec-ligand-exchange.
+- **History of MLD:** @sec-history-mld.
+:::
+
+## Principles of MLD {#sec-mld-principles}
+
+<!-- Check the framing of this section against Bath L2 (MLD lecture), which is not yet in the vault. -->
+
+### Organic and hybrid films {#sec-mld-film-types}
+
+MLD processes fall into two families [@Sundberg2014; @George2009]:
+
+- **Organic MLD.** Both precursors are organic, and the film is a polymer. The first MLD films, the polyimides of @Yoshimura1991, were made this way, and so are polyamides such as nylon and poly(*p*-phenylene terephthalamide) (@sec-mld-kevlar). The chemistry is a step-growth polymerization split into two half-reactions.
+- **Hybrid MLD.** One precursor is an ALD metal precursor and the other is an organic linker. The films are inorganic–organic hybrids. With diols as the linker they are called **metalcones**: alucone from aluminum, zincone from zinc, titanicone from titanium, and so on [@Dameron2008; @Sundberg2014]. Steven George, whose group introduced alucone, coined the name [@Barry2022].
+
+The organic part does not have to be a simple diol. Carboxylic acids, amines, aromatic rings, epoxides and redox-active monomers have all been used, and the reactions they take part in go well beyond Brønsted acid–base exchange. Ring-opening, ligand exchange, coordination and oxidative coupling all appear in @sec-mld-processes.
+
+Two practical differences from ALD follow from the larger, organic precursors:
+
+- **GPC is larger and much more variable.** A single organic fragment is several ångströms long, so GPCs of 3–5 Å are common, and some multistep processes grow by more than 20 Å per cycle (@tbl-mld-gpc). ALD oxides typically grow by about 1 Å [@Barry2022].
+- **The process window is narrow.** Organic precursors tend to condense at low temperature and to decompose at moderate temperature (@sec-process-windows). Many organic precursors are also only weakly bound to the surface before they react, which, as @sec-mld-trends shows, makes the GPC sensitive to temperature even inside the window.
+
+### Bifunctional monomers {#sec-bifunctional}
+
+In ALD the second precursor is usually a small molecule such as water or ammonia. When water reacts with a surface methyl group, the new hydroxyl it leaves behind sits on the surface, ready for the next metal pulse. An MLD linker has to do the same job across a much longer molecule: one end reacts with the surface and the other end must survive, unreacted, as the new surface group. A linker with two identical reactive ends, such as ethylene glycol, is **homobifunctional**.
+
+There is nothing in a homobifunctional molecule that tells it which end should react and which should wait. If the backbone is long and flexible enough, and a second reactive group is close by on the surface, the molecule can bend over and react at both ends (@fig-double-reaction, panel b). This is a **double reaction** [@George2009; @Barry2022].
+
+::: {#fig-double-reaction}
+```{=html}
+<svg viewBox="0 0 640 210" role="img" aria-label="Single and double reaction of a diol with a methyl-terminated surface" style="max-width:640px;width:100%;font-family:'Source Sans 3',sans-serif">
+  <defs>
+    <marker id="dr-arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#4D4D4D"/></marker>
+  </defs>
+  <!-- panel a -->
+  <text x="20" y="22" font-size="15" font-weight="600">a) Single reaction</text>
+  <rect x="20" y="160" width="280" height="22" fill="#EDEDED" stroke="#8C8C8C"/>
+  <g font-size="13" text-anchor="middle">
+    <circle cx="80" cy="150" r="11" fill="#4D4D4D"/><text x="80" y="155" fill="white">Al</text>
+    <circle cx="200" cy="150" r="11" fill="#4D4D4D"/><text x="200" y="155" fill="white">Al</text>
+    <line x1="80" y1="139" x2="80" y2="120" stroke="#000" stroke-width="2"/>
+    <circle cx="80" cy="112" r="9" fill="#E91C24"/><text x="80" y="116" fill="white">O</text>
+    <path d="M80,103 C80,85 95,80 95,65 C95,50 80,45 80,35" fill="none" stroke="#000" stroke-width="2.5"/>
+    <circle cx="80" cy="30" r="9" fill="#E91C24"/><text x="80" y="34" fill="white">O</text>
+    <text x="92" y="35" font-size="13" text-anchor="start">H</text>
+    <line x1="200" y1="139" x2="200" y2="122" stroke="#000" stroke-width="2"/>
+    <text x="200" y="117">CH₃</text>
+  </g>
+  <text x="20" y="200" font-size="12.5" fill="#4D4D4D">One end bonds; the free –OH becomes the next site.</text>
+  <!-- panel b -->
+  <text x="340" y="22" font-size="15" font-weight="600">b) Double reaction</text>
+  <rect x="340" y="160" width="280" height="22" fill="#EDEDED" stroke="#8C8C8C"/>
+  <g font-size="13" text-anchor="middle">
+    <circle cx="420" cy="150" r="11" fill="#4D4D4D"/><text x="420" y="155" fill="white">Al</text>
+    <circle cx="540" cy="150" r="11" fill="#4D4D4D"/><text x="540" y="155" fill="white">Al</text>
+    <line x1="420" y1="139" x2="420" y2="122" stroke="#000" stroke-width="2"/>
+    <line x1="540" y1="139" x2="540" y2="122" stroke="#000" stroke-width="2"/>
+    <circle cx="420" cy="114" r="9" fill="#E91C24"/><text x="420" y="118" fill="white">O</text>
+    <circle cx="540" cy="114" r="9" fill="#E91C24"/><text x="540" y="118" fill="white">O</text>
+    <path d="M427,107 C450,60 510,60 533,107" fill="none" stroke="#000" stroke-width="2.5"/>
+  </g>
+  <text x="340" y="200" font-size="12.5" fill="#4D4D4D">Both ends bond; two sites are used and none is left.</text>
+</svg>
+```
+A homobifunctional diol on a methyl-terminated (TMA-dosed) surface. (a) A single reaction leaves a hydroxyl for the next metal pulse. (b) A flexible linker that reaches a second surface methyl can react at both ends; the surface loses two sites and gains none. Schematic, not to scale; methane by-products not shown.
+:::
+
+A double reaction does more damage than an ordinary unreacted site. It consumes two surface groups and leaves no reactive group behind, so the site count falls in every cycle in which double reactions happen. Unless something in the cycle makes new sites, the GPC falls from one cycle to the next. ALD has no simple analogue of this failure: a water molecule that reacts twice still leaves hydroxyls behind [@Barry2022].
+
+There are three ways to design the problem out:
+
+1. **Stiffen the backbone.** An aromatic ring or a C=C double bond holds the two reactive ends apart, so the molecule cannot fold back to the surface. The *para*-phenylene monomers of Kevlar (@sec-mld-kevlar) and the double bond of tetracyanoethylene (@sec-mld-tcne) work this way [@Barry2022].
+2. **Make the two ends different.** A **heterobifunctional** precursor carries two different groups, only one of which reacts with the current surface. Glycidol, with a hydroxyl and an epoxide, is an example (@sec-mld-alucone): the hydroxyl reacts in the organic pulse, and the epoxide reacts only in the next metal pulse [@Lee2011].
+3. **Split the cycle into more steps.** An **ABC process** uses three precursors so that no single step needs a homobifunctional molecule. TMA, ethanolamine and maleic anhydride is a well-known example. The hydroxyl end of ethanolamine reacts with surface Al–CH~3~ and leaves an amine; the amine opens the anhydride ring and leaves a carboxylic acid; the acid reacts with the next TMA [@Yoon2009]. Each step uses a molecule whose two ends cannot both react with the surface it meets.
+
+Branching helps too. TMA is trifunctional, so an aluminum centre that bonds through one oxygen still carries two methyl groups. A triol such as glycerol cross-links the film more than a diol does and leaves spare hydroxyls behind, which can replace sites lost to double reactions [@Sundberg2014]. Simulation 4.1 includes this as a site-regeneration term.
+
+### Double reactions in practice: the site-loss simulator {#sec-double-reaction-sim}
+
+The simulation below follows the reactive groups on a small patch of surface through repeated cycles. In each organic half-cycle, every reactive site takes up one linker molecule. If a neighbouring site is still reactive, the linker may react at both ends (the double-reaction probability), and both sites are lost. The metal half-cycle then reacts with every remaining site and, with the regeneration probability, also creates a new reactive group on a neighbouring site that is not reactive.
+
+::: {.sim-box}
+[Simulation 4.1: Double reactions and site loss in MLD]{.sim-title}
+
+```{ojs}
+//| echo: false
+mldLinkers = [
+  {name: "Ethylene glycol (flexible C₂ diol)", M: 62, p: 0.2},
+  {name: "Longer flexible diol (e.g. 1,6-hexanediol)", M: 118, p: 0.45},
+  {name: "Rigid aromatic diol (e.g. hydroquinone)", M: 110, p: 0.03},
+  {name: "Heterobifunctional (e.g. glycidol)", M: 74, p: 0},
+  {name: "Custom", M: 80, p: 0.3}
+]
+viewof mldLinker = Inputs.select(mldLinkers, {label: "Organic precursor", format: d => d.name, value: mldLinkers[0]})
+```
+
+```{ojs}
+//| echo: false
+viewof mldP = Inputs.range([0, 1], {step: 0.01, value: mldLinker.p, label: "Double-reaction probability"})
+viewof mldRegen = Inputs.range([0, 1], {step: 0.01, value: 0.5, label: "Site regeneration by the metal precursor"})
+viewof mldDensity = Inputs.range([0.2, 1], {step: 0.05, value: 1, label: "Starting fraction of reactive sites"})
+viewof mldGPC0 = Inputs.range([0.5, 6], {step: 0.1, value: 4.0, label: "Ideal GPC (Å)"})
+viewof mldCycle = Inputs.range([1, 60], {step: 1, value: 20, label: "Show cycle"})
+viewof mldSeed = Inputs.button("New random surface", {value: 1, reduce: v => v + 1})
+```
+
+```{ojs}
+//| echo: false
+mldRun = {
+  // Seeded random numbers (mulberry32) so a surface is reproducible
+  let s = (mldSeed * 2654435761) >>> 0;
+  const rand = () => { s = (s + 0x6D2B79F5) >>> 0; let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const L = 40, N = L * L, nCycles = 60;
+  const nbr = (i) => { const x = i % L, y = (i / L) | 0;
+    return [((x + 1) % L) + y * L, ((x - 1 + L) % L) + y * L, x + ((y + 1) % L) * L, x + ((y - 1 + L) % L) * L]; };
+  // 0 = never reactive, 1 = reactive, 2 = lost to a double reaction
+  let st = new Uint8Array(N);
+  for (let i = 0; i < N; i++) st[i] = rand() < mldDensity ? 1 : 0;
+  const snaps = [], rows = [];
+  const Mlink = mldLinker.M, mMetal = 28;          // half a TMA per site: (72 − 16)/2, two methyls per Al
+  let thick = 0;
+  for (let c = 1; c <= nCycles; c++) {
+    // --- organic half-cycle ---
+    const live = []; for (let i = 0; i < N; i++) if (st[i] === 1) live.push(i);
+    const nStart = live.length;                     // Al–CH₃ groups made by the previous metal pulse
+    for (let k = live.length - 1; k > 0; k--) { const j = Math.floor(rand() * (k + 1)); [live[k], live[j]] = [live[j], live[k]]; }
+    const used = new Uint8Array(N);
+    let nSingle = 0, nDouble = 0;
+    for (const i of live) {
+      if (used[i]) continue;
+      used[i] = 1;
+      const free = nbr(i).filter(j => st[j] === 1 && !used[j]);
+      if (free.length && rand() < mldP) {
+        const j = free[Math.floor(rand() * free.length)];
+        used[j] = 1; st[i] = 2; st[j] = 2; nDouble++;
+      } else nSingle++;
+    }
+    // --- metal half-cycle ---
+    let nMetal = 0, nRegen = 0;
+    const live2 = []; for (let i = 0; i < N; i++) if (st[i] === 1) live2.push(i);
+    nMetal = live2.length;
+    for (const i of live2) {
+      if (rand() < mldRegen) {
+        const lost = nbr(i).filter(j => st[j] !== 1);
+        if (lost.length) { st[lost[Math.floor(rand() * lost.length)]] = 1; nRegen++; }
+      }
+    }
+    const added = 0.5 * nMetal + nSingle + nDouble;    // fragments added this cycle
+    const gpc = mldGPC0 * added / (1.5 * N);
+    thick += gpc;
+    const dmOrg = (Mlink - 16) * nSingle + (Mlink - 32) * nDouble;
+    rows.push({cycle: c, gpc, thick, ideal: mldGPC0 * c, live: nMetal / N,
+               nSingle, nDouble, nMetal, nRegen,
+               R: dmOrg > 0 ? (mMetal * nStart) / dmOrg : NaN,
+               fracDouble: (nSingle + nDouble) ? nDouble / (nSingle + nDouble) : 0});
+    snaps.push(st.slice());
+  }
+  return {L, N, rows, snaps, R0: mMetal / (Mlink - 16)};
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const {L, snaps} = mldRun, sz = 8;
+  const g = snaps[mldCycle - 1];
+  const col = ["#EDEDED", "#E91C24", "#000000"];
+  let cells = "";
+  for (let i = 0; i < g.length; i++)
+    cells += `<rect x="${(i % L) * sz}" y="${((i / L) | 0) * sz}" width="${sz - 0.6}" height="${sz - 0.6}" fill="${col[g[i]]}"/>`;
+  const W = L * sz;
+  const r = mldRun.rows[mldCycle - 1];
+  const gridSvg = `<svg viewBox="0 0 ${W + 50} ${W + 46}" style="width:100%;max-width:380px" role="img" aria-label="Map of surface sites after cycle ${mldCycle}">
+    ${cells}
+    <g font-size="13" font-family="Source Sans 3, sans-serif">
+      <rect x="0" y="${W + 10}" width="11" height="11" fill="#E91C24"/><text x="16" y="${W + 20}">reactive</text>
+      <rect x="85" y="${W + 10}" width="11" height="11" fill="#000"/><text x="101" y="${W + 20}">lost (double reaction)</text>
+      <rect x="235" y="${W + 10}" width="11" height="11" fill="#EDEDED" stroke="#8C8C8C"/><text x="251" y="${W + 20}">never reactive</text>
+      <text x="0" y="${W + 40}" fill="#4D4D4D">Surface after cycle ${mldCycle}</text>
+    </g></svg>`;
+  const pct = (x) => (100 * x).toFixed(0) + " %";
+  const card = `<div class="map-card">
+    <div class="map-card-title">Cycle ${mldCycle}</div>
+    <ul>
+      <li>Reactive sites: <b>${pct(r.live)}</b> of the surface</li>
+      <li>GPC this cycle: <b>${r.gpc.toFixed(2)} Å</b> (ideal ${mldGPC0.toFixed(1)} Å)</li>
+      <li>Thickness: <b>${r.thick.toFixed(1)} Å</b> (ideal ${r.ideal.toFixed(1)} Å)</li>
+      <li>Linkers that reacted twice: <b>${pct(r.fracDouble)}</b></li>
+      <li>QCM mass ratio Δm<sub>metal</sub>/Δm<sub>organic</sub>: <b>${isNaN(r.R) ? "–" : r.R.toFixed(2)}</b>
+        (all single: ${mldRun.R0.toFixed(2)})</li>
+    </ul></div>`;
+  return html`<div style="display:flex;flex-wrap:wrap;gap:1.25rem;align-items:flex-start">
+    <div>${html([gridSvg])}</div><div style="flex:1;min-width:240px">${html([card])}</div></div>`;
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const rows = mldRun.rows;
+  const ideal = rows.map(d => ({cycle: d.cycle, gpc: mldGPC0}));
+  const cur = rows[mldCycle - 1];
+  return Plot.plot({
+    width: 680, height: 260, marginLeft: 55,
+    x: {label: "Cycle", domain: [0, 60]},
+    y: {label: "GPC (Å)", domain: [0, mldGPC0 * 1.08], grid: true},
+    marks: [
+      Plot.line(ideal, {x: "cycle", y: "gpc", stroke: "#8C8C8C", strokeDasharray: "5,4"}),
+      Plot.line(rows, {x: "cycle", y: "gpc", stroke: "#E91C24", strokeWidth: 2.5}),
+      Plot.dot([cur], {x: "cycle", y: "gpc", r: 5, fill: "#000"}),
+      Plot.text([{cycle: 58, gpc: mldGPC0}], {x: "cycle", y: "gpc", text: () => "ideal", dy: -8, fill: "#4D4D4D", fontSize: 13})
+    ]
+  });
+}
+```
+
+**Things to try.**
+
+- Start with ethylene glycol and set the regeneration to 0. The GPC falls quickly and then stops falling. Look at the map: the reactive sites that survive are isolated, with no reactive neighbour to double-react with. Growth slows to about a tenth of the ideal value but does not stop.
+- Set the regeneration back to 0.5. The GPC now settles at a steady value below the ideal: the metal step makes sites as fast as the linker step destroys them. Real alucone films grow linearly with cycle number [@Dameron2008]. Linear growth is the signature of this kind of balance, not proof that no double reactions happen.
+- Choose the longer flexible diol. With the same regeneration, the film stops growing altogether. Regeneration puts new sites next to old ones, which gives the next linker a partner to double-react with, so above a critical double-reaction probability the losses win.
+- Switch to the rigid diol, then the heterobifunctional precursor. The GPC stays close to the ideal value.
+- With ethylene glycol, lower the starting fraction of reactive sites to 0.4. With regeneration, the GPC climbs to the same steady value as before: the steady state is set by the chemistry, not by the starting surface. Without regeneration, a smaller fraction of the sites is lost, because fewer of them have a reactive neighbour.
+- Watch the QCM mass ratio. It rises above the all-single value as double reactions take over, which is the basis of the measurement in @sec-mld-qcm.
+
+::: {.assumptions}
+**Assumptions.** A 40 × 40 square lattice with periodic edges; each cell is one reactive group, and a double reaction needs a reactive nearest neighbour. Every reactive site reacts in every half-cycle (both steps are saturated), and the double-reaction probability is the same for every linker that has a reactive neighbour. The probabilities in the presets are illustrative, not measured values. Regeneration is the probability that the metal precursor on a reactive site also creates a reactive group on one neighbouring site that has none; it stands in for the second and third methyl groups of TMA, or for a trifunctional linker. New sites are only ever created next to existing ones. GPC is taken as proportional to the number of fragments added, scaled so that a perfect cycle on a full surface gives the ideal GPC. In the organic step each cell is one Al–CH~3~ group. The QCM ratio assumes TMA binds through one oxygen and so supplies two methyl groups (+56 g mol^−1^ per TMA, 28 per cell), and that a linker of molar mass *M* adds *M* − 16 (single) or *M* − 32 (double, using two cells), as in @sec-mld-qcm; infiltration, desorption, steric crowding and three-dimensional growth are ignored.
+:::
+:::
+
+### Unusual trends: GPC that falls with temperature {#sec-mld-trends}
+
+In a well-behaved ALD process, the GPC is roughly constant across the window (@sec-ald-window). Many MLD processes behave differently. Their GPC falls steadily as the temperature rises, often with no flat region at all.
+
+| Process | Temperature | GPC | Source |
+|:---|:---|:---|:---|
+| Alucone (TMA + ethylene glycol) | 85 °C | 4.0 Å | @Dameron2008 |
+| | 175 °C | 0.4 Å | @Dameron2008 |
+| Alucone, long purge (MLD component only) | 100 °C | 3.0 Å | @Jain2021 |
+| | 150 °C | 1.1 Å | @Jain2021 |
+| TMA + ethanolamine + maleic anhydride (ABC) | 90 °C | 23 Å | @GeorgeYoon2008 |
+| | 150 °C | 8 Å | @GeorgeYoon2008 |
+
+: GPC of some MLD processes at two temperatures. {#tbl-mld-gpc}
+
+A tenfold drop in GPC over 90 °C, as for alucone, is not the high-temperature edge of an ALD window. Several causes contribute, and more than one usually operates at once:
+
+- **Weakly bound intermediates.** Many organic precursors are first held on the surface by hydrogen bonds, π-stacking or other weak interactions before (or instead of) reacting. These states have low adsorption energies, so their surface lifetime falls steeply with temperature (@sec-ka-kd). The Alq~3~ and PEDOT processes in @sec-mld-processes are clear examples [@Barry2022].
+- **Infiltration and outgassing.** Hybrid MLD films are not dense; alucone has a density of about 1.5 g cm^−3^ [@GeorgeYoon2008]. TMA can diffuse into the film during its pulse and diffuse out again slowly. If the purge is too short, the TMA that escapes during the next organic pulse reacts in the gas phase or at the surface as CVD, and adds to the apparent GPC. For alucone at 150 °C, the GPC falls from about 3.6 Å with an 8 s purge to about 1.1 Å once the TMA purge is long enough (about 100 s) to remove the infiltrated precursor. Less TMA infiltrates at higher temperature and lower TMA pressure, which by itself makes the measured GPC fall with temperature [@Jain2021].
+- **Changes in reaction pathway.** At higher temperature, the balance between single and double reactions, or between surface reaction and desorption, can shift. The surface then carries fewer reactive groups into the next cycle.
+
+The infiltration result changes how an MLD process should be qualified. A saturation curve run at ALD-style purge times can look self-limiting while carrying a CVD component, because the extra growth comes from precursor stored *inside* the film rather than from the gas phase. A **purge-time series** is as important in MLD as the dose series, and the same study showed that the bulkier precursor dimethylaluminum isopropoxide (@sec-tma-dmai) does not infiltrate alucone, so it can be purged quickly [@Jain2021].
+
+### Measuring saturation with a quartz crystal microbalance {#sec-mld-qcm}
+
+A quartz crystal microbalance (QCM) measures the mass gained or lost on a resonating quartz crystal from the shift in its resonance frequency. For a thin, rigid, uniform film, the Sauerbrey relation gives
+
+$$
+\Delta f = -\frac{2 f_0^2}{A\sqrt{\rho_q \mu_q}}\,\Delta m
+$$ {#eq-sauerbrey}
+
+where *f*~0~ is the resonant frequency, *A* the electrode area, and ρ~q~ and μ~q~ the density and shear modulus of quartz. Mass changes far smaller than one monolayer can be followed in real time within a single half-cycle, so a QCM is the workhorse for developing MLD processes [@Dameron2008; @Lee2011; @Kao2014].
+
+A QCM gives three things that ellipsometry after the run cannot:
+
+1. **Saturation curves in one experiment.** The dose of one precursor can be changed from cycle to cycle while the mass gain is recorded, which builds the saturation curve (@sec-saturation-curve) without running a separate film for each point.
+2. **The mass change in each half-cycle.** The ratio of the two mass gains tells you what reacted (see the worked example below).
+3. **What happens during the purge.** Infiltration shows up as a mass gain during the precursor pulse that is larger than surface saturation can account for, followed by a slow mass loss during the purge that levels off at a non-zero value [@Jain2021]. A flat trace during the purge means nothing is coming out.
+
+**Worked example: single or double reaction?** Suppose each TMA bonds through one surface oxygen and loses one methane. Its contribution per aluminum is the mass of Al(CH~3~)~3~ less one CH~4~: 72 − 16 = 56 g mol^−1^. In the ethylene glycol pulse (*M* = 62 g mol^−1^), a single reaction swaps one methyl for one –OCH~2~CH~2~OH and releases one CH~4~, so each linker adds 62 − 16 = 46 g mol^−1^. A double reaction releases two CH~4~ per linker, so each linker adds only 62 − 32 = 30 g mol^−1^, and it uses two methyl groups to do so. Per TMA bonded through one oxygen (two methyl groups available):
+
+- **All single reactions:** two EG molecules react, Δm~EG~ = 2 × 46 = 92, and the ratio Δm~TMA~/Δm~EG~ = 56/92 ≈ 0.61.
+- **All double reactions:** one EG molecule reacts, Δm~EG~ = 30, and the ratio is 56/30 ≈ 1.87.
+
+A measured ratio between these values points to a mixture. The calculation is idealized: it assumes TMA reacts with one oxygen only (compare @sec-hydroxyl-reaction), that no precursor is trapped in the film, and that the film obeys @eq-sauerbrey. In practice, these ratios are cross-checked with in situ infrared spectroscopy, which sees the hydroxyl and methyl groups directly [@Dameron2008].
+
+::: {.callout-warning appearance="simple"}
+## When Sauerbrey fails
+Polymers and hybrid films can be soft. A film that is not rigid dissipates energy and no longer follows @eq-sauerbrey, so thick MLD films can give mass readings that are wrong. QCM crystals are also sensitive to temperature and pressure transients during pulses. Run inert-gas "blank" pulses at the start, and check the QCM growth against film thickness measured on a substrate.
+:::
+
+## MLD processes: worked mechanisms {#sec-mld-processes}
+
+The five processes below follow Chapter 8 of @Barry2022. Each one shows a different kind of chemistry that MLD can use, and a different way of dealing with the bifunctional-monomer problem of @sec-bifunctional.
+
+| Film | Precursors | Key surface chemistry | How double reactions are avoided | What limits it |
+|:---|:---|:---|:---|:---|
+| Alucone | TMA + ethylene glycol, or TMA + glycidol | Brønsted acid–base; with glycidol, Lewis-acid epoxide ring-opening (S~N~2) | Not avoided with EG; heterobifunctional glycidol | Double reactions; TMA infiltration; GPC falls with *T* |
+| V(TCNE)~x~, Co(TCNE)~x~ | Metal carbonyl + tetracyanoethylene | CO loss; coordination and back-bonding; chelate effect | Rigid C=C backbone | Metal nucleation (Co islands); air sensitivity of precursors |
+| Alq~3~ | TMA + 8-hydroxyquinoline | Ligand exchange; π-stacking | — (ligand exchange, not chain growth) | Etching by excess TMA; physisorption; GPC falls with *T* |
+| Poly(*p*-phenylene terephthalamide) | Terephthaloyl chloride + *p*-phenylenediamine | Condensation (Brønsted acid–base), HCl by-product | Rigid *para*-phenylene monomers | HCl by-product; need for an amine-terminated start surface |
+| PEDOT | EDOT + MoCl~5~ | Single-electron oxidation and oxidative coupling | One monomer; coupling happens only in the oxidant pulse | Chloride retained; physisorbed EDOT; GPC falls with *T* |
+
+: Five MLD processes and the chemistry that drives them [@Barry2022]. {#tbl-mld-processes}
+
+### Alucone {#sec-mld-alucone}
+
+**TMA and ethylene glycol.** The metal half-cycle is the same as in alumina ALD (@sec-process-alumina): TMA reacts with surface hydroxyls by Brønsted acid–base exchange, releases methane, and leaves a methyl-terminated surface. In the second half-cycle, ethylene glycol takes the place of water:
+
+$$
+\text{A:}\quad \|\!-\!\text{OH}^* + \text{Al(CH}_3)_3 \rightarrow \|\!-\!\text{O–Al(CH}_3)_2^* + \text{CH}_4
+$$ {#eq-alucone-a}
+
+$$
+\text{B:}\quad \|\!-\!\text{Al–CH}_3^* + \text{HOCH}_2\text{CH}_2\text{OH} \rightarrow \|\!-\!\text{Al–OCH}_2\text{CH}_2\text{OH}^* + \text{CH}_4
+$$ {#eq-alucone-b}
+
+The film is approximately (Al–O–CH~2~CH~2~–O)~n~, a poly(aluminum ethylene glycol) [@Dameron2008]. Its GPC of up to about 4 Å is high compared with alumina ALD (about 1 Å) because each cycle adds the whole length of the glycol. The double reaction competes with @eq-alucone-b:
+
+$$
+2\,\|\!-\!\text{Al–CH}_3^* + \text{HOCH}_2\text{CH}_2\text{OH} \rightarrow \|\!-\!\text{Al–OCH}_2\text{CH}_2\text{O–Al}\!-\!\| + 2\,\text{CH}_4
+$$ {#eq-alucone-double}
+
+Ethylene glycol is short, but its C–C bond rotates freely, so the second hydroxyl can reach a neighbouring methyl group.
+
+**TMA and glycidol.** Glycidol has one hydroxyl and one epoxide, so it is heterobifunctional. In its own pulse, only the hydroxyl reacts, by the same acid–base exchange as @eq-alucone-b. The epoxide survives and becomes the reactive group for the next TMA pulse. Its chemistry in that pulse is the interesting part [@Lee2011; @Barry2022]:
+
+1. **Lewis acid–base adduct.** The electron-poor aluminum of an incoming TMA accepts a lone pair from the epoxide oxygen.
+2. **Ring-opening by methyl transfer.** A methyl group on aluminum attacks the less hindered ring carbon. This is an S~N~2 reaction: the methyl is the nucleophile, and the leaving group is the epoxide oxygen, which is already coordinated to aluminum. As the C–O bond breaks, the oxygen becomes a covalent alkoxide on aluminum, and the methyl ends up bonded to carbon, making a new C–C bond.
+3. **Cascade.** Each newly bound aluminum still carries methyl groups, so it can pass one to the next epoxide nearby. All of this happens in the TMA pulse.
+
+Both oxygens of glycidol end up covalently bonded to aluminum, and aluminum is strongly oxophilic, so the reaction has a large thermodynamic driving force. Ring-opening also adds carbon in the metal step, not just the organic step, which is one way of getting more film per cycle. Lewis-acid-driven epoxide opening of this kind depends on the strong Al–O interaction [@Lee2011].
+
+The lesson of alucone is that the metal half-cycle of ALD transfers to MLD unchanged, and all of the new difficulty sits in the organic half-cycle.
+
+### Tetracyanoethylene films {#sec-mld-tcne}
+
+Metal tetracyanoethylene compounds M(TCNE)~x~, where M is V or Co, are organic-based magnets; V(TCNE)~x~ was the first organic-based magnet to order above room temperature. MLD gives smooth, pinhole-free films of these materials [@Kao2014]. The metal precursors are carbonyls such as V(CO)~6~, and the organic precursor is TCNE, (NC)~2~C=C(CN)~2~ [@Barry2022].
+
+1. **Nucleation of the carbonyl.** A metal carbonyl loses CO on the surface. This is a CVD-like step that tends to deposit metal, and the metal stays zero-valent unless the surface carries many hydroxyls. Substrates are often pre-treated to control this step. Metallic cobalt islands found in MLD Co(TCNE)~x~ films show how easily it goes too far [@Kao2014].
+2. **TCNE displaces CO.** A nitrile nitrogen coordinates to the metal. Both CO and R–C≡N are L ligands that back-bond (@sec-ligand-bonding). CO is the stronger ligand in a symmetric M(CO)~6~ octahedron, but once one CO has gone, the remaining M–CO bonds are weaker, and TCNE can coordinate. A TCNE that binds through more than one nitrile benefits from the chelate effect (@sec-chelate), which favours releasing more CO.
+3. **Le Chatelier does the rest.** In solution, CO and nitrile would reach an equilibrium. In an MLD reactor, the released CO is pumped away, so the exchange runs to completion.
+4. **The next metal pulse** loses CO and binds to the nitrile groups left pointing away from the surface, and the cycle repeats.
+
+TCNE cannot double-react. The C=C double bond holds the four nitriles in a plane, and the molecule cannot bend to put nitriles from both ends on the surface at once [@Barry2022].
+
+### Alq~3~ {#sec-mld-alq3}
+
+Tris(8-hydroxyquinolinato)aluminum(III), Alq~3~, is the electron-transport and emitting material of the first efficient organic light-emitting diodes (OLEDs). It is a discrete six-coordinate molecule, not a polymer. Its films are usually grown by evaporation or co-condensation, and its useful photoluminescence depends on the molecules packing into the right crystalline phase [@Barry2022]. MLD from TMA and 8-hydroxyquinoline (Hq) gives conformal, highly luminescent Alq~3~ layers, including on curved and porous substrates [@Raupke2014].
+
+Hq is bifunctional (a phenol and a pyridine nitrogen), but both ends bind the *same* aluminum in Alq~3~, so the film cannot grow as a chain. @Barry2022 proposes instead that each TMA pulse works by **ligand exchange** (@sec-ligand-exchange). Two observations support this. Excess TMA etches the film:
+
+$$
+\|\!-\!\text{Alq}_3 + \text{Al(CH}_3)_3 \rightarrow \|\, + \text{q}_2\text{AlCH}_3 + \text{qAl(CH}_3)_2
+$$ {#eq-alq3-etch}
+
+and the GPC falls significantly as the temperature rises. The proposed picture is that methyl–quinolinate exchange produces species such as qAl(CH~3~)~2~, which stay on the surface because their quinolinate rings π-stack with those of the film. π-Stacking is worth only about 10 kJ mol^−1^, so this is a physisorbed, reversible state, and a weak, reversible adsorption explains the temperature dependence. The following Hq pulse replaces the methyls and rebuilds Alq~3~ [@Barry2022].
+
+The lesson of Alq~3~ is that a large organic molecule brings new kinds of surface bonding with it. A process can be "self-limiting" in practice while resting on a physisorbed state that would never give an ALD window (@sec-ka-kd). This is a mechanistic proposal, and it would be worth testing directly, for instance with QCM mass ratios at several temperatures.
+
+### Poly(*p*-phenylene terephthalamide) ("Kevlar") {#sec-mld-kevlar}
+
+Kevlar is poly(*p*-phenylene terephthalamide) (PPTA). Its strength comes partly from the polymer chains crystallizing when the fibre is drawn. In solution it is made by condensing terephthaloyl chloride with *p*-phenylenediamine, which alternate along the chain [@Barry2022]. That alternation translates directly into an organic MLD process [@Adamczyk2008]:
+
+$$
+\text{A:}\quad \|\!-\!\text{NH}_2^* + \text{ClOC–C}_6\text{H}_4\text{–COCl} \rightarrow \|\!-\!\text{NH–CO–C}_6\text{H}_4\text{–COCl}^* + \text{HCl}
+$$ {#eq-ppta-a}
+
+$$
+\text{B:}\quad \|\!-\!\text{COCl}^* + \text{H}_2\text{N–C}_6\text{H}_4\text{–NH}_2 \rightarrow \|\!-\!\text{CO–NH–C}_6\text{H}_4\text{–NH}_2^* + \text{HCl}
+$$ {#eq-ppta-b}
+
+Both half-reactions are Brønsted acid–base condensations that release HCl, much like a metal chloride reacting with a hydroxylated surface in ALD. The growing film needs an amine-terminated surface to start from; @Adamczyk2008 prepared one with 3-aminopropyltrimethoxysilane or ethanolamine, and followed growth at 145 °C by in situ FTIR.
+
+Both monomers contain a *para*-phenylene ring, so the two reactive ends point in opposite directions and cannot both reach the surface. This is the rigid-backbone strategy of @sec-bifunctional [@Barry2022]. It is not a complete cure: the authors of the PPTA work went on to propose surface chemistries that avoid bifunctional monomers altogether [@Adamczyk2008]. Note too that HCl is an acidic by-product: a surface amine can trap it as an ammonium chloride, which ties up a site until it is released.
+
+The broader lesson is that a step-growth polymerization can become an MLD process if both monomers meet the usual precursor requirements: volatile at a low temperature (a low onset of volatility, T~V~) and stable to a much higher one (a high onset of decomposition, T~D~) (@sec-thermolysis).
+
+### PEDOT {#sec-mld-pedot}
+
+Poly(3,4-ethylenedioxythiophene) (PEDOT) is a conductive polymer used in flexible electronics. Unlike PPTA, it is built from a single monomer, EDOT, and grows by oxidative coupling. In **oxidative MLD (oMLD)**, the monomer and an oxidant, MoCl~5~, are dosed in turn [@Atanasov2014]:
+
+1. **EDOT pulse.** EDOT adsorbs on the growing film, probably held by hydrogen bonding. This is a physisorbed state [@Barry2022].
+2. **MoCl~5~ pulse.** MoCl~5~ removes one electron from EDOT. Two oxidized EDOT units couple at their 2- and 5-positions and lose a proton each. A coupled unit can be oxidized again and couple again, so the chain grows and cross-links to the layer below. The half-reactions are
+
+$$
+\text{MoCl}_5 + e^- \rightarrow \text{MoCl}_4 + \text{Cl}^-
+\qquad\qquad
+\text{EDOT} \rightarrow \text{EDOT}^{\bullet+} + e^-
+$$ {#eq-pedot-redox}
+
+The choice of oxidant is elegant: MoCl~5~ and its reduced form MoCl~4~ are both volatile, so the oxidant and its by-product both leave in the gas phase [@Barry2022]. The chloride ions do not. They stay in the film as the counter-ions that balance the positive charge on oxidized PEDOT. @Barry2022 treats this as an impurity, and it is, but it is also the dopant that makes PEDOT conductive. A chloride-free film would be an insulating one.
+
+Again the GPC falls noticeably as the temperature rises, as expected for a physisorbed monomer [@Barry2022]. With ReCl~5~ as the oxidant, growth falls sharply above about 200 °C and no film forms beyond that [@Ghafourisaleh2021]. The temperature also sets the film structure: MoCl~5~/EDOT films grown at about 150 °C are strongly textured and routinely exceed 1000 S cm^−1^, with the best above 3000 S cm^−1^, and they coat high-aspect-ratio structures conformally [@Atanasov2014].
+
+oMLD shows that MLD does not need linear chain growth. The first pulse delivers a layer of monomer, the second makes the bonds, and the "self-limiting" step is the supply of monomer that the oxidant can reach.
+
+## Check your understanding
+
+::: {.quiz}
+Glycidol and ethylene glycol both have two oxygen-containing groups. Why does glycidol avoid the double reactions that ethylene glycol suffers?
+
+- [ ] Glycidol is too large to reach a second surface site.
+- [x] Its hydroxyl and epoxide are different groups: only the hydroxyl reacts with surface Al–CH~3~ in the glycidol pulse, and the epoxide waits for the next TMA pulse.
+- [ ] The epoxide ring makes the molecule rigid, like a *para*-phenylene ring.
+- [ ] Glycidol reacts only by physisorption, so it cannot form two covalent bonds.
+
+::: {.explanation}
+Glycidol is heterobifunctional (@sec-bifunctional). The epoxide opens only when TMA, a strong Lewis acid, coordinates to it (@sec-mld-alucone).
+:::
+:::
+
+::: {.quiz}
+An alucone process grows at 4.0 Å at 85 °C and 0.4 Å at 175 °C. A colleague calls 175 °C "above the ALD window". What is the best reply?
+
+- [ ] Agreed: precursor decomposition at 175 °C removes material.
+- [ ] Agreed: the high-temperature desorption edge of the window is reached at about 100 °C.
+- [x] The steady fall over the whole range is typical of MLD. It can come from weakly bound intermediates, from less TMA infiltrating and outgassing at higher temperature, and from changes in surface reactions. The process needs dose and purge-time series at each temperature before calling any of it a window.
+- [ ] The difference is within the error of ex situ thickness measurements.
+
+::: {.explanation}
+See @sec-mld-trends and @tbl-mld-gpc. With short purges, part of the low-temperature GPC can be CVD from infiltrated TMA [@Jain2021].
+:::
+:::
+
+::: {.quiz}
+In TMA/ethylene glycol MLD, the QCM shows a mass gain of 56 ng cm^−2^ in the TMA pulse and 31 ng cm^−2^ in the EG pulse. Assuming TMA bonds through one oxygen, what does the ratio suggest?
+
+- [ ] Nearly all EG molecules react once.
+- [x] Most EG molecules react twice: the ratio, about 1.8, is close to the all-double value of 1.87, far from the all-single value of 0.61.
+- [ ] TMA is reacting with two hydroxyls.
+- [ ] The QCM must be wrong, because the EG pulse should always gain more mass than the TMA pulse.
+
+::: {.explanation}
+A single reaction adds 46 g mol^−1^ per EG and two EG react per Al; a double reaction adds 30 g mol^−1^ and one EG reacts per Al (@sec-mld-qcm). Before believing the result, check for TMA infiltration and for a non-rigid film.
+:::
+:::
+
+::: {.quiz}
+Why do both monomers in PPTA ("Kevlar") MLD resist double reactions?
+
+- [ ] HCl blocks the second reactive group.
+- [ ] Acid chlorides react only with amines in the gas phase.
+- [x] Each monomer has a *para*-phenylene ring that holds its two reactive groups on opposite sides, so both ends cannot reach the surface.
+- [ ] The amine-terminated starting surface has too few sites for double reactions.
+
+::: {.explanation}
+This is the rigid-backbone strategy (@sec-bifunctional, @sec-mld-kevlar). TCNE uses the same idea with a C=C double bond.
+:::
+:::
+
+::: {.quiz}
+In MoCl~5~/EDOT oMLD, chloride ends up in the PEDOT film. Which statement is right?
+
+- [ ] Chloride comes from incomplete purging of MoCl~5~ and can be removed with longer purges.
+- [x] Chloride is the counter-ion for oxidized PEDOT. It cannot leave as a volatile product, and it is also the dopant that makes the film conductive.
+- [ ] Chloride leaves as HCl in the next EDOT pulse.
+- [ ] Chloride is incorporated only above 200 °C.
+
+::: {.explanation}
+The reduced oxidant, MoCl~4~, is volatile, but the Cl^−^ released by the reduction balances the positive charge on the polymer (@sec-mld-pedot).
+:::
+:::
+
+::: {.quiz}
+In Simulation 4.1, with ethylene glycol and no site regeneration, why does the GPC level off instead of falling to zero?
+
+- [ ] The double-reaction probability decreases as the film grows.
+- [x] The sites that survive end up isolated, with no reactive neighbour, so they can no longer double-react.
+- [ ] The metal precursor regenerates sites.
+- [ ] The simulation stops counting lost sites after 20 cycles.
+
+::: {.explanation}
+A double reaction needs two reactive groups within reach. As sites are lost, the survivors are spread out, and each one reacts singly from then on. On a real surface the reach of a linker sets how sparse "isolated" has to be.
+:::
+:::
+
+## Further reading
+
+- @Sundberg2014: a broad review of organic and hybrid MLD, with a history of the field. Open access.
+- @George2009: surface chemistry of organic and hybrid MLD, including double reactions and ABC sequences.
+- @Dameron2008: the alucone paper, with QCM and FTIR analysis of the TMA/ethylene glycol reactions.
+- @Jain2021: why purge times matter in alucone MLD. Open access.
+- @Atanasov2014: oxidative MLD of PEDOT.
+- Chapter 8 of @Barry2022: the worked mechanisms in @sec-mld-processes, in more depth.

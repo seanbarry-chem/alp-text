@@ -27,6 +27,9 @@ book:
     - part: "Atomic Layer Deposition"
       chapters:
         - chapters/02-ald-fundamentals.qmd
+    - part: "Molecular Layer Deposition"
+      chapters:
+        - chapters/03-mld.qmd
     - references.qmd
 
 bibliography: references.bib

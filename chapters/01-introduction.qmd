@@ -23,7 +23,7 @@ This book covers four processes that apply that logic in different ways:
 | Process | What one cycle does | Typical per-cycle quantity | Main chapter |
 |:---|:---|:---|:---|
 | **Atomic layer deposition (ALD)** | Adds a fraction of a monolayer of an inorganic film | Growth per cycle (GPC), in Å | Chapter 3 |
-| **Molecular layer deposition (MLD)** | Adds a molecular fragment, giving an organic or hybrid film | GPC, in Å | (in preparation) |
+| **Molecular layer deposition (MLD)** | Adds a molecular fragment, giving an organic or hybrid film | GPC, in Å | Chapter 4 |
 | **Atomic layer etching (ALE)** | Removes a thin, chemically modified layer | Etch per cycle (EPC), in Å | (in preparation) |
 | **Area-selective deposition (ASD)** | Adds film on one part of a patterned surface but not another | GPC on each surface, and selectivity | (in preparation) |
 
@@ -479,7 +479,7 @@ The term "molecular layer deposition" and the first experiments with organic mol
 
 ### The hybrid turn
 
-MLD became a partner to ALD when metal precursors were combined with organic linkers. In 2008, the George group at the University of Colorado reported "alucone" films grown from trimethylaluminum and ethylene glycol [@Dameron2008]. Alucones, and the related zincones, titanicones and other "metalcones", use the familiar ALD metal precursors with diols and other bifunctional organics as the second precursor. Because the chemistry is shared, ALD and MLD cycles can be mixed in one process to make nanolaminates and alloys with tunable properties [@Sundberg2014]. MLD processes are covered in Chapter 8 of @Barry2022.
+MLD became a partner to ALD when metal precursors were combined with organic linkers. In 2008, the George group at the University of Colorado reported "alucone" films grown from trimethylaluminum and ethylene glycol [@Dameron2008]. Alucones, and the related zincones, titanicones and other "metalcones", use the familiar ALD metal precursors with diols and other bifunctional organics as the second precursor. Because the chemistry is shared, ALD and MLD cycles can be mixed in one process to make nanolaminates and alloys with tunable properties [@Sundberg2014]. MLD processes are covered in Chapter 4 (@sec-mld-processes) and in Chapter 8 of @Barry2022.
 
 ### A different failure mode
 
