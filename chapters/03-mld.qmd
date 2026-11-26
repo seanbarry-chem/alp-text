@@ -11,6 +11,7 @@ After this chapter you should be able to:
 3. Explain why the GPC of many MLD processes falls as the temperature rises, and why purge times in MLD are often far longer than in ALD.
 4. Use QCM mass gains from the two half-cycles to tell single reactions from double reactions.
 5. Walk through the surface chemistry of five MLD processes: alucone, M(TCNE)~x~, Alq~3~, poly(*p*-phenylene terephthalamide) ("Kevlar") and PEDOT.
+6. Explain how metalcone films work as lithography resists, and why a less cross-linked film can pattern better.
 :::
 
 MLD uses the same logic as ALD: two or more precursors are dosed one at a time, each reaction stops by itself, and the film grows by a fixed amount in each cycle. What changes is the size and the chemistry of what is added. At least one precursor is an organic molecule, so each cycle adds a molecular fragment rather than a fraction of a monolayer of an inorganic solid. The training, the vocabulary and often the reactor carry over directly from ALD [@Barry2022].
@@ -96,7 +97,7 @@ There are three ways to design the problem out:
 2. **Make the two ends different.** A **heterobifunctional** precursor carries two different groups, only one of which reacts with the current surface. Glycidol, with a hydroxyl and an epoxide, is an example (@sec-mld-alucone): the hydroxyl reacts in the organic pulse, and the epoxide reacts only in the next metal pulse [@Lee2011].
 3. **Split the cycle into more steps.** An **ABC process** uses three precursors so that no single step needs a homobifunctional molecule. TMA, ethanolamine and maleic anhydride is a well-known example. The hydroxyl end of ethanolamine reacts with surface Al–CH~3~ and leaves an amine; the amine opens the anhydride ring and leaves a carboxylic acid; the acid reacts with the next TMA [@Yoon2009]. Each step uses a molecule whose two ends cannot both react with the surface it meets.
 
-Branching helps too. TMA is trifunctional, so an aluminum centre that bonds through one oxygen still carries two methyl groups. A triol such as glycerol cross-links the film more than a diol does and leaves spare hydroxyls behind, which can replace sites lost to double reactions [@Sundberg2014]. Simulation 4.1 includes this as a site-regeneration term.
+Branching helps too. TMA is trifunctional, so an aluminum centre that bonds through one oxygen still carries two methyl groups. A triol such as glycerol cross-links the film more than a diol does and leaves spare hydroxyls behind, which can replace sites lost to double reactions [@Sundberg2014]. Simulation 4.1 includes this as a site-regeneration term. Cross-linking is not always what you want, though: in metalcone lithography resists, the most networked film patterns worst (@sec-mld-resists).
 
 ### Double reactions in practice: the site-loss simulator {#sec-double-reaction-sim}
 
@@ -306,7 +307,7 @@ Polymers and hybrid films can be soft. A film that is not rigid dissipates energ
 
 ## MLD processes: worked mechanisms {#sec-mld-processes}
 
-The five processes below follow Chapter 8 of @Barry2022. Each one shows a different kind of chemistry that MLD can use, and a different way of dealing with the bifunctional-monomer problem of @sec-bifunctional.
+The first five processes below follow Chapter 8 of @Barry2022. Each one shows a different kind of chemistry that MLD can use, and a different way of dealing with the bifunctional-monomer problem of @sec-bifunctional. The sixth, metalcone resists for lithography, is a current application that uses the alucone chemistry of @sec-mld-alucone and turns its design rules around.
 
 | Film | Precursors | Key surface chemistry | How double reactions are avoided | What limits it |
 |:---|:---|:---|:---|:---|
@@ -315,8 +316,9 @@ The five processes below follow Chapter 8 of @Barry2022. Each one shows a differ
 | Alq~3~ | TMA + 8-hydroxyquinoline | Ligand exchange; π-stacking | — (ligand exchange, not chain growth) | Etching by excess TMA; physisorption; GPC falls with *T* |
 | Poly(*p*-phenylene terephthalamide) | Terephthaloyl chloride + *p*-phenylenediamine | Condensation (Brønsted acid–base), HCl by-product | Rigid *para*-phenylene monomers | HCl by-product; need for an amine-terminated start surface |
 | PEDOT | EDOT + MoCl~5~ | Single-electron oxidation and oxidative coupling | One monomer; coupling happens only in the oxidant pulse | Chloride retained; physisorbed EDOT; GPC falls with *T* |
+| Hafnicone and alucone resists | TDMAHf or TMA + ethylene glycol (± glycerol or methanol) | Brønsted acid–base growth; radiation-driven M–O–C cleavage and densification | Not avoided; network density is tuned on purpose | Low EUV sensitivity; developer chemistry |
 
-: Five MLD processes and the chemistry that drives them [@Barry2022]. {#tbl-mld-processes}
+: Six MLD processes and the chemistry that drives them [@Barry2022; @Shi2022; @Than2025]. {#tbl-mld-processes}
 
 ### Alucone {#sec-mld-alucone}
 
@@ -410,6 +412,40 @@ Again the GPC falls noticeably as the temperature rises, as expected for a physi
 
 oMLD shows that MLD does not need linear chain growth. The first pulse delivers a layer of monomer, the second makes the bonds, and the "self-limiting" step is the supply of monomer that the oxidant can reach.
 
+### Metalcone resists for lithography {#sec-mld-resists}
+
+Extreme-ultraviolet (EUV) lithography at 13.5 nm delivers few photons to the wafer, so resists need to absorb strongly and respond to small doses. One approach is to put metal atoms, which absorb EUV well, into a thin organic–inorganic film. MLD can grow such films from the vapour, without solvent, with sub-nanometre control of thickness, and conformally. This makes metalcones a test bed for "dry" resists. Electron-beam lithography (EBL) is usually used as a stand-in for EUV, because it is easier to access and it also works mainly through secondary electrons [@Shi2022; @Than2025].
+
+**Growth.** Hafnicone is grown from tetrakis(dimethylamido)hafnium(IV) (TDMAHf) and ethylene glycol at 100 °C, with a GPC of about 1.5 Å. The metal half-cycle is a Brønsted acid–base reaction, as for TMA, except that the leaving group is dimethylamine instead of methane [@Shi2022]. Alucone resists use the TMA/ethylene glycol chemistry of @sec-mld-alucone, at a GPC of about 2.5 Å [@Than2025].
+
+**What exposure does.** Both films are **negative-tone** resists: dilute HCl dissolves unexposed film, and exposed film stays. For hafnicone, XPS and FTIR show what changes [@Shi2022]:
+
+1. The C–O bonds of the glycolate units break; the C–O signal in XPS disappears after exposure.
+2. Carbon leaves the film. The Hf:C:O ratio falls from about 1:4.4:4.4 as deposited to about 1:2.6:4.0 after e-beam exposure. Some of the carbon that stays is converted to carboxylate.
+3. Hafnium oxide forms. About 15 % of the oxygen is in HfO~2~-like environments after e-beam exposure, and the oxide domains aggregate into nanoparticles that do not dissolve in HCl.
+
+The general picture for metalcone resists is therefore M–O–C bond cleavage, loss of volatile organic fragments, and densification into metal-oxide clusters that resist the developer [@Than2025]. Hafnicone resolved 50 nm lines at 100 nm pitch at a dose of about 400 µC cm^−2^ (50 keV), developed in 3 M HCl [@Shi2022].
+
+**Network density.** @Than2025 grew three alucone resists from TMA with linkers of different functionality: glycerol (three hydroxyls, the most cross-linked film, GPC about 5.1 Å), ethylene glycol (two hydroxyls, GPC about 2.5 Å), and a three-step cycle of TMA, methanol and ethylene glycol (GPC about 2.1 Å). Methanol has only one hydroxyl, so it caps aluminum sites and deliberately lowers the network density.
+
+| Film | Linker functionality | E-beam dose to clear (mC cm^−2^) | Contrast (γ) | Best half pitch (HCl developer) |
+|:---|:---|:---|:---|:---|
+| Al–MeOH–EG | 1 and 2 (least networked) | 88 | 3.7 | 18 nm |
+| Al–EG | 2 | slightly above Al–MeOH–EG | 1.8 | 24 nm |
+| Al–GL | 3 (most networked) | 342 | 2.1 | 28 nm |
+
+: E-beam patterning of three alucone resists with different network densities [@Than2025]. {#tbl-alucone-resists}
+
+The least networked film did best on every measure. With a dilute tetramethylammonium hydroxide developer, it resolved 14 nm half pitch with 1.6 nm line-edge roughness. The authors give three reasons [@Than2025]:
+
+- **Fewer bonds to break.** A fragment tied to the network at one point leaves after one cleavage; a glycerolate tied at three points needs three.
+- **Less recombination.** In a dense network, radical fragments are held close together and re-form bonds (a cage effect), so fewer cleavage events are productive.
+- **Easier transport.** Liberated fragments diffuse out, and developer diffuses in, more easily through a less connected network, which also reduces bridging between lines.
+
+Under EUV (13.5 nm) flood exposure, the Al–MeOH–EG film changed in the same way as under the electron beam and stayed negative-tone. Its sensitivity, however, was about 2000 mJ cm^−2^, compared with about 40–100 mJ cm^−2^ for commercial metal-containing EUV resists. Poor absorption was ruled out, and the outgassing was mostly H~2~ [@Than2025]. Turning MLD metalcones into production resists is therefore still a chemistry problem: the film absorbs enough, but too little of the absorbed energy ends up breaking the right bonds.
+
+The lesson for MLD process design is that the "right" amount of cross-linking depends on what the film is for. For a tough barrier or a film that must keep growing, branching linkers are an asset (@sec-bifunctional). For a resist, where exposure has to tear the network apart, a monofunctional capping reagent such as methanol, which an MLD chemist would normally regard as a growth inhibitor, becomes a design tool.
+
 ## Check your understanding
 
 ::: {.quiz}
@@ -490,6 +526,19 @@ A double reaction needs two reactive groups within reach. As sites are lost, the
 :::
 :::
 
+::: {.quiz}
+Three alucone resists are grown with glycerol, with ethylene glycol, and with methanol plus ethylene glycol. Which is likely to need the lowest e-beam dose to pattern, and why?
+
+- [ ] The glycerol film, because it contains the most carbon to remove.
+- [ ] The glycerol film, because a denser network absorbs more energy.
+- [x] The methanol/ethylene glycol film, because its fragments are bound at fewer points, recombine less, and diffuse out more easily.
+- [ ] All three need the same dose, because the dose depends only on aluminum content.
+
+::: {.explanation}
+The least networked film cleared at 88 mC cm^−2^ against 342 mC cm^−2^ for the glycerol film, with better contrast and resolution (@sec-mld-resists, @tbl-alucone-resists).
+:::
+:::
+
 ## Further reading
 
 - @Sundberg2014: a broad review of organic and hybrid MLD, with a history of the field. Open access.
@@ -497,4 +546,5 @@ A double reaction needs two reactive groups within reach. As sites are lost, the
 - @Dameron2008: the alucone paper, with QCM and FTIR analysis of the TMA/ethylene glycol reactions.
 - @Jain2021: why purge times matter in alucone MLD. Open access.
 - @Atanasov2014: oxidative MLD of PEDOT.
+- @Than2025: how network density controls the patterning of MLD alucone resists.
 - Chapter 8 of @Barry2022: the worked mechanisms in @sec-mld-processes, in more depth.
