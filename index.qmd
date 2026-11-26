@@ -10,8 +10,7 @@ This is an open, interactive textbook on **atomic layer processing**: presently 
 
 ## Status {.unnumbered}
 
-This book is in early development and should be considered a first draft. Corrections and suggestions are welcome. Please contact me at this email:
-Seán Barry (sean_barry@carleton.ca)
+This book is in early development and should be considered a first draft. Corrections and suggestions are welcome. Please contact me at Seán Barry (sean_barry@carleton.ca)
 
 ## Acknowledgements {.unnumbered}
 
