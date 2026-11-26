@@ -323,9 +323,11 @@ A plasma also changes the chemistry, not just the rate. An O~2~ plasma removes l
 The growth per cycle (GPC) is reported in Å, not as a "growth rate", because it is an amount per cycle, not per unit time [@Barry2022]. Thickness is the easiest form to measure, but it is not the most informative. Two derived quantities say more about the chemistry:
 
 $$
-V = \frac{M}{\rho\,N_\text{A}}, \qquad
-\text{fraction of a monolayer} = \frac{\mathrm{GPC}}{V^{1/3}}, \qquad
-\text{metal atoms per area per cycle} = \frac{\mathrm{GPC}}{V}
+\begin{aligned}
+V &= \frac{M}{\rho\,N_\text{A}} \\[4pt]
+\text{fraction of a monolayer} &= \frac{\mathrm{GPC}}{V^{1/3}} \\[4pt]
+\text{metal atoms per area per cycle} &= \frac{\mathrm{GPC}}{V}
+\end{aligned}
 $$ {#eq-gpc-ml}
 
 Here M is the molar mass of the film per metal atom (AlO~1.5~ for alumina, W for tungsten), ρ is the film density, and V is the volume per metal atom (@eq-val).
