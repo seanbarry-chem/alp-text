@@ -25,6 +25,7 @@ book:
     - chapters/02-ald-fundamentals.qmd
     - chapters/03-mld.qmd
     - chapters/04-ale.qmd
+    - chapters/05-asd.qmd
     - references.qmd
 
 bibliography: references.bib

@@ -1,0 +1,599 @@
+---
+title: "Area-Selective Deposition"
+---
+
+::: {.callout-tip appearance="simple"}
+## Learning outcomes
+After this chapter you should be able to:
+
+1. Explain how two surfaces exposed to the same precursor can saturate at different rates, and why that kinetic selectivity always runs out eventually.
+2. Calculate the selectivity S from coverage or thickness, explain why the thickness-based value flatters a process, and use t~S=0.9~ to compare processes.
+3. Use the analytical nucleation model to tell apart selectivity loss from defects already on the surface (N̂) and from sites created during deposition (Ṅ).
+4. Describe how self-assembled monolayers, small-molecule inhibitors and N-heterocyclic carbenes block a surface, in terms of the attractive and repulsive interactions each one sets up.
+5. Explain why a selectively grown film spreads sideways over a pattern edge, and estimate when neighbouring features merge.
+6. Describe how ASD addresses edge placement error, RC delay in interconnects and stochastic defects in EUV patterning.
+:::
+
+Every chapter so far has assumed that a precursor reacts with whatever surface it meets. Area-selective deposition (ASD) turns that around. A patterned substrate has a **growth surface (GS)**, where the film should form, and a **non-growth surface (NGS)**, where it should not, and the chemistry is arranged so that deposition happens only on the first. It is "bottom-up" patterning: the pattern already on the wafer decides where the film goes, so no new lithography or etching step is needed [@Parsons2020; @Mackus2019].
+
+::: {.callout-note appearance="simple"}
+## Where the fundamentals are
+- **Saturation kinetics and kinetic selectivity:** @sec-saturation-curve and Simulation 2.2, which already compares two surfaces with different rate constants.
+- **Nucleation and growth modes:** @sec-nucleation-energetics, @sec-growth-modes and Simulation 2.14.
+- **Ligand bonding, σ donation and π back-bonding:** @sec-ligand-bonding. These decide how carbenes and isocyanides bind to metals.
+- **The chelate effect:** @sec-chelate, which explains why bidentate inhibitors stick better.
+- **Thermolysis:** @sec-thermolysis. Inhibitors must be volatile and stable, like any precursor.
+- **History of ASD:** @sec-history-asd.
+:::
+
+## Selectivity and saturation {#sec-asd-selectivity}
+
+<!-- Check the framing and examples of this section against Bath L7 (ASD lecture), which is not yet in the vault. -->
+
+### Three ways to make deposition selective {#sec-asd-routes}
+
+Approaches to ASD fall into three groups, often combined with a fourth, corrective step [@Parsons2020; @Mackus2019]:
+
+1. **Inherent selectivity.** The precursor and co-reactant simply react faster on one surface than the other. Examples are metal ALD that nucleates readily on metals but slowly on oxides, and TiCl~4~/H~2~O, which grows TiO~2~ on SiO~2~ for 1–2 nm before nucleating on H-terminated silicon [@Parsons2020].
+2. **Area deactivation.** The NGS is covered by a layer that blocks the precursor: a self-assembled monolayer (SAM), a polymer, or a small-molecule inhibitor (SMI) dosed from the vapour (@sec-asd-blocking).
+3. **Area activation.** Only the GS is given the sites that the precursor needs, for instance by an electron beam or a plasma that seeds nucleation locally.
+4. **Correction.** Nuclei that form on the NGS anyway are removed by a short etch, repeated every few cycles. This is where ASD meets ALE (@sec-ale-selectivity).
+
+All four depend on the same underlying quantity: how fast nuclei form on each surface. The rest of this section develops that idea, starting from the saturation curve.
+
+### Kinetic selectivity from the saturation curve {#sec-kinetic-selectivity}
+
+In the irreversible limit, coverage on a surface rises as θ = 1 − exp(−k~a~p~A~t) (@sec-saturation-curve). Suppose the GS reacts with rate constant k~a~ and the NGS with a much smaller k~a~′. Both see the same precursor pressure for the same time. With k~a~ : k~a~′ = 100 : 1, a pulse just long enough to saturate the GS barely touches the NGS [@Barry2022]:
+
+$$
+\frac{\theta_\mathrm{NGS}}{\theta_\mathrm{GS}} \approx \frac{1-\exp(-k_a' p_A t)}{1-\exp(-k_a p_A t)}
+$$ {#eq-kinetic-selectivity}
+
+This is **kinetic selectivity**. Chemisorption is thermodynamically allowed on both surfaces, but it is so much slower on one that, on the right timescale, only the other one reacts. Plotted on a logarithmic time axis, both curves eventually reach saturation. Kinetic selectivity is therefore a demonstration that selectivity is *possible*, not a guarantee that it lasts. A short pulse buys a window, and every additional cycle uses some of it up [@Barry2022]. Simulation 2.2 lets you see the two curves side by side.
+
+Two further points from the saturation curve matter for ASD:
+
+- **Saturation without a full monolayer.** If the adsorption equilibrium lies on the reactant side, a surface can still saturate given enough time, at a coverage well below a monolayer. Small changes in precursor vapour pressure then have large effects on how far that saturation goes [@Barry2022]. For ASD this means the NGS also creeps toward its own (low) saturation every cycle, and the dose matters as much as the chemistry.
+- **ALD gives the NGS a large exposure every cycle.** Doses in ALD are set to saturate the GS. The NGS receives the same exposure, cycle after cycle, which increases the chance of creating unwanted nuclei. This is one reason why the best blanket ALD chemistry is often the worst ASD chemistry: TMA and water make excellent Al~2~O~3~ because the reactions are so strongly downhill, but that same reactivity makes Al~2~O~3~ ASD notoriously difficult [@Parsons2020].
+
+### Defining and quantifying selectivity {#sec-selectivity-metric}
+
+Following @Gladfelter1993, selectivity is defined by comparing the amount deposited on the two surfaces after *n* cycles:
+
+$$
+S(n) = \frac{\theta_\mathrm{GS} - \theta_\mathrm{NGS}}{\theta_\mathrm{GS} + \theta_\mathrm{NGS}} \approx \frac{t_\mathrm{GS} - t_\mathrm{NGS}}{t_\mathrm{GS} + t_\mathrm{NGS}}
+$$ {#eq-selectivity}
+
+where θ is the fractional coverage and *t* the thickness. S = 1 is perfect selectivity and S = 0 is none. Three practical points follow [@Parsons2020]:
+
+- **Report S against the thickness on the GS, not as a single number.** S always falls as nuclei build up on the NGS. A useful figure of merit is **t~S=0.9~**, the GS thickness at which S drops to 0.9. Most processes in the literature fall between about 1 and 10 nm, and a few exceed 100 nm.
+- **Thickness-based S is flattering.** Isolated nuclei cover more area than their average thickness suggests, so coverage-based S is lower than thickness-based S at the same point. Ellipsometry also struggles below 1–2 nm, which is exactly where selectivity is lost.
+- **0.9 is not good enough for manufacturing.** Production likely needs S > 0.999. Defect density is the more honest measure: an average NGS coverage of 0.1 % can hide a nucleus every few hundred nanometres, and each one can short two lines.
+
+### Where unwanted nuclei come from {#sec-unwanted-nuclei}
+
+@Parsons2020 list six routes to nuclei on the NGS:
+
+1. a defect or impurity that was there before deposition;
+2. physisorbed precursor molecules that cluster and survive the purge;
+3. feature edges and corners;
+4. a reactant that turns a passive site into an active one, such as stripping H from Si–H;
+5. a by-product formed on the GS that migrates to the NGS (for example, tungsten subfluorides from WF~6~ landing on SiO~2~);
+6. etch products that create new sites.
+
+Routes 3, 5 and 6 depend on the pattern: unwanted nuclei gather near feature boundaries and depend on how much GS there is nearby. Precursor design plays a role too. Amidinate precursors that form dimers or tetramers in the gas phase can bind the NGS through several dative N→M bonds and speed up selectivity loss, and β-hydride elimination products can seed growth where it is not wanted [@Parsons2020]. This is why thermal stability (@sec-thermolysis) matters even more for ASD than for blanket ALD.
+
+### An analytical nucleation model {#sec-nucleation-model}
+
+@Parsons2019 proposed a simple model with three adjustable parameters that links what happens on the NGS to the selectivity curve:
+
+- **Ġ**, the growth rate on the GS and on any nucleus, per cycle (the GPC);
+- **N̂**, the density of nucleation sites already present on the NGS at the start (nm^−2^);
+- **Ṅ**, the rate at which new sites are generated on the NGS during deposition (nm^−2^ per cycle), optionally starting after a delay of ν~d~ cycles.
+
+Each site grows a hemispherical nucleus at rate Ġ. The area the nuclei would cover if they never touched, the *extended* coverage, is
+
+$$
+\theta_\mathrm{ext}(n) = \pi\dot{G}^2\left[\hat{N}\,n^2 + \dot{N}\,\frac{(n-\nu_d)^3}{3}\right]
+$$ {#eq-avrami-ext}
+
+and the Avrami relation corrects for nuclei that overlap:
+
+$$
+\theta_\mathrm{NGS}(n) = 1 - \exp\left[-\theta_\mathrm{ext}(n)\right]
+$$ {#eq-avrami}
+
+The thickness on the NGS follows from integrating the covered fraction over height through the layer of hemispheres [@Parsons2019; @Parsons2020].
+
+The value of the model is diagnostic. Fitting it to a measured selectivity curve tells you *why* a process fails [@Parsons2020]:
+
+- **N̂ > 0, Ṅ ≈ 0:** the NGS started with defects, or the inhibitor layer had gaps. The fix is a cleaner surface or a denser, more strongly bound inhibitor. TiO~2~ on H-terminated Si versus SiO~2~ fits this case, with Ġ = 0.37 Å, N̂ = 0.01 nm^−2^ and t~S=0.9~ = 1.2 nm.
+- **Ṅ > 0:** new sites appear as deposition goes on. The inhibitor is desorbing or being displaced, or the precursor or a by-product is creating sites. The fix is a more robust inhibitor, or redosing it every cycle. Electron-beam-activated ZnO ASD fits this case better, with Ṅ ≈ 4 × 10^−4^ nm^−2^ per cycle after a delay, and t~S=0.9~ = 12.6 nm.
+
+A density of 0.01 nm^−2^ sounds small. It is 10^12^ sites per square centimetre.
+
+### Simulation 6.1: selectivity versus cycles {#sec-selectivity-sim}
+
+::: {.sim-box}
+[Simulation 6.1: Selectivity-versus-cycles calculator]{.sim-title}
+
+```{ojs}
+//| echo: false
+asd1Presets = [
+  {name: "Defects on the starting surface (TiO₂ on Si–H type, Parsons fit)", G: 0.37, logN0: -2, logNd: -9, nd: 0},
+  {name: "Good inhibitor, slowly degrading", G: 1.0, logN0: -5, logNd: -6, nd: 0},
+  {name: "Inhibitor fails after a delay", G: 1.5, logN0: -9, logNd: -3.4, nd: 150},
+  {name: "Near-perfect (S > 0.999 target)", G: 1.0, logN0: -7, logNd: -9, nd: 0}
+]
+viewof asd1Preset = Inputs.select(asd1Presets, {label: "Case", format: d => d.name, value: asd1Presets[0]})
+```
+
+```{ojs}
+//| echo: false
+viewof asd1G = Inputs.range([0.1, 3], {step: 0.01, value: asd1Preset.G, label: "GPC on growth surface (Å)"})
+viewof asd1LogN0 = Inputs.range([-9, -1], {step: 0.1, value: asd1Preset.logN0, label: "log₁₀ N̂ (sites nm⁻² at start)"})
+viewof asd1LogNd = Inputs.range([-9, -2], {step: 0.1, value: asd1Preset.logNd, label: "log₁₀ Ṅ (new sites nm⁻² per cycle)"})
+viewof asd1Nd = Inputs.range([0, 500], {step: 5, value: asd1Preset.nd, label: "Delay before new sites appear, ν_d (cycles)"})
+viewof asd1Max = Inputs.range([20, 1000], {step: 10, value: 300, label: "Cycles to plot"})
+```
+
+```{ojs}
+//| echo: false
+asd1Run = {
+  const G = asd1G / 10;                       // nm per cycle
+  const N0 = Math.pow(10, asd1LogN0), Nd = asd1LogNd <= -8.95 ? 0 : Math.pow(10, asd1LogNd), nd = asd1Nd;
+  const thExt = (n, h) => {                   // extended coverage of a plane at height h after n cycles
+    const R0 = G * n;
+    let a = N0 * Math.max(0, R0 * R0 - h * h);
+    const U = Math.max(0, n - nd), u0 = h / G;
+    let b = 0;
+    if (U > u0) b = Nd * (G * G * (U ** 3 - u0 ** 3) / 3 - h * h * (U - u0));
+    return Math.PI * (a + b);
+  };
+  const rows = [];
+  const step = Math.max(1, Math.round(asd1Max / 200));
+  for (let n = step; n <= asd1Max; n += step) {
+    const R0 = G * n, K = 60;
+    let t2 = 0;
+    for (let i = 0; i < K; i++) { const h = (i + 0.5) * R0 / K; t2 += (1 - Math.exp(-thExt(n, h))) * R0 / K; }
+    const cov = 1 - Math.exp(-thExt(n, 0));
+    const t1 = R0;
+    rows.push({n, t1, t2, cov,
+      St: (t1 - t2) / (t1 + t2),
+      Sc: (1 - cov) / (1 + cov),
+      nuclei: N0 + Nd * Math.max(0, n - nd)});
+  }
+  const cross = (key, s) => { const r = rows.find(d => d[key] < s); return r ? r.t1 : null; };
+  return {rows, t90: cross("St", 0.9), t90c: cross("Sc", 0.9), t999: cross("St", 0.999), t999c: cross("Sc", 0.999)};
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const r = asd1Run.rows;
+  const long = r.flatMap(d => [{t1: d.t1, S: d.St, kind: "Thickness-based S"}, {t1: d.t1, S: d.Sc, kind: "Coverage-based S"}]);
+  return Plot.plot({
+    width: 680, height: 280, marginLeft: 55, marginBottom: 45,
+    x: {label: "Thickness on growth surface (nm)", labelAnchor: "center", labelOffset: 38},
+    y: {label: "Selectivity S", domain: [0, 1.02], grid: true},
+    color: {domain: ["Thickness-based S", "Coverage-based S"], range: ["#E91C24", "#000000"], legend: true},
+    marks: [
+      Plot.ruleY([0.9], {stroke: "#8C8C8C", strokeDasharray: "5,4"}),
+      Plot.text([{x: 0, y: 0.9}], {x: "x", y: "y", text: () => "S = 0.9", dy: -7, textAnchor: "start", fill: "#4D4D4D", fontSize: 12}),
+      Plot.line(long, {x: "t1", y: "S", stroke: "kind", strokeWidth: 2.5})
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const r = asd1Run.rows;
+  return Plot.plot({
+    width: 680, height: 240, marginLeft: 55, marginBottom: 45,
+    x: {label: "Cycle", labelAnchor: "center", labelOffset: 38},
+    y: {label: "Thickness (nm)", grid: true},
+    color: {domain: ["Growth surface", "Non-growth surface"], range: ["#000000", "#E91C24"], legend: true},
+    marks: [
+      Plot.line(r, {x: "n", y: "t1", stroke: () => "Growth surface", strokeWidth: 2}),
+      Plot.line(r, {x: "n", y: "t2", stroke: () => "Non-growth surface", strokeWidth: 2.5})
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const o = asd1Run, last = o.rows[o.rows.length - 1];
+  const f = (x) => x === null ? `not reached in ${asd1Max} cycles` : `${x.toFixed(1)} nm`;
+  const perCm2 = last.nuclei * 1e14;
+  return html`<div class="map-card"><div class="map-card-title">Selectivity figures of merit</div><ul>
+    <li>t<sub>S=0.9</sub> (thickness-based): <b>${f(o.t90)}</b>; coverage-based: <b>${f(o.t90c)}</b></li>
+    <li>t<sub>S=0.999</sub> (thickness-based): <b>${f(o.t999)}</b>; coverage-based: <b>${f(o.t999c)}</b></li>
+    <li>After ${last.n} cycles: NGS coverage <b>${(100 * last.cov).toFixed(2)} %</b>, nucleation sites <b>${perCm2.toExponential(1)} cm⁻²</b></li>
+  </ul></div>`;
+}
+```
+
+**Things to try.**
+
+- Start with the defect case. All of the selectivity loss comes from sites present at the start, so S falls early and steadily. Lower N̂ by one order of magnitude: how much does t~S=0.9~ grow? (Coverage scales with n^2^N̂, so roughly by √10.)
+- Compare the two curves. The coverage-based S always lies below the thickness-based S. A process reported only by ellipsometry thickness can look better than it is.
+- Choose the delayed-failure case. S stays at 1 until the inhibitor starts to fail, then collapses quickly because Ṅ adds nuclei *and* each one grows. Redosing the inhibitor every cycle, as in an ABC process, aims to push that delay out.
+- Try the near-perfect case and read the site density. Even S > 0.999 at several nanometres can correspond to 10^7^ or more nuclei per square centimetre.
+- Raise the GPC with N̂ fixed. t~S=0.9~ hardly changes, because nuclei on the NGS grow at the same rate as the film. Faster growth does not buy selectivity by itself.
+
+::: {.assumptions}
+**Assumptions.** The functional model of @Parsons2019: nucleation sites are points; each grows a hemispherical nucleus at the same rate as the GS film; nuclei do not move or merge except through the Avrami overlap correction; the GS grows linearly from cycle 1 with no delay. New sites appear at a constant rate Ṅ after ν~d~ cycles. NGS thickness is computed by integrating the covered fraction of each horizontal plane through the hemispheres (60 slices). This geometric integration gives t~S=0.9~ ≈ 1.6 nm for the TiO~2~ preset, compared with 1.2 nm reported by @Parsons2020 for the same parameters; the published thickness integral is evaluated somewhat differently, so treat numbers from this calculator as estimates. Diffusing metal islands (Pt, Ru), inhibitor regeneration and pattern effects are not included. Setting log Ṅ to −9 switches site generation off.
+:::
+:::
+
+## Surface blocking groups {#sec-asd-blocking}
+
+<!-- Check the examples and the attractive/repulsive framing in this section against Bath L7. -->
+
+### Blocking with self-assembled monolayers {#sec-asd-sams}
+
+If the two surfaces do not differ enough in their natural reactivity, the difference can be made. The simplest way is to cover the NGS with a layer of molecules that binds strongly to it and offers nothing to the precursor [@Barry2022]. The best-studied blockers are long-chain thiols on metals, and alkylsilanes and phosphonic acids on oxides. An octadecyltrichlorosilane SAM blocked HfO~2~ ALD in the first demonstration of SAM-based ASD [@Chen2004].
+
+Dodecanethiol on a Cu/SiO~2~ pattern shows how a blocker picks its surface (@fig-asd-blockers, panel a). @Barry2022 explains the selectivity with electronegativity. Sulfur (EN = 2.58) holds negative charge better than hydrogen (2.20), so the thiol readily gives up its proton. Copper (1.90) can accept a negatively charged sulfur head group; the oxygen of a silica surface (3.04) cannot. The thiol binds to copper and not to SiO~2~, and its dodecyl tail presents a terminal CH~3~ that offers no site for most precursors. Exactly what happens to the thiol hydrogen is still not settled: some leaves as H~2~, but not enough to account for all of it, and the rest may stay as surface hydride or dissolve in the metal [@Barry2022].
+
+SAMs can work very well. Octadecylphosphonic acid on Cu blocks more than 30 nm of ZnO ASD, and dodecanethiol SAMs that are regenerated from the vapour extend selectivity to more than 80 nm [@Parsons2020]. Their drawbacks are practical. Well-ordered SAMs can take hours to form from solution, long-chain molecules are hard to deliver as vapours, thiolates oxidize, and a thick SAM is a tall wall that the growing film can climb over (@sec-asd-lateral).
+
+::: {#fig-asd-blockers}
+```{=html}
+<svg viewBox="0 0 720 230" role="img" aria-label="Three kinds of surface blocking group" style="max-width:720px;width:100%;font-family:'Source Sans 3',sans-serif">
+  <g font-size="14" font-weight="600">
+    <text x="15" y="20">a) Thiol SAM on Cu</text>
+    <text x="255" y="20">b) Chelating SMI on an oxide</text>
+    <text x="495" y="20">c) NHC on a metal</text>
+  </g>
+  <!-- a: SAM -->
+  <rect x="15" y="185" width="210" height="25" fill="#BDBDBD" stroke="#8C8C8C"/><text x="120" y="202" font-size="12.5" text-anchor="middle">Cu</text>
+  <g stroke="#000" stroke-width="2.2">
+    <path d="M45,172 L52,150 L45,128 L52,106 L45,84 L52,62"/>
+    <path d="M85,172 L92,150 L85,128 L92,106 L85,84 L92,62"/>
+    <path d="M125,172 L132,150 L125,128 L132,106 L125,84 L132,62"/>
+    <path d="M165,172 L172,150 L165,128 L172,106 L165,84 L172,62"/>
+    <path d="M205,172 L212,150 L205,128 L212,106 L205,84 L212,62" />
+  </g>
+  <g fill="#E91C24">
+    <circle cx="45" cy="178" r="7"/><circle cx="85" cy="178" r="7"/><circle cx="125" cy="178" r="7"/><circle cx="165" cy="178" r="7"/><circle cx="205" cy="178" r="7"/>
+  </g>
+  <g fill="#4D4D4D"><circle cx="52" cy="58" r="5"/><circle cx="92" cy="58" r="5"/><circle cx="132" cy="58" r="5"/><circle cx="172" cy="58" r="5"/><circle cx="212" cy="58" r="5"/></g>
+  <text x="15" y="45" font-size="11.5" fill="#4D4D4D">CH₃ ends: low surface energy</text>
+  <text x="230" y="182" font-size="11.5" fill="#E91C24">S</text>
+  <!-- b: acac chelate -->
+  <rect x="255" y="185" width="210" height="25" fill="#EDEDED" stroke="#8C8C8C"/><text x="360" y="202" font-size="12.5" text-anchor="middle">Al₂O₃ (NGS)</text>
+  <g>
+    <circle cx="315" cy="178" r="9" fill="#4D4D4D"/><text x="315" y="182" font-size="10" fill="white" text-anchor="middle">Al</text>
+    <circle cx="295" cy="150" r="7" fill="#E91C24"/><circle cx="335" cy="150" r="7" fill="#E91C24"/>
+    <path d="M295,143 L300,120 L315,110 L330,120 L335,143" fill="none" stroke="#000" stroke-width="2.2"/>
+    <line x1="309" y1="172" x2="299" y2="156" stroke="#000" stroke-width="2"/><line x1="321" y1="172" x2="331" y2="156" stroke="#000" stroke-width="2"/>
+    <circle cx="405" cy="178" r="9" fill="#4D4D4D"/><text x="405" y="182" font-size="10" fill="white" text-anchor="middle">Al</text>
+    <circle cx="405" cy="150" r="7" fill="#E91C24"/>
+    <path d="M405,143 L410,120 L425,110 L440,120" fill="none" stroke="#000" stroke-width="2.2"/><circle cx="445" cy="124" r="7" fill="#E91C24"/>
+    <line x1="405" y1="169" x2="405" y2="157" stroke="#000" stroke-width="2"/>
+  </g>
+  <text x="275" y="90" font-size="11.5" fill="#4D4D4D">bidentate:</text><text x="275" y="104" font-size="11.5" fill="#4D4D4D">sticks</text>
+  <text x="392" y="90" font-size="11.5" fill="#4D4D4D">monodentate:</text><text x="392" y="104" font-size="11.5" fill="#4D4D4D">displaced</text>
+  <!-- c: NHC -->
+  <rect x="495" y="185" width="210" height="25" fill="#BDBDBD" stroke="#8C8C8C"/><text x="600" y="202" font-size="12.5" text-anchor="middle">Au, Cu, Co, Ru (GS or NGS)</text>
+  <g>
+    <circle cx="600" cy="172" r="7" fill="#000"/><text x="600" y="176" font-size="9" fill="white" text-anchor="middle">C</text>
+    <line x1="600" y1="179" x2="600" y2="185" stroke="#000" stroke-width="2.4"/>
+    <polygon points="600,165 622,150 614,124 586,124 578,150" fill="none" stroke="#000" stroke-width="2.2"/>
+    <circle cx="622" cy="150" r="7" fill="#8C8C8C"/><text x="622" y="154" font-size="9" fill="white" text-anchor="middle">N</text>
+    <circle cx="578" cy="150" r="7" fill="#8C8C8C"/><text x="578" y="154" font-size="9" fill="white" text-anchor="middle">N</text>
+    <path d="M629,150 L652,150 L660,136 M652,150 L660,164" fill="none" stroke="#000" stroke-width="2"/>
+    <path d="M571,150 L548,150 L540,136 M548,150 L540,164" fill="none" stroke="#000" stroke-width="2"/>
+    <polygon points="586,124 614,124 628,100 614,76 586,76 572,100" fill="none" stroke="#000" stroke-width="2"/>
+  </g>
+  <text x="640" y="52" font-size="11.5" fill="#4D4D4D">strong σ-donor</text><text x="640" y="66" font-size="11.5" fill="#4D4D4D">C–M bond;</text><text x="640" y="80" font-size="11.5" fill="#4D4D4D">wing-tips set</text><text x="640" y="94" font-size="11.5" fill="#4D4D4D">packing</text>
+</svg>
+```
+Three kinds of blocking group. (a) A dodecanethiolate SAM binds Cu through sulfur and presents methyl groups. (b) Acetylacetone on an oxide: the bidentate (chelating) form resists displacement by the precursor, the monodentate form does not [@Merkx2020]. (c) An N-heterocyclic carbene (here a 1,3-diisopropylbenzimidazolylidene) binds a metal through its carbene carbon. Schematic; not to scale.
+:::
+
+### Small-molecule inhibitors and ABC cycles {#sec-asd-smi}
+
+A small-molecule inhibitor is volatile enough to be pulsed like a precursor. That allows an **ABC cycle**: A is the inhibitor, B the precursor, C the co-reactant. The inhibitor is renewed every cycle, so any that the co-reactant removes is put back before the next precursor pulse, which keeps Ṅ low (@sec-nucleation-model). The first such process used acetylacetone (Hacac) as the inhibitor, bis(diethylamino)silane as the precursor and an O~2~ plasma. Hacac adsorbs on Al~2~O~3~, TiO~2~ and HfO~2~ and blocks the precursor there, while SiO~2~ grows on GeO~2~, SiN~x~, SiO~2~ and WO~3~ [@Mameli2017].
+
+How the inhibitor binds matters as much as whether it binds. Acac can attach to an oxide through one oxygen (monodentate) or two (bidentate, a chelate). The monodentate form is easily displaced by an incoming precursor; the bidentate form stays and blocks (@fig-asd-blockers, panel b) [@Merkx2020]. This is the chelate effect of @sec-chelate at work on a surface.
+
+Aminosilanes such as Me~3~Si–NMe~2~ (DMATMS) work by reacting rather than simply adsorbing: ‖–OH + Me~3~Si–NMe~2~ → ‖–O–SiMe~3~ + HNMe~2~, leaving trimethylsilyl caps that block Ru ALD on SiO~2~ [@Khan2018]. The comparison with silicon ALD is instructive. H~3~Si–N*^i^*Pr~2~ (DIPAS) undergoes the same first step and is a standard precursor for SiN~x~ with an ammonia plasma. What turns one aminosilane into a precursor and the other into an inhibitor is the second step: an N/H plasma attacks Si–H bonds and builds a film, whereas a gentle precursor pulse leaves Si–CH~3~ untouched. The Barry group is developing aminosilane SMIs along these lines. <!-- Barry-group aminosilane work (Atherton et al., ASD 2026 / IDW 2026) is unpublished; cite once published. -->
+
+@MameliTeplyakov2023 summarize what an SMI needs: it must bind the NGS selectively, leave the GS alone, pack densely enough to block the precursor, survive the co-reactant, and be removable afterwards. Each of these is a statement about intermolecular interactions, which is the subject of the next section.
+
+### Attractive and repulsive surface interactions {#sec-asd-interactions}
+
+A blocked surface is a set of competing interactions. It helps to sort them into those you want to be *attractive* and those you want to be *repulsive*.
+
+**Interactions that should be attractive.**
+
+- **Inhibitor to NGS.** The head group must bind strongly and selectively: thiolate to Cu, phosphonate or silyl to oxides, chelating acac to Al~2~O~3~, a carbene carbon to a metal. Strong binding means the inhibitor survives the precursor and co-reactant pulses, which keeps Ṅ small.
+- **Inhibitor to inhibitor.** Dense packing closes the gaps through which a precursor reaches the surface, which keeps N̂ small. In long-chain SAMs, van der Waals contacts between chains order the layer. Small inhibitors cannot rely on this, and random sequential adsorption leaves gaps between molecules that limit their coverage; a precursor smaller than the gaps gets through.
+
+**Interactions that should be repulsive, or at least absent.**
+
+- **Precursor to the inhibited surface.** The outward face of the inhibitor should give the precursor nothing to hold on to: no Lewis-basic lone pairs, no acidic protons, low polarizability. Methyl and especially CF~3~ termini give surfaces of very low surface energy. A precursor that cannot physisorb has a short residence time (@sec-ka-kd) and leaves before it can react.
+- **Precursor size and acidity.** A small, strongly Lewis-acidic precursor is the hardest to block. TMA adsorbs within SAMs and causes selectivity loss, whereas diethylzinc, a weaker Lewis acid with bulkier ligands, physisorbs less strongly and diffuses less into the layer [@Parsons2020]. Steric repulsion between the precursor's ligands and the inhibitor helps; so does avoiding precursors that oligomerize (@sec-unwanted-nuclei).
+
+**Surface energy and nucleation.** These interactions can be summarized thermodynamically. A nucleus of film *f* on surface *s* meets it at a contact angle θ~c~ set by Young's equation,
+
+$$
+\gamma_s = \gamma_{fs} + \gamma_f \cos\theta_c
+$$ {#eq-young}
+
+where γ~s~, γ~f~ and γ~fs~ are the surface energies of the substrate, the film, and their interface. Lowering γ~s~, which is what a methyl- or fluorine-terminated inhibitor does, raises θ~c~, so the film prefers to bead up as islands rather than wet the surface (Volmer–Weber growth, @sec-growth-modes). Classical nucleation theory then says that the energy barrier to forming a stable nucleus on the surface is the homogeneous barrier multiplied by
+
+$$
+f(\theta_c) = \frac{(2+\cos\theta_c)(1-\cos\theta_c)^2}{4}
+$$ {#eq-nucleation-factor}
+
+which rises from 0 for a fully wetting film (θ~c~ = 0°) to 1 for a non-wetting one (θ~c~ = 180°). A low-energy NGS therefore makes nucleation both less likely and slower. The analogy with liquid droplets is loose for nuclei a few atoms across, but it explains a common observation: on inhibited surfaces, the first growth appears as isolated islands rather than a thin continuous film.
+
+### Carbenes as small-molecule inhibitors {#sec-asd-nhc}
+
+N-heterocyclic carbenes (NHCs) are neutral two-electron (L-type) ligands in which the carbene carbon sits between two nitrogen atoms. The nitrogens donate into the empty p orbital of the carbene and leave a strongly σ-donating lone pair. NHCs have long been used as stabilizing ligands in Cu, Ag and Au precursors (@sec-ligand-bonding) [@Coyle2013]. On a metal surface, the same strong σ donation gives a strong C–metal bond. @Crudden2014 showed that NHC monolayers on gold survive conditions that strip thiol SAMs, including boiling water, hot organic solvents, a wide range of pH and dilute hydrogen peroxide. This robustness, together with the fact that NHCs bind metals and not oxides, made them candidates for SMIs on metal surfaces. A collaboration between the Barry, Crudden and Ragogna groups has developed them for ASD [@Lomax2024; @Crudden2023patent].
+
+**Delivering the carbene cleanly.** Free NHCs are air-sensitive and, as it turns out, thermally fragile. Neat 1,3-diisopropylbenzimidazolylidene is stable only to about 363 K (90 °C). Above that, it decomposes by a second-order reaction through a transient tetraazafulvalene dimer, mainly to 1,2-diisopropylbenzimidazole. Films grown by subliming the free carbene onto copper therefore contain decomposition products. Air-stable benzimidazolium hydrogen carbonate salts avoid the problem: on heating, they lose water and CO~2~ and release the carbene in situ, at a low steady concentration, so the bimolecular decomposition cannot compete and the films are clean [@Veinot2022]. This is a direct application of the thermolysis ideas of @sec-thermolysis: the best way to deliver an unstable molecule may be as a stable precursor of it. The salts are the delivery vehicle claimed in the group's patent, which covers vapour-phase NHC masks on a wide range of metals [@Crudden2023patent].
+
+**Selectivity on interconnect metals.** Cobalt and ruthenium are candidates to replace copper in narrow interconnects (@sec-asd-rc), so an SMI for them is directly useful. NHCs from bicarbonate salts chemisorb on Co and Ru as well as on Au [@Lomax2024]:
+
+- On patterned Au/SiO~2~, the NHC is selective for the metal with a selectivity coefficient of 0.97.
+- On Co/SiO~2~ and Ru/SiO~2~, some NHC initially physisorbs on the dielectric as well. A vacuum anneal at 175 °C for 1 h removes it and leaves the chemisorbed NHC, giving selectivities of 0.85 (Co) and 0.96 (Ru).
+- As an inhibitor, the NHC layer blocked ZnO ALD (diethylzinc/water) on the Au lines of a Au/SiO~2~ pattern, giving a selectivity of 0.89. Without the NHC, ZnO grew everywhere, slightly favouring the metal (S = −0.10).
+- The NHC layer can be removed when it is no longer needed, by annealing at 350 °C for 1 h or by a short H~2~/Ar plasma.
+
+Wing-tip groups (the substituents on nitrogen) set how the NHCs pack and how robust the layer is. In QCM tests on gold, the diisopropyl NHC delayed Al~2~O~3~ growth from TMA and water, while the bulkier and less thermally robust di-*tert*-butyl analogue degraded faster and inhibited less [@Crudden2023patent]. Polymerizable wing-tips give another route: polystyrenyl NHC films electrodeposited on gold reach selectivity factors up to 0.90 on Au/SiO~2~ [@Bosso2026].
+
+**Surface-dependent activation.** Not all metals activate carbene precursors equally. Copper activates C–H bonds more readily than gold, and its narrow d-band favours strong, hard-to-reverse bonds to the carbene, so NHC formation from protonated precursors is more favourable on Cu than on Au [@Vojvodic2014]. <!-- The Cu-vs-Au activation and H2-NHC results are from Barry, ASD 2025 and ASD 2026 ("NHC 2.0"); unpublished. Cite the paper when it appears. --> This points to a further level of selectivity: choosing an inhibitor that binds one *metal* and not another.
+
+**Ligands as inhibitors.** The NHC work grew out of an observation about precursor ligands. In CVD of gold from NHC- and phosphine-stabilized Au(I) precursors, the released ligands passivate the Au(111) face and the gold grows as plates [@Griffiths2015]. Dosing tetrahydrothiophene as a vapour-phase surfactant gave the same facet control deliberately [@Zhang2017]. In Me~3~AuPMe~3~ ALD, the trimethylphosphine left on the surface acts as a built-in inhibitor until it desorbs, and above about 120 °C the process turns into CVD (@sec-au-120) [@VanDaele2020]. A ligand that sticks to the surface is a nuisance for ALD but an asset for ASD. Isocyanides, R–N≡C:, which are isoelectronic with CO and bind metals by σ donation and π back-bonding, are a second family of metal-selective inhibitors under study for the same reason. <!-- Barry-group perfluoroalkyl isocyanide SMIs (Alderman; Atherton) are conference results; cite when published. -->
+
+**Restructuring the surface it protects.** An NHC does not just sit on gold. It can extract a gold adatom from a small island to form a mobile NHC–Au complex. Machine-learned molecular dynamics put the extraction energy at +26 kJ mol^−1^ without the NHC and −4 kJ mol^−1^ with it. Extraction destabilizes the island and raises the mobility of surface atoms, and the surface relaxes toward a smoother state [@Goodwin2025]. A single vapour exposure lowered the RMS roughness of sputter-roughened Au(111) from 0.77 to 0.54 nm, filling pits as well as levelling protrusions, and smoothed polished gold electrodes over 1.5 cm^2^. Surfaces smoother than about 3.3 Å are not expected to smooth further [@Goodwin2025]. This **atomic layer restructuring** neither adds nor removes metal, which sets it apart from ALD and ALE. For ASD, it is a reminder that an inhibitor can change the surface it protects, and that rough metal lines, which raise resistance (@sec-asd-rc), might be smoothed by the same chemistry that masks them.
+
+### Lateral growth over pattern edges {#sec-asd-lateral}
+
+Selectivity is not only a question of nuclei on the NGS. ALD is conformal: once the film is thicker than the inhibitor layer, it grows sideways from the exposed edge of the GS as fast as it grows upward. Under ordinary ALD conditions, lateral growth equals vertical growth [@Carroll2024]. The film "mushrooms" over the edge of the pattern, and its edge moves into the NGS by roughly its own thickness [@Mackus2019]. A tall SAM can hold the film back as a wall only until the film is thicker than the SAM [@Parsons2020].
+
+For a line-and-space pattern this sets a hard limit. If the spaces are *s* wide and the film grows *t* thick, the gap between neighbouring films shrinks to about *s* − 2*t*. Lines merge, and short, when *t* reaches *s*/2, whatever the selectivity. Long before that, the shrinking gap raises the electric field between lines and the risk of dielectric breakdown.
+
+Several strategies limit lateral growth:
+
+- **Grow into a recess.** If the GS is recessed below the NGS, the film fills the recess first and spreads only once it overflows. This is the basis of bottom-up fill.
+- **Use a taller or multiple blocking layer** to confine the film for longer.
+- **Use inherently selective chemistry that does not mushroom.** A redox-coupled ALD of TaO~x~, with an ethanol reduction pulse before each cycle, grew on SiO~2~ next to Cu without excessive mushrooming at the edges or nuclei on the Cu [@Li2023].
+- **Etch back.** A short isotropic etch trims both stray nuclei and lateral overgrowth (@sec-asd-routes).
+
+### Simulation 6.2: when do neighbouring features merge? {#sec-lateral-sim}
+
+::: {.sim-box}
+[Simulation 6.2: Lateral growth on a line-and-space pattern]{.sim-title}
+
+```{ojs}
+//| echo: false
+viewof asd2W = Inputs.range([5, 50], {step: 1, value: 20, label: "Growth-surface line width (nm)"})
+viewof asd2S = Inputs.range([5, 50], {step: 1, value: 20, label: "Space between lines (nm)"})
+viewof asd2T = Inputs.range([0, 25], {step: 0.5, value: 5, label: "Film thickness on growth surface (nm)"})
+viewof asd2D = Inputs.range([0, 15], {step: 0.5, value: 0, label: "Recess depth of growth surface (nm)"})
+viewof asd2R = Inputs.range([0, 1], {step: 0.05, value: 1, label: "Lateral : vertical growth ratio"})
+viewof asd2Min = Inputs.range([0, 20], {step: 0.5, value: 8, label: "Minimum safe gap (nm)"})
+```
+
+```{ojs}
+//| echo: false
+{
+  const w = asd2W, s = asd2S, t = asd2T, d = asd2D, r = asd2R;
+  const over = Math.max(0, t - d);            // film above the NGS level
+  const lat = r * over;                       // lateral spread on each side
+  const gap = s - 2 * lat;
+  const scale = Math.min(8, 640 / (3 * w + 3 * s));
+  const X = (x) => 20 + x * scale, top = 170, Y = (y) => top - y * scale;
+  let svg = "";
+  // substrate / NGS dielectric
+  svg += `<rect x="${X(0)}" y="${top}" width="${(3 * w + 3 * s) * scale}" height="40" fill="#EDEDED" stroke="#8C8C8C"/>`;
+  for (let i = 0; i < 3; i++) {
+    const x0 = s / 2 + i * (w + s);
+    // metal line (GS), recessed by d
+    svg += `<rect x="${X(x0)}" y="${top + d * scale}" width="${w * scale}" height="${40 - d * scale}" fill="#4D4D4D"/>`;
+    // film: fills recess then grows with rounded edges
+    if (t > 0) {
+      const fillH = Math.min(t, d);
+      svg += `<rect x="${X(x0)}" y="${top + (d - fillH) * scale}" width="${w * scale}" height="${fillH * scale}" fill="#E91C24" fill-opacity="0.85"/>`;
+      if (over > 0) {
+        const a = lat * scale, b = over * scale;
+        const xl = X(x0), xr = X(x0 + w), yt = Y(over);
+        svg += `<path d="M${xl - a},${top} A${Math.max(a, 0.01)},${b} 0 0 1 ${xl},${yt} L${xr},${yt} A${Math.max(a, 0.01)},${b} 0 0 1 ${xr + a},${top} Z" fill="#E91C24" fill-opacity="0.85"/>`;
+      }
+    }
+  }
+  svg += `<text x="${X(0)}" y="${top + 58}" font-size="13" fill="#4D4D4D">grey: growth-surface lines · light grey: non-growth dielectric · red: ASD film</text>`;
+  let status, col;
+  if (gap <= 0) { status = "Films from neighbouring lines have merged: a short."; col = "#E91C24"; }
+  else if (gap < asd2Min) { status = "Gap is below the minimum safe spacing: reliability risk."; col = "#E91C24"; }
+  else { status = "Gap is above the minimum safe spacing."; col = "#000"; }
+  const pitch = w + s;
+  return html`<div>${html([`<svg viewBox="0 0 680 240" style="width:100%;max-width:680px;font-family:'Source Sans 3',sans-serif">${svg}</svg>`])}
+  <div class="map-card"><div class="map-card-title">Pitch ${pitch} nm</div><ul>
+    <li>Lateral spread on each side: <b>${lat.toFixed(1)} nm</b></li>
+    <li>Remaining gap: <b>${Math.max(0, gap).toFixed(1)} nm</b> (of ${s} nm)</li>
+    <li>Largest film thickness before the gap reaches ${asd2Min} nm: <b>${r > 0 ? (d + (s - asd2Min) / (2 * r)).toFixed(1) + " nm" : "unlimited"}</b></li>
+  </ul><p style="margin:0.4rem 0 0;color:${col}"><b>${status}</b></p></div></div>`;
+}
+```
+
+**Things to try.**
+
+- With 20 nm lines and spaces and isotropic growth, increase the thickness. The gap closes at 10 nm of film, however perfect the selectivity.
+- Shrink the pitch to 20 nm (10 nm lines and spaces). Now only a few nanometres of film are allowed. At tight pitch, lateral growth, not nucleation, may set the limit.
+- Recess the lines by 5 nm. The film fills the recess before it spreads, and the allowed thickness grows by the recess depth.
+- Lower the lateral ratio to 0.5, as a stand-in for a tall blocking layer that partly confines the film.
+
+::: {.assumptions}
+**Assumptions.** Geometry only. The film grows on the GS lines with no nuclei on the NGS; it first fills any recess and then grows above the NGS level with an elliptical edge whose horizontal reach is the lateral ratio times the height above the NGS. Isotropic ALD corresponds to a ratio of 1 [@Carroll2024]. The "minimum safe gap" stands for a design rule for dielectric spacing; real values depend on voltage, dielectric and reliability targets. Edge rounding, inhibitor height, faceting and nucleation at edges (@sec-unwanted-nuclei, route 3) are ignored.
+:::
+:::
+
+## Applications {#sec-asd-applications}
+
+<!-- Check this section against Bath L2 (motivation for ALD/ASD in device scaling), which is not yet in the vault. -->
+
+### Edge placement error {#sec-asd-epe}
+
+A chip is built layer by layer, and every new layer has to line up with the one below. The **edge placement error (EPE)** is the difference between where an edge of a feature ends up and where it was intended to be [@Mackus2019]. It combines errors in feature size (critical dimension, CD) with errors in placement (overlay), plus local variation such as line-edge roughness. Engineers add the contributions statistically, as a root sum of squares of three-standard-deviation terms for overlay, CD uniformity of lines and cuts, proximity effects, and roughness. As pitches shrink, the allowed EPE shrinks with them, while the individual contributions do not shrink as fast.
+
+ASD attacks the overlay term directly. A film that grows only on the material below it is aligned to that material by chemistry, not by a lithography tool: it is **self-aligned** [@Mackus2019; @Parsons2020]. The new layer still has its own errors (nuclei on the NGS, and lateral growth, @sec-asd-lateral), but they are set by deposition chemistry and can be controlled in the ways described in this chapter.
+
+### RC delay and interconnects {#sec-asd-rc}
+
+Above the transistors, a modern chip has a dozen or more layers of metal wires and vias. A signal travelling along a wire is slowed by its resistance R and its capacitance C to neighbouring wires; the product RC sets the delay. Both get worse as wires shrink:
+
+- **Resistance.** R = ρL/A rises as the cross-section A falls. Worse, the resistivity ρ itself rises in narrow lines, because electrons scatter at surfaces and grain boundaries. The barrier and liner layers needed around copper also take up a growing share of a narrow line. This is why Co, Ru and other metals are being considered to replace Cu [@Gall2020].
+- **Capacitance.** Closer wires, and any misalignment that brings a via near the wrong line, raise C and the electric field between conductors.
+
+ASD helps in several places [@Parsons2020]:
+
+- **Selective metal caps.** A thin cobalt cap grown selectively on top of copper lines improves electromigration lifetime, because copper atoms move most easily along its top interface. Selective CVD Co capping is in production, and with a CVD Co liner it gave electromigration lifetimes about 100 times longer than a control scheme [@Nogami2012].
+- **Fully self-aligned vias (FSAV).** If a via lands off-centre, it comes close to the neighbouring line, the field rises, and the dielectric eventually breaks down (time-dependent dielectric breakdown, TDDB). Growing dielectric selectively on the dielectric between lines (dielectric-on-dielectric ASD) raises a self-aligned barrier that keeps the via on its own line. Recessing the metal lines does the same job, with more process steps.
+- **Barrier-free contacts.** Growing the barrier only on the dielectric, and not at the bottom of the via, keeps a high-resistivity layer out of the current path.
+- **Inhibitors for new metals.** This is where NHCs on Co and Ru come in (@sec-asd-nhc): they are SMIs for exactly the metals that may replace copper [@Lomax2024].
+
+### EUV patterning {#sec-asd-euv}
+
+Extreme-ultraviolet (EUV) lithography at 13.5 nm prints the smallest features, but it delivers few photons per feature, so the image is noisy. Random **stochastic defects** appear: line breaks, bridges and missing contacts [@LutkerLee2022]. Thinner resists reduce pattern collapse but increase line breaks, trading one defect for another. ASD offers several fixes:
+
+- **Selective deposition on the resist.** Depositing material selectively on the resist lines, inside the etch chamber, before the pattern is transferred, repaired notches and breaks and improved both defectivity and electrical yield at 30 nm pitch [@LutkerLee2022].
+- **Resist hardening and tone inversion.** Organic EUV resists etch too easily. TiO~2~ ASD on thin polymethacrylate resists is being developed to harden them or to invert the pattern, and the polymer structure decides where the oxide grows: a cyclohexyl protecting group, for instance, inhibits TiO~2~ growth [@Nye2022].
+- **Inorganic resists made by vapour deposition.** The metalcone resists of @sec-mld-resists are the MLD side of the same idea.
+
+| Application | What is deposited, and where | ASD approach | Main challenge |
+|:---|:---|:---|:---|
+| Co cap on Cu lines | Co on Cu, not on low-k dielectric | Inherent (selective CVD) | Nuclei on dielectric; Cu oxide |
+| Fully self-aligned via | Dielectric on dielectric, not on metal | SAM or SMI on metal (thiols, NHCs) | Lateral growth at tight pitch |
+| Barrier-free via bottom | Barrier on dielectric, not on metal | Inhibitor on metal | Inhibitor removal; contamination |
+| EUV resist repair | Material on resist lines, not in spaces | Plasma or ALD selectivity to the resist | Compatibility with resist; residues |
+| Selective epitaxy | Si or SiGe on Si, not on oxide | Inherent (high temperature) | Already mature |
+
+: Some applications of ASD [@Parsons2020; @LutkerLee2022; @Nye2022]. {#tbl-asd-applications}
+
+## Check your understanding
+
+::: {.quiz}
+A precursor reacts with a hydroxylated oxide with rate constant k~a~ and with a neighbouring metal with k~a~/100. Which statement is right?
+
+- [ ] The metal will never react.
+- [x] A short pulse can saturate the oxide while leaving the metal almost bare, but given a long enough exposure both surfaces saturate.
+- [ ] The metal reacts first because it has more sites.
+- [ ] The ratio of coverages is always 100 : 1.
+
+::: {.explanation}
+This is kinetic selectivity (@sec-kinetic-selectivity). It provides a window, not a permanent difference, and every cycle uses some of it.
+:::
+:::
+
+::: {.quiz}
+After 50 cycles, ellipsometry gives 5.0 nm on the growth surface and 0.25 nm on the non-growth surface. What is the thickness-based selectivity, and is the true coverage-based selectivity likely to be higher or lower?
+
+- [ ] S = 0.95; coverage-based S will be higher.
+- [x] S ≈ 0.90; coverage-based S will be lower, because isolated nuclei cover more area than their average thickness suggests.
+- [ ] S = 0.05; the two will be the same.
+- [ ] S ≈ 0.90; coverage-based S will be higher, because ellipsometry overestimates thin films.
+
+::: {.explanation}
+S = (5.0 − 0.25)/(5.0 + 0.25) ≈ 0.905 (@eq-selectivity). Thickness-based S flatters a process [@Parsons2020].
+:::
+:::
+
+::: {.quiz}
+A fit of the nucleation model to an ASD process gives N̂ ≈ 0 and Ṅ > 0 after about 100 cycles. What is the most likely cause, and fix?
+
+- [ ] Defects in the starting surface; clean the wafer more carefully.
+- [x] The inhibitor is being lost or displaced during deposition, or the process is creating sites; redose the inhibitor each cycle or use a more strongly bound one.
+- [ ] The GPC is too high; reduce the precursor dose.
+- [ ] Lateral growth at the pattern edges; recess the lines.
+
+::: {.explanation}
+Ṅ describes sites created during deposition, N̂ sites present at the start (@sec-nucleation-model). ABC cycles fight Ṅ.
+:::
+:::
+
+::: {.quiz}
+Why does dodecanethiol bind to copper but not to SiO~2~ on a Cu/SiO~2~ pattern?
+
+- [ ] Its alkyl chain is attracted to copper by van der Waals forces.
+- [x] The thiol readily loses its proton, and copper, being much less electronegative than oxygen, can accept the negatively charged sulfur head group, whereas the oxide surface cannot.
+- [ ] SiO~2~ is covered in methyl groups that repel the thiol.
+- [ ] The thiol decomposes on SiO~2~.
+
+::: {.explanation}
+The electronegativity argument of @Barry2022 (@sec-asd-sams). The CH~3~ end of the chain then blocks the precursor.
+:::
+:::
+
+::: {.quiz}
+Why did NHC monolayers made by subliming the free carbene contain decomposition products, while those made from the hydrogen carbonate salt did not?
+
+- [ ] The salt contains a stabilizing metal.
+- [ ] The free carbene reacts with the copper surface to decompose.
+- [x] The free carbene decomposes above about 90 °C by a bimolecular route through a dimer; the salt releases the carbene slowly in situ, so its concentration stays too low for that route to compete.
+- [ ] Water from the salt hydrolyses the decomposition products.
+
+::: {.explanation}
+A second-order decomposition is suppressed by keeping the concentration low [@Veinot2022] (@sec-asd-nhc).
+:::
+:::
+
+::: {.quiz}
+Which precursor is likely to be easier to block with a SAM, and why?
+
+- [ ] TMA, because it is smaller.
+- [x] Diethylzinc, because it is a weaker Lewis acid with bulkier ligands, so it physisorbs less strongly and diffuses less into the inhibitor layer.
+- [ ] TMA, because methyl groups repel the SAM's methyl groups.
+- [ ] Both equally, since blocking depends only on the SAM.
+
+::: {.explanation}
+TMA adsorbs within SAMs and causes selectivity loss [@Parsons2020] (@sec-asd-interactions).
+:::
+:::
+
+::: {.quiz}
+A 12 nm pitch pattern has 6 nm metal lines and 6 nm dielectric spaces. A dielectric is grown selectively on the *metal* by ALD, with perfect selectivity. Roughly how thick can it get before films from neighbouring lines touch?
+
+- [ ] 6 nm
+- [ ] 12 nm
+- [x] 3 nm
+- [ ] There is no limit with perfect selectivity.
+
+::: {.explanation}
+ALD grows sideways as fast as upward, so each film spreads about *t* into the space from each side; they meet when 2*t* = 6 nm (@sec-asd-lateral, Simulation 6.2).
+:::
+:::
+
+::: {.quiz}
+How does ASD reduce edge placement error?
+
+- [ ] It removes line-edge roughness from the lithography step.
+- [x] A film that grows only on the material below is aligned to it by chemistry, which removes the overlay contribution for that layer.
+- [ ] It makes the lithography tool more accurate.
+- [ ] It deposits films faster than lithography can pattern them.
+
+::: {.explanation}
+Self-aligned deposition sidesteps overlay; nuclei on the NGS and lateral growth become the new error sources (@sec-asd-epe).
+:::
+:::
+
+## Further reading
+
+- @Parsons2020: the standard review of ASD, including how to report selectivity and where unwanted nuclei come from.
+- @Parsons2019: the analytical nucleation model behind Simulation 6.1.
+- @Mackus2019: a perspective on achieving high selectivity, including correction steps.
+- @MameliTeplyakov2023: selection criteria for small-molecule inhibitors.
+- @Mameli2017: the first ABC process with a small-molecule inhibitor.
+- @Lomax2024: NHCs as removable inhibitors on Co and Ru.
+- @Goodwin2025: atomic layer restructuring of gold by NHCs.
+- Chapter 2, §2.2 and §2.4, and Chapter 6, §6.4, of @Barry2022: kinetic selectivity and surface blocking groups.
