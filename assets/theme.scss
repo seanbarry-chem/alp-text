@@ -102,6 +102,9 @@ $headings-font-weight: 600;
 .tga-ok { font-weight: 600; color: $cu-black; border-left: 4px solid $cu-black; padding-left: 0.5rem; margin-bottom: 0.4rem; }
 .tga-no { font-weight: 600; color: $cu-red; border-left: 4px solid $cu-red; padding-left: 0.5rem; margin-bottom: 0.4rem; }
 
-/* Site logo above the main title on the Welcome page (inserted by index.qmd) */
-.title-logo { display: block; margin: 0 auto 1rem; max-width: 240px; width: 60%; height: auto; }
-#title-block-header.title-centered .quarto-title { text-align: center; }
+/* Site logo beside the main title on the Welcome page (inserted by index.qmd) */
+#title-block-header.title-with-logo .quarto-title { display: flex; align-items: center; justify-content: center; gap: 1.25rem; flex-wrap: nowrap; }
+@media (max-width: 575px) { #title-block-header.title-with-logo .quarto-title { flex-wrap: wrap; } }
+.title-logo { display: block; width: 180px; flex: 0 0 auto; height: auto; }
+.title-text { text-align: left; min-width: 0; flex: 0 1 auto; }
+.title-text .title { margin-bottom: 0.25rem; }

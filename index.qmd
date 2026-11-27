@@ -18,17 +18,20 @@ Text and original figures are licensed [CC BY-NC-SA 4.0](https://creativecommons
 
 ```{=html}
 <script>
-// Put the site logo, centred, above the book title on this page only.
+// Put the site logo beside the book title on this page only.
 document.addEventListener("DOMContentLoaded", () => {
   const header = document.getElementById("title-block-header");
   const title = header && header.querySelector(".quarto-title");
   if (!title) return;
+  const text = document.createElement("div");
+  text.className = "title-text";
+  while (title.firstChild) text.appendChild(title.firstChild);
   const img = document.createElement("img");
   img.src = "assets/logo.png";
   img.alt = "Atomic Layer Processing logo";
   img.className = "title-logo";
-  title.prepend(img);
-  header.classList.add("title-centered");
+  title.append(img, text);
+  header.classList.add("title-with-logo");
 });
 </script>
 ```
