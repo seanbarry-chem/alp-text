@@ -7,11 +7,12 @@ title: "Area-Selective Deposition"
 After this chapter you should be able to:
 
 1. Explain how two surfaces exposed to the same precursor can saturate at different rates, and why that kinetic selectivity always runs out eventually.
-2. Calculate the selectivity S from coverage or thickness, explain why the thickness-based value flatters a process, and use t~S=0.9~ to compare processes.
-3. Use the analytical nucleation model to tell apart selectivity loss from defects already on the surface (N̂) and from sites created during deposition (Ṅ).
-4. Describe how self-assembled monolayers, small-molecule inhibitors and N-heterocyclic carbenes block a surface, in terms of the attractive and repulsive interactions each one sets up.
-5. Explain why a selectively grown film spreads sideways over a pattern edge, and estimate when neighbouring features merge.
-6. Describe how ASD addresses edge placement error, RC delay in interconnects and stochastic defects in EUV patterning.
+2. Use classical nucleation theory to explain the inherent selectivity window, and why a stronger driving force narrows it.
+3. Calculate the selectivity S from coverage or thickness, explain why the thickness-based value flatters a process, and use t~S=0.9~ to compare processes.
+4. Use the analytical nucleation model to tell apart selectivity loss from defects already on the surface (N̂) and from sites created during deposition (Ṅ).
+5. Describe how self-assembled monolayers, small-molecule inhibitors and N-heterocyclic carbenes block a surface, in terms of the attractive and repulsive interactions each one sets up.
+6. Explain why a selectively grown film spreads sideways over a pattern edge, and estimate when neighbouring features merge.
+7. Describe how ASD addresses edge placement error, RC delay in interconnects and stochastic defects in EUV patterning.
 :::
 
 Every chapter so far has assumed that a precursor reacts with whatever surface it meets. Area-selective deposition (ASD) turns that around. A patterned substrate has a **growth surface (GS)**, where the film should form, and a **non-growth surface (NGS)**, where it should not, and the chemistry is arranged so that deposition happens only on the first. It is "bottom-up" patterning: the pattern already on the wafer decides where the film goes, so no new lithography or etching step is needed [@Parsons2020; @Mackus2019].
@@ -53,6 +54,148 @@ Two further points from the saturation curve matter for ASD:
 
 - **Saturation without a full monolayer.** If the adsorption equilibrium lies on the reactant side, a surface can still saturate given enough time, at a coverage well below a monolayer. Small changes in precursor vapour pressure then have large effects on how far that saturation goes [@Barry2022]. For ASD this means the NGS also creeps toward its own (low) saturation every cycle, and the dose matters as much as the chemistry.
 - **ALD gives the NGS a large exposure every cycle.** Doses in ALD are set to saturate the GS. The NGS receives the same exposure, cycle after cycle, which increases the chance of creating unwanted nuclei. This is one reason why the best blanket ALD chemistry is often the worst ASD chemistry: TMA and water make excellent Al~2~O~3~ because the reactions are so strongly downhill, but that same reactivity makes Al~2~O~3~ ASD notoriously difficult [@Parsons2020].
+
+### Nucleation barriers and the inherent selectivity window {#sec-selectivity-window}
+
+Kinetic selectivity looks at how fast molecules stick. A second, thermodynamic view looks at what happens once they are on the surface: whether the clusters they form grow into stable nuclei or fall apart again. @Parsons2020 sketch this as two free-energy curves, one for each surface (their Figure 2b). A small cluster costs energy, because it has a lot of surface for its volume; past a critical size it becomes stable and grows downhill. If the critical size and barrier are much smaller on the GS than on the NGS, there is a range of conditions, the **selective window**, in which clusters on the GS grow into film while clusters of the same size on the NGS still dissolve.
+
+Classical nucleation theory makes this quantitative. Take a nucleus of film *f* sitting on surface *s* as a spherical cap that meets the surface at a contact angle θ~c~ set by Young's equation,
+
+$$
+\gamma_s = \gamma_{fs} + \gamma_f \cos\theta_c
+$$ {#eq-young}
+
+where γ~s~, γ~f~ and γ~fs~ are the surface energies of the substrate and the film, and the energy of their interface. A surface the film wets well (high γ~s~) gives a small θ~c~; a low-energy surface gives a large one. The free energy of a cap containing *n* atoms of volume Ω is
+
+$$
+\Delta G(n) = f(\theta_c)\left[-\tfrac{4}{3}\pi r^3\,\Delta g_v + 4\pi r^2 \gamma_f\right], \qquad n = f(\theta_c)\,\frac{4\pi r^3}{3\Omega}
+$$ {#eq-cnt}
+
+where *r* is the radius of curvature of the cap, Δg~v~ = k~B~T ln *S* / Ω is the driving force per unit volume for a supersaturation *S*, and
+
+$$
+f(\theta_c) = \frac{(2+\cos\theta_c)(1-\cos\theta_c)^2}{4}
+$$ {#eq-nucleation-factor}
+
+is the fraction of a full sphere that the cap occupies. f rises from 0 for a fully wetting film (θ~c~ = 0°) to 1 for a non-wetting one (θ~c~ = 180°). The barrier and the size of the critical nucleus are both proportional to it:
+
+$$
+\Delta G^* = f(\theta_c)\,\frac{16\pi\gamma_f^3}{3\,\Delta g_v^2}, \qquad n^* = f(\theta_c)\,\frac{32\pi\gamma_f^3}{3\,\Omega\,\Delta g_v^3}
+$$ {#eq-cnt-barrier}
+
+Because the nucleation rate depends on exp(−ΔG\*/k~B~T), a modest difference in f between the two surfaces becomes an enormous difference in rate. The model also shows the cost of driving hard: both barriers fall as 1/(ln *S*)^2^, so a more aggressive precursor or co-reactant narrows the window. This is the thermodynamic form of the point in @sec-kinetic-selectivity that the best blanket ALD chemistry is often the worst ASD chemistry [@Parsons2020].
+
+The droplet picture is crude for nuclei of a few atoms, and ALD is not a steady supersaturated vapour. Treat the model as a way of reasoning about trends, not as a predictor of numbers.
+
+### Simulation 6.1: the inherent selectivity window {#sec-window-sim}
+
+::: {.sim-box}
+[Simulation 6.1: Nucleation barriers on two surfaces]{.sim-title}
+
+```{ojs}
+//| echo: false
+asd0Presets = [
+  {name: "Metal film: metal GS vs oxide NGS", gs: 40, ngs: 110, gam: 0.4, lnS: 3, T: 500},
+  {name: "Inhibitor on the NGS (low surface energy)", gs: 40, ngs: 150, gam: 0.4, lnS: 3, T: 500},
+  {name: "Similar surfaces (poor inherent selectivity)", gs: 60, ngs: 80, gam: 0.4, lnS: 3, T: 500},
+  {name: "Aggressive chemistry (high driving force)", gs: 40, ngs: 110, gam: 0.4, lnS: 8, T: 500}
+]
+viewof asd0Preset = Inputs.select(asd0Presets, {label: "Case", format: d => d.name, value: asd0Presets[0]})
+```
+
+```{ojs}
+//| echo: false
+viewof asd0Gs = Inputs.range([0, 180], {step: 1, value: asd0Preset.gs, label: "Contact angle on growth surface (°)"})
+viewof asd0Ngs = Inputs.range([0, 180], {step: 1, value: asd0Preset.ngs, label: "Contact angle on non-growth surface (°)"})
+viewof asd0LnS = Inputs.range([0.5, 10], {step: 0.1, value: asd0Preset.lnS, label: "Driving force, ln S"})
+viewof asd0Gam = Inputs.range([0.1, 1.5], {step: 0.01, value: asd0Preset.gam, label: "Film surface energy γ_f (J m⁻²)"})
+viewof asd0T = Inputs.range([300, 800], {step: 10, value: asd0Preset.T, label: "Temperature (K)"})
+```
+
+```{ojs}
+//| echo: false
+asd0Model = {
+  const kB = 1.380649e-23, Omega = 1.6e-29;            // m³ per atom (16 Å³)
+  const kT = kB * asd0T, dg = kT * asd0LnS / Omega, g = asd0Gam;
+  const f = (deg) => { const c = Math.cos(deg * Math.PI / 180); return Math.max(1e-6, (2 + c) * (1 - c) ** 2 / 4); };
+  const fG = f(asd0Gs), fN = f(asd0Ngs);
+  const homBarrier = 16 * Math.PI * g ** 3 / (3 * dg * dg) / kT;     // in kT
+  const homN = 32 * Math.PI * g ** 3 / (3 * Omega * dg ** 3);
+  const surf = (ff) => {
+    const curve = (n) => {                                          // ΔG(n) in kT for a cap containing n atoms
+      const r = Math.cbrt(3 * n * Omega / (4 * Math.PI * ff));
+      return ff * (-(4 / 3) * Math.PI * r ** 3 * dg + 4 * Math.PI * r * r * g) / kT;
+    };
+    return {f: ff, barrier: ff * homBarrier, nstar: ff * homN, curve};
+  };
+  const G = surf(fG), N = surf(fN);
+  const nMax = Math.max(3, 2.2 * Math.max(G.nstar, N.nstar));
+  const pts = [];
+  for (let i = 1; i <= 240; i++) {
+    const n = nMax * i / 240;
+    pts.push({n, dG: G.curve(n), surface: "Growth surface"});
+    pts.push({n, dG: N.curve(n), surface: "Non-growth surface"});
+  }
+  return {G, N, pts, nMax, log10ratio: (N.barrier - G.barrier) / Math.LN10, rstar: 2 * g / dg * 1e9};
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const {G, N, pts, nMax} = asd0Model;
+  const yHi = Math.max(G.barrier, N.barrier) * 1.25 + 1;
+  const yLo = -0.6 * yHi;
+  const lo = Math.min(G.nstar, N.nstar), hi = Math.max(G.nstar, N.nstar);
+  const vis = pts.filter(d => d.dG >= yLo);
+  return Plot.plot({
+    width: 680, height: 300, marginLeft: 60, marginBottom: 45,
+    x: {label: "Atoms in cluster, n", domain: [0, nMax], labelAnchor: "center", labelOffset: 38},
+    y: {label: "ΔG (units of k_BT)", domain: [yLo, yHi], grid: true},
+    color: {domain: ["Growth surface", "Non-growth surface"], range: ["#000000", "#E91C24"], legend: true},
+    marks: [
+      Plot.rect([{x1: lo, x2: hi, y1: yLo, y2: yHi}], {x1: "x1", x2: "x2", y1: "y1", y2: "y2", fill: "#EDEDED"}),
+      Plot.text([{x: (lo + hi) / 2, y: yHi * 0.93}], {x: "x", y: "y", text: () => "selective window", fill: "#4D4D4D", fontSize: 13}),
+      Plot.ruleY([0], {stroke: "#8C8C8C"}),
+      Plot.line(vis, {x: "n", y: "dG", stroke: "surface", strokeWidth: 2.5}),
+      Plot.dot([{n: G.nstar, dG: G.barrier}, {n: N.nstar, dG: N.barrier}], {x: "n", y: "dG", r: 5, fill: "#000"})
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const m = asd0Model;
+  const r = m.log10ratio;
+  let msg;
+  if (r > 10) msg = "Strong inherent selectivity: nuclei form on the non-growth surface so rarely that other routes (defects, by-products, edges) will set the limit.";
+  else if (r > 3) msg = "Useful selectivity: nucleation on the non-growth surface is slower by orders of magnitude, but it will happen within a practical number of cycles.";
+  else if (r > 0.5) msg = "Weak selectivity: the window is narrow, and growth on the non-growth surface starts soon after growth on the growth surface.";
+  else msg = "No useful selectivity.";
+  const fmt = (x) => x < 1 ? x.toFixed(2) : x.toFixed(1);
+  return html`<div class="map-card"><div class="map-card-title">Critical nuclei</div><ul>
+    <li>Growth surface: f = ${m.G.f.toFixed(3)}, barrier <b>${fmt(m.G.barrier)} k<sub>B</sub>T</b>, critical nucleus <b>${fmt(m.G.nstar)} atoms</b></li>
+    <li>Non-growth surface: f = ${m.N.f.toFixed(3)}, barrier <b>${fmt(m.N.barrier)} k<sub>B</sub>T</b>, critical nucleus <b>${fmt(m.N.nstar)} atoms</b></li>
+    <li>Radius of curvature of the critical cap (both surfaces): ${m.rstar.toFixed(2)} nm</li>
+    <li>Nucleation-rate ratio, growth : non-growth ≈ <b>10<sup>${r.toFixed(1)}</sup></b></li>
+  </ul><p style="margin:0.4rem 0 0">${msg}</p></div>`;
+}
+```
+
+**Things to try.**
+
+- Start with the metal-on-oxide case. The barrier on the NGS is many times that on the GS, and the critical nucleus is much larger. The shaded window is the range of cluster sizes that are stable on the GS but still uphill on the NGS.
+- Choose the inhibitor case. Raising the contact angle on the NGS, which is what a low-energy inhibitor does, widens the window and raises the rate ratio by many orders of magnitude.
+- Choose the aggressive-chemistry case, or raise ln *S*. Both barriers collapse toward zero, and the selectivity goes with them, even though the two surfaces have not changed.
+- Raise the film's surface energy. Both barriers rise as γ~f~^3^, and the ratio grows with them: films with a high surface energy, such as many metals, have more inherent selectivity to exploit.
+- Set the two contact angles close together. Without a real difference between the surfaces, no choice of conditions gives a useful window.
+
+::: {.assumptions}
+**Assumptions.** Classical heterogeneous nucleation of a spherical cap (@eq-cnt, @eq-cnt-barrier), after the concept in Figure 2b of @Parsons2020; the curves are calculated here, not reproduced from that figure. The atomic volume is fixed at 16 Å^3^; the driving force is Δg~v~ = k~B~T ln *S*/Ω, which treats the deposit as condensing from a supersaturated vapour. The contact angles stand in for the surface energies through @eq-young. The rate ratio assumes the same pre-exponential factor on both surfaces, so it reflects the barriers only; differences in adsorption rate (@sec-kinetic-selectivity), defects and diffusion are ignored. Nuclei of only a few atoms are outside the range where a continuum model is reliable.
+:::
+:::
 
 ### Defining and quantifying selectivity {#sec-selectivity-metric}
 
@@ -110,10 +253,10 @@ The value of the model is diagnostic. Fitting it to a measured selectivity curve
 
 A density of 0.01 nm^−2^ sounds small. It is 10^12^ sites per square centimetre.
 
-### Simulation 6.1: selectivity versus cycles {#sec-selectivity-sim}
+### Simulation 6.2: selectivity versus cycles {#sec-selectivity-sim}
 
 ::: {.sim-box}
-[Simulation 6.1: Selectivity-versus-cycles calculator]{.sim-title}
+[Simulation 6.2: Selectivity-versus-cycles calculator]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -318,19 +461,7 @@ A blocked surface is a set of competing interactions. It helps to sort them into
 - **Precursor to the inhibited surface.** The outward face of the inhibitor should give the precursor nothing to hold on to: no Lewis-basic lone pairs, no acidic protons, low polarizability. Methyl and especially CF~3~ termini give surfaces of very low surface energy. A precursor that cannot physisorb has a short residence time (@sec-ka-kd) and leaves before it can react.
 - **Precursor size and acidity.** A small, strongly Lewis-acidic precursor is the hardest to block. TMA adsorbs within SAMs and causes selectivity loss, whereas diethylzinc, a weaker Lewis acid with bulkier ligands, physisorbs less strongly and diffuses less into the layer [@Parsons2020]. Steric repulsion between the precursor's ligands and the inhibitor helps; so does avoiding precursors that oligomerize (@sec-unwanted-nuclei).
 
-**Surface energy and nucleation.** These interactions can be summarized thermodynamically. A nucleus of film *f* on surface *s* meets it at a contact angle θ~c~ set by Young's equation,
-
-$$
-\gamma_s = \gamma_{fs} + \gamma_f \cos\theta_c
-$$ {#eq-young}
-
-where γ~s~, γ~f~ and γ~fs~ are the surface energies of the substrate, the film, and their interface. Lowering γ~s~, which is what a methyl- or fluorine-terminated inhibitor does, raises θ~c~, so the film prefers to bead up as islands rather than wet the surface (Volmer–Weber growth, @sec-growth-modes). Classical nucleation theory then says that the energy barrier to forming a stable nucleus on the surface is the homogeneous barrier multiplied by
-
-$$
-f(\theta_c) = \frac{(2+\cos\theta_c)(1-\cos\theta_c)^2}{4}
-$$ {#eq-nucleation-factor}
-
-which rises from 0 for a fully wetting film (θ~c~ = 0°) to 1 for a non-wetting one (θ~c~ = 180°). A low-energy NGS therefore makes nucleation both less likely and slower. The analogy with liquid droplets is loose for nuclei a few atoms across, but it explains a common observation: on inhibited surfaces, the first growth appears as isolated islands rather than a thin continuous film.
+**Surface energy and nucleation.** These interactions can be summarized in one number, the surface energy of the inhibited NGS. Lowering it, which is what a methyl- or fluorine-terminated inhibitor does, raises the contact angle of any nucleus that forms there and raises its nucleation barrier, which widens the inherent selectivity window of @sec-selectivity-window (try it in Simulation 6.1). It also explains a common observation: on inhibited surfaces, the first growth appears as isolated islands rather than a thin continuous film (Volmer–Weber growth, @sec-growth-modes).
 
 ### Carbenes as small-molecule inhibitors {#sec-asd-nhc}
 
@@ -366,10 +497,10 @@ Several strategies limit lateral growth:
 - **Use inherently selective chemistry that does not mushroom.** A redox-coupled ALD of TaO~x~, with an ethanol reduction pulse before each cycle, grew on SiO~2~ next to Cu without excessive mushrooming at the edges or nuclei on the Cu [@Li2023].
 - **Etch back.** A short isotropic etch trims both stray nuclei and lateral overgrowth (@sec-asd-routes).
 
-### Simulation 6.2: when do neighbouring features merge? {#sec-lateral-sim}
+### Simulation 6.3: when do neighbouring features merge? {#sec-lateral-sim}
 
 ::: {.sim-box}
-[Simulation 6.2: Lateral growth on a line-and-space pattern]{.sim-title}
+[Simulation 6.3: Lateral growth on a line-and-space pattern]{.sim-title}
 
 ```{ojs}
 //| echo: false
@@ -491,6 +622,19 @@ This is kinetic selectivity (@sec-kinetic-selectivity). It provides a window, no
 :::
 
 ::: {.quiz}
+In classical nucleation theory, why does a more aggressive precursor (a larger driving force, ln *S*) reduce inherent selectivity?
+
+- [ ] It raises the contact angle on the growth surface.
+- [x] Both nucleation barriers scale as 1/(ln *S*)^2^, so they shrink toward zero together and the difference between them, which sets the rate ratio, shrinks too.
+- [ ] It changes the surface energy of the non-growth surface.
+- [ ] It only affects the growth surface.
+
+::: {.explanation}
+See @eq-cnt-barrier and Simulation 6.1. This is why the most exothermic ALD chemistry is often poor for ASD [@Parsons2020].
+:::
+:::
+
+::: {.quiz}
 After 50 cycles, ellipsometry gives 5.0 nm on the growth surface and 0.25 nm on the non-growth surface. What is the thickness-based selectivity, and is the true coverage-based selectivity likely to be higher or lower?
 
 - [ ] S = 0.95; coverage-based S will be higher.
@@ -564,7 +708,7 @@ A 12 nm pitch pattern has 6 nm metal lines and 6 nm dielectric spaces. A dielect
 - [ ] There is no limit with perfect selectivity.
 
 ::: {.explanation}
-ALD grows sideways as fast as upward, so each film spreads about *t* into the space from each side; they meet when 2*t* = 6 nm (@sec-asd-lateral, Simulation 6.2).
+ALD grows sideways as fast as upward, so each film spreads about *t* into the space from each side; they meet when 2*t* = 6 nm (@sec-asd-lateral, Simulation 6.3).
 :::
 :::
 
@@ -584,7 +728,7 @@ Self-aligned deposition sidesteps overlay; nuclei on the NGS and lateral growth 
 ## Further reading
 
 - @Parsons2020: the standard review of ASD, including how to report selectivity and where unwanted nuclei come from.
-- @Parsons2019: the analytical nucleation model behind Simulation 6.1.
+- @Parsons2019: the analytical nucleation model behind Simulation 6.2.
 - @Mackus2019: a perspective on achieving high selectivity, including correction steps.
 - @MameliTeplyakov2023: selection criteria for small-molecule inhibitors.
 - @Mameli2017: the first ABC process with a small-molecule inhibitor.
