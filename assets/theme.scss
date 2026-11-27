@@ -102,5 +102,6 @@ $headings-font-weight: 600;
 .tga-ok { font-weight: 600; color: $cu-black; border-left: 4px solid $cu-black; padding-left: 0.5rem; margin-bottom: 0.4rem; }
 .tga-no { font-weight: 600; color: $cu-red; border-left: 4px solid $cu-red; padding-left: 0.5rem; margin-bottom: 0.4rem; }
 
-/* Site logo at the top of the left-hand sidebar */
-.sidebar-logo { max-width: 160px; height: auto; }
+/* Site logo above the main title on the Welcome page (inserted by index.qmd) */
+.title-logo { display: block; margin: 0 auto 1rem; max-width: 240px; width: 60%; height: auto; }
+#title-block-header.title-centered .quarto-title { text-align: center; }
