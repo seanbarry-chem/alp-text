@@ -29,7 +29,7 @@ Run `python3 tools/export_for_editing.py OUTDIR` (needs pandoc, e.g. from Quarto
 
 ## Credit
 
-- **Invited authors receive equal credit.** All invited authors, including the editor, are listed as co-authors of the book in alphabetical order by surname. The order does not reflect the size of anyone's contribution.
+- **Invited authors receive equal credit.** All invited authors, including the editor, are listed as co-authors of the resource in alphabetical order by surname. The order does not reflect the size of anyone's contribution.
 - **Other contributors** (people who submit fixes or suggestions without an invitation) are thanked by name in the Acknowledgements on the Welcome page. Add yourself in your pull request.
 - Becoming an invited author is at the editor's discretion.
 

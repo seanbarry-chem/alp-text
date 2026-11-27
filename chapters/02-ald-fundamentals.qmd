@@ -538,9 +538,9 @@ Gap fill therefore asks for something different from conformality: growth that i
 
 ## Developing an ALD process {#sec-process-development}
 
-A new ALD recipe is developed in a fairly standard order. The ten steps below follow a widely used guide [@Vos2019]; the right-hand column points to where each check is discussed in this book.
+A new ALD recipe is developed in a fairly standard order. The ten steps below follow a widely used guide [@Vos2019]; the right-hand column points to where each check is discussed in this resource.
 
-| Step | What to establish | Watch out for | In this book |
+| Step | What to establish | Watch out for | In this resource |
 |:---|:---|:---|:---|
 | 1. Reactant selection | A precursor and co-reactant that supply the right elements, react with each other's surface groups, and are volatile, thermally stable, available and safe | How the precursor will be delivered in *your* reactor | @sec-precursors, @sec-second-precursors, @sec-thermolysis |
 | 2. Composition | The film contains what it should (XPS, RBS; refractive index or conductivity as quick checks) | If it is far off, go back to step 1 rather than tuning | @sec-process-alumina to @sec-process-sno2 |

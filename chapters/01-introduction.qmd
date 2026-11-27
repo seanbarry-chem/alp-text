@@ -6,7 +6,7 @@ title: "Introduction to Atomic Layer Processing"
 ## Learning outcomes
 After this chapter you should be able to:
 
-1. Describe the four atomic layer processes covered in this book (ALD, MLD, ALE and ASD) and understand how each alters a surface in one cycle.
+1. Describe the four atomic layer processes covered in this resource (ALD, MLD, ALE and ASD) and explain how each alters a surface in one cycle.
 2. Use the core vocabulary of the field: precursor, adsorption, surface vs. substrate, monolayer, self-limiting, and layer.
 3. Describe the two independent origins of ALD: molecular layering in the Soviet Union and atomic layer epitaxy in Finland.
 4. Explain why the technique's first industrial use was in displays, and how it was adopted into semiconductor manufacturing.
@@ -16,9 +16,9 @@ After this chapter you should be able to:
 
 ## What is atomic layer processing? {#sec-what-is-alp}
 
-*Atomic layer processing* is a family of thin-film methods that change a surface in small, repeatable steps. Every member of the family follows the same steps of pulsed delivery of gaseous precursors. The surface is commonly exposed to one reactant at a time, with a purge or evacuation in between, and each exposure is a vapour phase–surface reaction that stops by itself [@George2016; @Barry2022]. Repeating these cycles gives thickness control at the scale of a fraction of a nanometre. The test for whether a given process really behaves this way is discussed in @sec-what-makes-ald.
+*Atomic layer processing* is a family of thin-film methods that change a surface in small, repeatable steps. Every member of the family follows the same steps of pulsed delivery of gaseous precursors. The surface is commonly exposed to one reactant at a time, with a purge or evacuation in between, and each exposure is a vapour-phase–surface reaction that stops by itself [@George2016; @Barry2022]. Repeating these cycles gives thickness control at the scale of a fraction of a nanometre. The test for whether a given process really behaves this way is discussed in @sec-what-makes-ald.
 
-This book covers four processes that apply pulsed deposition in different ways:
+This resource covers four processes that apply pulsed delivery in different ways:
 
 | Process | What one cycle does | Typical per-cycle quantity | Main chapter |
 |:---|:---|:---|:---|
@@ -27,7 +27,7 @@ This book covers four processes that apply pulsed deposition in different ways:
 | **Atomic layer etching (ALE)** | Removes a thin, chemically modified layer | Etch per cycle (EPC), in Å | Chapter 5 |
 | **Area-selective deposition (ASD)** | Adds film on one part of a patterned surface but not another | GPC on each surface, and selectivity | Chapter 6 |
 
-: The four atomic layer processes covered in this book. {#tbl-four-processes}
+: The four atomic layer processes covered in this resource. {#tbl-four-processes}
 
 The concepts all four share (saturation, ligands, precursors, thermolysis, surface mechanisms and nucleation) are shown in Chapter 2. ALD is the oldest and best understood of the four, so most of the examples there come from ALD and MLD; ALE and ASD are treated as variations on this surface chemistry.
 
@@ -186,9 +186,9 @@ Throughout, molecular layering was described as surface chemistry: how to change
 
 In 1974, the Finnish medical-technology company Instrumentarium asked Tuomo Suntola, a young physicist, to lead a new R&D effort. He chose thin-film electroluminescent (EL) displays. These need very thin, uniform, pinhole-free films with high dielectric strength, over large areas. The original target was high-quality **polycrystalline ZnS** for EL panels [@Puurunen2014].
 
-Suntola and Jorma Antson filed the patent "Method for Producing Compound Thin Films" in 1974 [@Puurunen2014; @Barry2022]. Where molecular layering asked a chemical question, ALE was an engineering solution for making devices, and it focused on the physics of depositing and characterizing films [@Barry2022]. The patent contains detailed technical drawings of a reactor, and the ALE work laid the foundations that are now active research areas in their own right, including area-selective ALD and spatial ALD [@Barry2022].
+Suntola and Jorma Antson filed the patent "Method for Producing Compound Thin Films" in 1974 [@Puurunen2014; @Barry2022]. Where molecular layering asked a chemical question, ALE was an engineering solution for making devices, and it focused on the physics of depositing and characterizing films [@Barry2022]. The patent contains detailed technical drawings of a reactor, and the ALE work laid the foundations of what are now active research areas in their own right, including area-selective ALD and spatial ALD [@Barry2022].
 
-In 1977 the team moved to Lohja Corporation, which built an electronics factory in Espoo (in 1984) to make ALE-grown ZnS:Mn displays. This was the first industrial use of the technique. Display modules were made for in the departure hall of Helsinki-Vantaa airport for about two decades. Suntola's display work also explains why early ALD research concentrated on chalcogenides (sulfides and selenides); oxides and nitrides came to the fore in the 1990s [@Barry2022].
+In 1977 the team moved to Lohja Corporation, which built an electronics factory in Espoo (in 1984) to make ALE-grown ZnS:Mn displays. This was the first industrial use of the technique. Display modules were installed in the departure hall of Helsinki-Vantaa airport for about two decades. Suntola's display work also explains why early ALD research concentrated on chalcogenides (sulfides and selenides); oxides and nitrides came to the fore in the 1990s [@Barry2022].
 
 #### A missed connection
 
@@ -494,7 +494,7 @@ As with ALD, the first report on ALE was a patent. Max Yoder of the US Office of
 
 ### A second wave driven by device scaling
 
-Interest continued in the mid-2010s, when feature sizes below 10 nm made by continuous plasma etching became hard to control [@Fischer2021]. Kanarik and co-workers at Lam Research published an overview in 2015 that set out the definitions now in common use: a process is ALE if it is divided into separate steps and at least one step is as self-limiting as possible [@Kanarik2015]. The same year, the ALE community began meeting jointly with the ALD conference (@sec-history-ald).
+Interest continued in the mid-2010s, when continuous plasma etching of features below 10 nm became hard to control [@Fischer2021]. Kanarik and co-workers at Lam Research published an overview in 2015 that set out the definitions now in common use: a process is ALE if it is divided into separate steps and at least one step is as self-limiting as possible [@Kanarik2015]. The same year, the ALE community began meeting jointly with the ALD conference (@sec-history-ald).
 
 ### Thermal ALE: ALD in reverse
 
@@ -523,13 +523,13 @@ For most of ALD's history, a delay in nucleation on some substrates was a nuisan
 
 ### A community forms
 
-ASD gained its own meeting in 2016, when the first Area Selective Deposition workshop was held at imec in Leuven. The second followed in Eindhoven in 2017 and the third in Raleigh, North Carolina, in 2018 [@AtomicLimits2017]. Strategies have broadened since then: inhibitors dosed in the vapour phase as part of an ABC cycle, area *activation* rather than deactivation, and periodic etch-back steps that remove stray nuclei from the non-growth surface all became selectivity strategies [@Mackus2019; @Parsons2020].
+ASD gained its own meeting in 2016, when the first Area Selective Deposition workshop was held at imec in Leuven. The second followed in Eindhoven in 2017 and the third in Raleigh, North Carolina, in 2018 [@AtomicLimits2017]. Strategies have broadened since then: inhibitors dosed in the vapour phase as part of an ABC cycle, area *activation* rather than deactivation, and periodic etch-back steps that remove stray nuclei from the non-growth surface [@Mackus2019; @Parsons2020].
 
 ## Atomic layer processing today {#sec-convergence}
 
 The four processes had separate origins but are now increasingly used together [@George2016; @Parsons2020]:
 
-- **ALD and ALE** share precursor chemistry, and thermal ALE is kind of like ALD in reverse. Since 2015 the two communities have met at the same conference.
+- **ALD and ALE** share precursor chemistry, and thermal ALE is, in effect, ALD in reverse. Since 2015 the two communities have met at the same conference.
 - **ALD and MLD** use the same metal precursors, and their cycles can be combined in laminate films.
 - **ASD and ALE** can be combined in supercycles: a few ALD cycles build film selectively, then a short etch removes the stray nuclei that have formed on the non-growth surface, resetting the selectivity [@Mackus2019].
 
@@ -618,7 +618,7 @@ Why is "atomic layer epitaxy" a misleading name, even for Suntola's original ZnS
 :::
 
 ::: {.quiz}
-A colleague describes HfO~2~ as being deposited "using TDMAH and the co-reactant water". How would this book describe the same process?
+A colleague describes HfO~2~ as being deposited "using TDMAH and the co-reactant water". How would this resource describe the same process?
 
 - [ ] TDMAH is the precursor and water is the reactant.
 - [x] TDMAH and water are the first and second precursors.

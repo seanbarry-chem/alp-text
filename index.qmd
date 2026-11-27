@@ -2,7 +2,7 @@
 
 This is an open, interactive textbook on **atomic layer processing**: atomic layer deposition (ALD), molecular layer deposition (MLD), atomic layer etching (ALE), and area-selective deposition (ASD). It is written for graduate students and researchers who already have a background in surface chemistry and want a working understanding of the fundamentals of these processes.
 
-## What this book offers {.unnumbered}
+## What this resource offers {.unnumbered}
 
 - **Simulations.** Grey boxes contain small models that run in your browser. Move the sliders to see how the outputs change. Every simulation lists its assumptions underneath, to help you understand where a model fails as well as what it predicts.
 - **Self-checks.** Boxes marked *Check your understanding* are ungraded questions to test your knowledge. The submitted answers are not kept, so feel free to make mistakes.
@@ -10,7 +10,7 @@ This is an open, interactive textbook on **atomic layer processing**: atomic lay
 
 ## Status {.unnumbered}
 
-This book is in early development and should be considered a draft. Corrections and suggestions are welcome. Please contact me (sean_barry@carleton.ca) if you have any comments or corrections.
+This resource is in early development and should be considered a draft. Corrections and suggestions are welcome. Please contact me (sean_barry@carleton.ca) if you have any comments or corrections.
 
 ::: {.callout-note appearance="minimal"}
 Text and original figures are licensed [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) unless noted otherwise. For commercial uses, including reproducing figures in commercial journals, contact the editor for permission.
