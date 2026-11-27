@@ -1303,7 +1303,7 @@ The pK~a~ of each ligand's conjugate acid is a first guide to which ligand will 
 
 ### Case study: TMA versus DMAI {#sec-tma-dmai}
 
-<!-- TODO(SB): add measured vapour pressure, GPC, temperature range and impurity data for TMA vs DMAI from L3, and the primary references. The predictions below are deliberately qualitative until then. -->
+<!-- TODO(SB): add measured vapour pressure, GPC, temperature range and impurity data for TMA vs DMAI from the primary references. The predictions below are deliberately qualitative until then. -->
 
 Dimethylaluminum isopropoxide, [Me~2~Al(μ-O^i^Pr)]~2~ (DMAI), has been explored as an alternative to TMA for Al~2~O~3~. It differs from TMA by one ligand: an isopropoxide in place of a methyl. That single change touches every requirement in @tbl-requirements, which makes the pair a good exercise in using the principles of this chapter. Look at both molecules in Simulation 2.9 before reading on.
 

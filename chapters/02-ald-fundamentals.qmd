@@ -277,8 +277,6 @@ In **thermal ALD**, the energy that drives each half-reaction comes from the hea
 
 In **plasma-enhanced ALD (PEALD)**, one half-cycle uses a plasma instead: an O~2~, N~2~, NH~3~ or H~2~ plasma replaces water, ammonia or a thermal reducing agent. The plasma supplies reactive species whose reactivity does not depend on the substrate temperature [@Profijt2011].
 
-<!-- Check against Bath L1 and L4: these lectures were not available when this section was written. -->
-
 ### What a plasma delivers
 
 A plasma contains four kinds of species, and each does something different at the surface [@Profijt2011]:
@@ -426,8 +424,6 @@ ${gpcIn.islands ? (gc.tClose > gpcIn.target ? `**The film is not closed at the t
 
 ALD's reputation rests on films that are uniform across a wafer and conformal inside three-dimensional structures. Both follow from saturation: if every part of the surface receives enough precursor to saturate, every part gets the same GPC. Both fail in the same way: some part of the surface does not get enough.
 
-<!-- Check against Bath L6: this lecture was not available when this section was written. -->
-
 ### Sub-saturation and soft saturation
 
 Two kinds of incomplete saturation are worth telling apart.
@@ -558,8 +554,6 @@ A new ALD recipe is developed in a fairly standard order. The ten steps below fo
 | 10. Other aspects | Safety of reactants and by-products, film stability, reproducibility, precursor use, agreement with the literature, performance in a device | Defects and pinholes that only a device reveals | @sec-ald-limitations |
 
 : Ten steps for developing an ALD process, after @Vos2019. {#tbl-ten-steps}
-
-<!-- Check the order and emphasis against Bath L1. -->
 
 Two habits make the steps work. First, change one variable at a time from a reference recipe that has long doses and long purges, so that every curve answers one question. Second, keep a reference process (TMA/H~2~O is the usual choice) that is run regularly on the same reactor. If the reference drifts, the problem is the reactor, not the new chemistry.
 

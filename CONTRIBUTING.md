@@ -19,6 +19,7 @@ Thanks for helping build *Atomic Layer Processing*. Seán Barry is the editor; a
 
 ## Content rules
 
+- **Do not use the 2024 ALD Academy (Bath) course lectures as a source.** No text, data, figures or structure may be taken from them, directly or indirectly.
 - **Original work only.** Do not copy text, figures or data plots from papers, books or slides, even with a citation. Redraw figures and write text in your own words. If you need to reuse a published figure, get written permission and note it in the caption.
 - Licence: by contributing you agree your contribution is released under the site licence (CC BY-NC-SA 4.0).
 

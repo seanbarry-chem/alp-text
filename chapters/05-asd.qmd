@@ -28,8 +28,6 @@ Every chapter so far has assumed that a precursor reacts with whatever surface i
 
 ## Selectivity and saturation {#sec-asd-selectivity}
 
-<!-- Check the framing and examples of this section against Bath L7 (ASD lecture), which is not yet in the vault. -->
-
 ### Three ways to make deposition selective {#sec-asd-routes}
 
 Approaches to ASD fall into three groups, often combined with a fourth, corrective step [@Parsons2020; @Mackus2019]:
@@ -232,8 +230,6 @@ asd1Run = {
 :::
 
 ## Surface blocking groups {#sec-asd-blocking}
-
-<!-- Check the examples and the attractive/repulsive framing in this section against Bath L7. -->
 
 ### Blocking with self-assembled monolayers {#sec-asd-sams}
 
@@ -440,8 +436,6 @@ viewof asd2Min = Inputs.range([0, 20], {step: 0.5, value: 8, label: "Minimum saf
 :::
 
 ## Applications {#sec-asd-applications}
-
-<!-- Check this section against Bath L2 (motivation for ALD/ASD in device scaling), which is not yet in the vault. -->
 
 ### Edge placement error {#sec-asd-epe}
 

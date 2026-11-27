@@ -28,8 +28,6 @@ MLD uses the same logic as ALD: two or more precursors are dosed one at a time, 
 
 ## Principles of MLD {#sec-mld-principles}
 
-<!-- Check the framing of this section against Bath L2 (MLD lecture), which is not yet in the vault. -->
-
 ### Organic and hybrid films {#sec-mld-film-types}
 
 MLD processes fall into two families [@Sundberg2014; @George2009]:
