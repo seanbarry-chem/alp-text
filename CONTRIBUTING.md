@@ -9,6 +9,10 @@ Thanks for helping build *Atomic Layer Processing*. Seán Barry is the editor; a
 3. Work on a branch, then open a pull request against `main`. Every push to `main` republishes the site, so `main` should always build.
 4. Before submitting, run `quarto render` locally and check that the page builds without errors and your simulations work.
 
+## Copy-editing without GitHub
+
+Run `python3 tools/export_for_editing.py OUTDIR` (needs pandoc, e.g. from Quarto) to make a Word copy of each chapter. Simulations and inline figures appear as grey placeholders. Edit with Track Changes, keep `[@Key]` citations and `@sec-` references as they are, and return the file to the editor, who applies the changes to the `.qmd` source.
+
 ## House style
 
 - **GPC is always reported in Å, never Å/cycle.** This applies to text, axis labels, slider labels and computed outputs. Write out other rates in full, e.g. "Å per 100 °C".
