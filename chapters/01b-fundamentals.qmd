@@ -556,7 +556,7 @@ A self-limiting process can even have more than one plateau. InN grown from trim
 
 The same idea carries over, with different variables:
 
-- **ALE** has its own window. In directional (plasma) ALE, the variable is ion energy: there is a range above the energy needed to remove the modified layer and below the energy that sputters the unmodified material, in which the etch per cycle (EPC) is constant [@Kanarik2015]. Thermal ALE has temperature windows, because its ligand-exchange step often works only above a threshold temperature. Both are treated in the ALE chapter (in preparation).
+- **ALE** has its own window. In directional (plasma) ALE, the variable is ion energy: there is a range above the energy needed to remove the modified layer and below the energy that sputters the unmodified material, in which the etch per cycle (EPC) is constant [@Kanarik2015]. Thermal ALE has temperature windows, because its ligand-exchange step often works only above a threshold temperature. Both are treated in @sec-ale-plasma-thermal.
 - **MLD** windows are usually narrower than ALD windows, because organic precursors condense at low temperature and decompose at moderate temperature.
 - **ASD** adds a window in *cycles*: selectivity holds only until enough nuclei form on the non-growth surface (@sec-nucleation-energetics).
 
@@ -1958,7 +1958,7 @@ Copper shows both. When Cu(dmae)~2~ meets a copper surface, it loses a ligand to
 
 Ligand exchange swaps a ligand on the metal for a group from somewhere else: a proton from a surface –OH (protonolysis, @sec-hydroxyl-reaction), an alkyl from a second metal precursor (the ZnEt~2~ step above), or a hydride from the surface (@sec-hydride-surfaces). Two ideas from earlier in the chapter decide which exchange happens. The basicity of the leaving ligand sets a first guess (@tbl-pka), and the fact that products are swept away means that ALD surface reactions are never at equilibrium, so less favourable exchanges can compete [@Barry2021].
 
-The same reaction runs in the other direction in **thermal ALE**. There, a fluorination step converts the top of an Al~2~O~3~ film to AlF~3~, and a precursor such as Sn(acac)~2~ then exchanges its acac ligands for fluoride, taking aluminum away as a volatile complex [@Lee2015; @George2016]. The requirements are the ones in @sec-precursors read backwards: the *product* of the exchange must be volatile and thermally stable, and the reaction must stop once the modified layer is used up. The ALE chapter (in preparation) develops this in detail.
+The same reaction runs in the other direction in **thermal ALE**. There, a fluorination step converts the top of an Al~2~O~3~ film to AlF~3~, and a precursor such as Sn(acac)~2~ then exchanges its acac ligands for fluoride, taking aluminum away as a volatile complex [@Lee2015; @George2016]. The requirements are the ones in @sec-precursors read backwards: the *product* of the exchange must be volatile and thermally stable, and the reaction must stop once the modified layer is used up. @sec-ale-selectivity develops this in detail.
 
 ## Surfaces and nucleation sites {#sec-surfaces}
 

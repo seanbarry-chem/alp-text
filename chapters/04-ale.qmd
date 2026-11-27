@@ -1,0 +1,884 @@
+---
+title: "Atomic Layer Etching"
+---
+
+::: {.callout-tip appearance="simple"}
+## Learning outcomes
+After this chapter you should be able to:
+
+1. Define ALE by its two criteria, describe a cycle as a modification step and a removal step, and work out an etch per cycle (EPC) from a QCM mass change.
+2. Calculate ALE synergy from EPC, α and β, and explain what an ion-energy window is and what narrows it.
+3. Explain why plasma ALE is directional and thermal ALE is isotropic, and say when each is needed.
+4. Walk through the thermal ALE of Al~2~O~3~ by HF and TMA, including the fluorination step, the four-centre ligand exchange and the temperature at which the same reagents start to deposit AlF~3~ instead.
+5. Predict whether a fluorination and ligand-exchange pair will etch a given oxide, using the stability and volatility of the possible products, and recognize when a conversion step is needed instead.
+6. Describe how metals, silicon and silicon nitride are etched by first making an oxide, and explain why a non-self-limiting oxidation step makes the EPC hard to control.
+:::
+
+ALD builds a film from the bottom up, a fraction of a monolayer at a time. ALE does the opposite: it removes a film from the top down in steps of a few Ångströms or less. Etching is the step that transfers a pattern into a film in micro- and nanoelectronics, and the workhorse is reactive ion etching, which is fast, directional and continuous. As features shrank below about 10 nm, continuous etching became hard to control, and the old idea of etching a layer at a time, as a "reverse" of ALD, came back into use [@Barry2022; @Kanarik2015].
+
+::: {.callout-note appearance="simple"}
+## Where the fundamentals are
+- **Saturation curves and process windows:** @sec-saturation-curve and @sec-process-windows. Every ALE half-reaction must pass the same saturation test as an ALD half-reaction.
+- **Ligand exchange:** @sec-ligand-exchange. The removal step of most thermal ALE processes is a ligand exchange run "backwards".
+- **What makes a good precursor:** @sec-precursors. In ALE, the same rules apply to the *products*: they must be volatile and thermally stable.
+- **The TMA chemistry of ALD:** @sec-tma-model and @sec-process-alumina. TMA is also a key ALE reagent.
+- **History of ALE:** @sec-history-ale.
+:::
+
+## Principles of ALE {#sec-ale-principles}
+
+### Modification and removal {#sec-ale-cycle}
+
+@Kanarik2015 gave the definition now in common use. A process is ALE if
+
+1. it is divided into a **sequence of separate steps** that are repeated in cycles, and
+2. **at least one step is as self-limiting as possible.**
+
+In the simplest case there are two steps:
+
+- **Modification (step A).** A reactant changes the top of the film into a thin layer with different chemistry. Silicon is chlorinated; an oxide is fluorinated; a metal is oxidized.
+- **Removal (step B).** A second reactant, or a dose of energy (ions, heat, photons), removes the modified layer, and only that layer. The surface underneath is left ready for the next cycle.
+
+Purges separate the steps, as in ALD. The thickness removed in one cycle is the **etch per cycle (EPC)**, and the total depth is the number of cycles times the EPC. Like GPC, EPC is reported in Å.
+
+ALE needs a step in which the surface atoms are chemically activated, whether by a ligand from a gas or by a precursor, and a step in which that activated surface forms volatile products that carry the surface atoms away [@Barry2022]. In a thermal process both of these are chemical reactions, and each reactant pulse may remove one component of the film. A cycle does not have to remove an element in every pulse, but by the end of the cycle every element of the film has to have left [@Barry2022].
+
+::: {#fig-ale-cycle}
+```{=html}
+<svg viewBox="0 0 700 250" role="img" aria-label="One thermal ALE cycle of Al2O3 with HF and TMA" style="max-width:700px;width:100%;font-family:'Source Sans 3',sans-serif">
+  <defs>
+    <marker id="ale-arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#4D4D4D"/></marker>
+  </defs>
+  <g font-size="14" font-weight="600">
+    <text x="20" y="22">a) Al₂O₃ surface</text>
+    <text x="255" y="22">b) After HF: AlF₃ layer</text>
+    <text x="490" y="22">c) After TMA: layer removed</text>
+  </g>
+  <!-- panel a -->
+  <rect x="20" y="120" width="200" height="90" fill="#EDEDED" stroke="#8C8C8C"/>
+  <rect x="20" y="95" width="200" height="25" fill="#BDBDBD" stroke="#8C8C8C"/>
+  <text x="120" y="112" font-size="12.5" text-anchor="middle">top layer of Al₂O₃</text>
+  <text x="120" y="170" font-size="13" text-anchor="middle" fill="#4D4D4D">Al₂O₃ film</text>
+  <!-- arrow a→b -->
+  <line x1="222" y1="70" x2="250" y2="70" stroke="#4D4D4D" stroke-width="2" marker-end="url(#ale-arr)"/>
+  <text x="236" y="60" font-size="12" text-anchor="middle">HF</text>
+  <!-- panel b -->
+  <rect x="255" y="120" width="200" height="90" fill="#EDEDED" stroke="#8C8C8C"/>
+  <rect x="255" y="95" width="200" height="25" fill="#E91C24" fill-opacity="0.85" stroke="#8C8C8C"/>
+  <text x="355" y="112" font-size="12.5" text-anchor="middle" fill="white">AlF₃ (≈ 3 Å, self-limiting)</text>
+  <text x="355" y="170" font-size="13" text-anchor="middle" fill="#4D4D4D">Al₂O₃ film</text>
+  <g font-size="12.5" fill="#4D4D4D"><text x="410" y="75">H₂O ↑</text></g>
+  <!-- arrow b→c -->
+  <line x1="457" y1="70" x2="485" y2="70" stroke="#4D4D4D" stroke-width="2" marker-end="url(#ale-arr)"/>
+  <text x="471" y="60" font-size="12" text-anchor="middle">TMA</text>
+  <!-- panel c -->
+  <rect x="490" y="120" width="200" height="90" fill="#EDEDED" stroke="#8C8C8C"/>
+  <rect x="490" y="95" width="200" height="25" fill="none" stroke="#8C8C8C" stroke-dasharray="4,3"/>
+  <text x="590" y="112" font-size="12.5" text-anchor="middle" fill="#4D4D4D">removed: 1 EPC</text>
+  <text x="590" y="170" font-size="13" text-anchor="middle" fill="#4D4D4D">Al₂O₃ film</text>
+  <g font-size="12.5" fill="#4D4D4D"><text x="600" y="75">AlF(CH₃)₂ ↑</text></g>
+  <text x="20" y="240" font-size="12.5" fill="#4D4D4D">HF converts the top of the oxide to a fluoride and stops; TMA swaps methyls for fluorides and carries the aluminum away.</text>
+</svg>
+```
+One thermal ALE cycle of Al~2~O~3~ with HF and trimethylaluminum (TMA). (a) The starting oxide. (b) HF fluorinates the top few Ångströms to AlF~3~, releasing water; the fluoride stops further reaction. (c) TMA removes the fluoride by ligand exchange, producing volatile dimethylaluminum fluoride, and leaves fresh Al~2~O~3~. Schematic; layer thicknesses not to scale [@Lee2016TMA; @Barry2022].
+:::
+
+**ALE is not ALD run backwards.** It is tempting to think of ALE as an ALD process run in reverse, but an ALD reaction runs to completion because it is strongly downhill, so its reverse is uphill and will not happen [@Barry2022]. Every ALE step has to be designed so that it is itself thermodynamically favourable. In practice that means one of two things: the modification step makes a layer that is *more reactive* than the film underneath, and the removal step makes a product that is *volatile*.
+
+The earliest digital etching of GaAs shows both ideas. Chlorine reacts with the surface to make a chlorinated layer:
+
+$$
+\|\!-\!\text{Ga} + \|\!-\!\text{As} + 3\,\text{Cl}_2 \rightarrow \|\!-\!\text{GaCl}_3 + \text{AsCl}_3(g)
+$$ {#eq-gaas}
+
+AsCl~3~ desorbs by itself, but GaCl~3~ needs extra energy to leave, which was supplied by electrons, low-energy ions or a laser [@Barry2022; @Meguro1990]. The modified layer is more reactive than GaAs, and the removal step turns it into something that can leave the surface.
+
+| | ALD | ALE |
+|:---|:---|:---|
+| What one cycle does | Adds a fraction of a monolayer | Removes a thin modified layer |
+| Per-cycle quantity | GPC, in Å | EPC, in Å |
+| Self-limiting step | Both half-reactions, ideally | At least one step, "as far as possible" |
+| Main failure mode | CVD: precursors react without the surface (@sec-saturation-curve) | Spontaneous etching: a reactant etches continuously by itself |
+| Process window variable | Temperature | Ion energy (plasma ALE) or temperature (thermal ALE) |
+| What must be volatile | The by-products | The products that carry film atoms away |
+
+: ALD and ALE compared. {#tbl-ald-ale}
+
+### Etch per cycle {#sec-epc}
+
+The EPC is set by two things: how thick the modified layer is, and how much of it the removal step takes away. In thermal ALE, both depend on temperature and pressure, which is the first big difference from ALD. In ALD, the GPC in the window is set by the number of surface sites and is roughly constant. In ALE, the thickness of the modified layer is set by how far the modification can *penetrate* before it stops, and that is a diffusion question.
+
+Two examples from Al~2~O~3~ ALE with HF and TMA show this:
+
+- **Pressure.** The fluoride layer made by HF grows from 2.0 to 5.5 Å as the HF pressure rises, and then levels off; at 300 °C, the EPC rises from 0.6 to 2.5 Å over the same range [@Cano2019]. A "self-limiting" fluorination in thermal ALE is better described as *self-passivating*: the fluoride slows the diffusion of HF into the oxide until the reaction effectively stops.
+- **Temperature.** The EPC rises from 0.14 Å at 250 °C to 0.75 Å at 325 °C, because TMA removes more of the AlF~3~ layer at higher temperature [@Lee2016TMA].
+
+**Worked example: EPC from a QCM mass change.** A QCM (@sec-mld-qcm) gives the mass change per cycle (MCPC). If the film density is ρ, the EPC is
+
+$$
+\text{EPC} = \frac{|\text{MCPC}|}{\rho}
+$$ {#eq-epc-qcm}
+
+For Al~2~O~3~ ALE with HF and Sn(acac)~2~ at 200 °C, the MCPC is −8.4 ng cm^−2^ [@George2020]. With ρ = 3.0 g cm^−3^ for an ALD alumina film,
+
+$$
+\text{EPC} = \frac{8.4\times10^{-9}\ \text{g cm}^{-2}}{3.0\ \text{g cm}^{-3}} = 2.8\times10^{-9}\ \text{cm} = 0.28\ \text{Å}
+$$
+
+This is about a quarter of the GPC of Al~2~O~3~ ALD. Thermal ALE of oxides by fluorination and ligand exchange typically removes a fraction of an Ångström to a few Ångströms per cycle; mechanisms that oxidize or convert the surface first can remove several Ångströms per cycle (@sec-ale-metals).
+
+::: {.callout-warning appearance="simple"}
+## Watch the mass during each step
+The MCPC is a net value. In HF/TMA ALE, the HF step *gains* mass (two F atoms, 38 g mol^−1^, replace each O atom, 16 g mol^−1^) and the TMA step loses more. Reading the two half-cycles separately, as in @sec-mld-qcm, tells you whether the fluoride layer is being formed and removed as intended. A mass that keeps rising cycle after cycle means a fluoride is being *deposited* instead (@sec-ale-alumina).
+:::
+
+### Synergy {#sec-ale-synergy}
+
+ALE behaves ideally when neither step etches the film by itself, but the two steps together do. @Kanarik2015 measure this with the **ALE synergy**:
+
+$$
+S = \frac{\text{EPC} - (\alpha + \beta)}{\text{EPC}} \times 100\,\%
+$$ {#eq-synergy}
+
+where α is the thickness etched per cycle by the modification step alone (spontaneous chemical etching), and β is the thickness etched per cycle by the removal step alone (for plasma ALE, sputtering of the unmodified film). Both are measured by running one step on its own, cycle after cycle. A synergy near 100 % means almost all the etching comes from the two steps acting together. Lam Research's silicon case study, with Cl~2~ modification and Ar^+^ removal, reached about 90 %, the loss coming from some etching in the chlorine step [@Kanarik2018].
+
+Synergy can be negative. If one step etches faster on its own than the full cycle does, the "ALE" process is really a continuous etch with interruptions. HF alone etches silicon nitride at 275 °C at 1.72 Å per minute, while it barely touches SiO~2~ (0.03 Å per minute). As a result, TMA/HF "ALE" of SiN~x~ has a synergy of −22 %, while SiO~2~ under the same conditions reaches 88–95 % [@Junige2024]. Synergy is therefore a quick test of whether a process deserves the name.
+
+### Plasma and thermal ALE {#sec-ale-plasma-thermal}
+
+The removal step can be driven by ions or by heat, and the choice decides the shape of the etch.
+
+**Plasma (directional) ALE.** In the silicon example, Cl~2~ (or Cl radicals from a plasma) chlorinates the top layer of silicon. Low-energy Ar^+^ ions then remove the SiCl~x~ layer, mainly as SiCl~2~ and related products. The ions arrive along the electric field of the plasma sheath, so the removal happens only on surfaces in their line of sight. The etch is **anisotropic**: trench bottoms etch, sidewalls do not [@Kanarik2015; @Kanarik2018]. The process window is set by ion energy (@sec-process-windows). Below one threshold, the ions cannot remove the modified layer; above a second threshold, they sputter the unmodified silicon as well, and β rises. Between the two, the EPC is flat. @Kanarik2017 found that materials whose surface atoms are strongly bound, but whose modified layers are weakly bound, have the widest windows and the highest synergy. Simulation 5.1 shows why.
+
+**Thermal (isotropic) ALE.** With no ions, the removal step is a chemical reaction that happens on every surface the gas can reach. Thermal ALE is therefore **isotropic**, like ALD: it etches sidewalls and the undersides of overhangs as readily as flat tops [@Barry2022; @George2020]. It cannot replace plasma ALE for transferring a pattern straight down, but it is the tool for jobs such as recessing one layer sideways inside a stack, as in gate-all-around transistors, or thinning a film conformally inside a deep feature. Its window is a temperature window: the ligand-exchange step needs a minimum temperature to run, and, as @sec-ale-alumina shows, the same reagents can deposit rather than etch below it.
+
+| | Plasma ALE | Thermal ALE |
+|:---|:---|:---|
+| Energy for removal | Ions (often low-energy Ar^+^), also electrons or photons | Heat; a chemical reaction makes a volatile product |
+| Profile | Anisotropic (line of sight) | Isotropic (all exposed surfaces) |
+| Window | Ion energy | Temperature (and reactant pressure) |
+| Typical chemistry | Chlorination, fluorination, oxidation then ion bombardment | Fluorination then ligand exchange; oxidation or conversion first |
+| Main risks | Sputtering (β), damage, spontaneous radical etching (α) | Spontaneous etching, deposition of the modified phase, slow rates |
+| Example | Si with Cl~2~ and Ar^+^ | Al~2~O~3~ with HF and TMA |
+
+: Plasma and thermal ALE [@Kanarik2015; @George2020; @Fischer2021]. {#tbl-plasma-thermal-ale}
+
+### The ion-energy window: Simulation 5.1 {#sec-ale-window-sim}
+
+The simulation below models one plasma ALE cycle as three contributions: spontaneous etching in the modification step (α), removal of the modified layer by ions, and sputtering of the unmodified film by ions (β). Move the ion energy and watch the EPC and the synergy.
+
+::: {.sim-box}
+[Simulation 5.1: The ALE window and synergy]{.sim-title}
+
+```{ojs}
+//| echo: false
+ale1Presets = [
+  {name: "Wide window (weak modified layer, strongly bound film)", d: 1.0, Emod: 15, Esp: 70, alpha: 0, b: 0.8},
+  {name: "Narrow window (thresholds close together)", d: 1.0, Emod: 30, Esp: 40, alpha: 0, b: 0.8},
+  {name: "Spontaneous etching in the modification step", d: 1.0, Emod: 15, Esp: 70, alpha: 0.35, b: 0.8},
+  {name: "Thick modified layer", d: 3.0, Emod: 20, Esp: 70, alpha: 0, b: 0.8}
+]
+viewof ale1Preset = Inputs.select(ale1Presets, {label: "Case", format: d => d.name, value: ale1Presets[0]})
+```
+
+```{ojs}
+//| echo: false
+viewof ale1E = Inputs.range([0, 150], {step: 1, value: 55, label: "Ion energy (eV)"})
+viewof ale1Dose = Inputs.range([0.1, 3], {step: 0.05, value: 1, label: "Ion dose in removal step (relative)"})
+viewof ale1D = Inputs.range([0.2, 5], {step: 0.1, value: ale1Preset.d, label: "Modified-layer thickness (Å)"})
+viewof ale1Emod = Inputs.range([5, 60], {step: 1, value: ale1Preset.Emod, label: "Threshold to remove modified layer (eV)"})
+viewof ale1Esp = Inputs.range([10, 120], {step: 1, value: ale1Preset.Esp, label: "Sputter threshold of unmodified film (eV)"})
+viewof ale1Alpha = Inputs.range([0, 1], {step: 0.01, value: ale1Preset.alpha, label: "α: etch by modification step alone (Å)"})
+```
+
+```{ojs}
+//| echo: false
+ale1Model = {
+  const d = ale1D, Emod = ale1Emod, Esp = ale1Esp, a = ale1Alpha, b = ale1Preset.b, D = ale1Dose;
+  const frac = (E) => E > Emod ? 1 - Math.exp(-4 * D * (Math.sqrt(E / Emod) - 1)) : 0;
+  const beta = (E) => E > Esp ? b * D * (Math.sqrt(E / Esp) - 1) : 0;
+  const point = (E) => {
+    const f = frac(E), be = beta(E), epc = a + d * f + be;
+    return {E, f, beta: be, alpha: a, epc, base: a + be, S: epc > 0 ? 100 * (epc - a - be) / epc : NaN};
+  };
+  const curve = d3.range(0, 151, 1).map(point);
+  return {curve, cur: point(ale1E)};
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const {curve, cur} = ale1Model;
+  const win = curve.filter(p => p.f > 0.95 && p.S >= 90);
+  const ymax = Math.max(1.2 * ale1D + ale1Alpha, d3.max(curve, p => p.epc) * 1.05);
+  return Plot.plot({
+    width: 680, height: 310, marginLeft: 55, marginBottom: 45,
+    x: {label: "Ion energy (eV)", domain: [0, 150], labelAnchor: "center", labelOffset: 38},
+    y: {label: "Etch per cycle (Å)", domain: [0, ymax], grid: true},
+    marks: [
+      ...(win.length ? [
+        Plot.rect([{x1: d3.min(win, p => p.E), x2: d3.max(win, p => p.E), y1: 0, y2: ymax}], {x1: "x1", x2: "x2", y1: "y1", y2: "y2", fill: "#EDEDED"}),
+        Plot.text([{x: (d3.min(win, p => p.E) + d3.max(win, p => p.E)) / 2, y: ymax * 0.94}], {x: "x", y: "y", text: () => "ALE window (S ≥ 90 %)", fill: "#4D4D4D", fontSize: 13})
+      ] : []),
+      Plot.line(curve, {x: "E", y: "base", stroke: "#8C8C8C", strokeDasharray: "5,4", strokeWidth: 2}),
+      Plot.line(curve, {x: "E", y: "epc", stroke: "#E91C24", strokeWidth: 2.5}),
+      Plot.ruleX([cur.E], {stroke: "#000", strokeOpacity: 0.4}),
+      Plot.dot([cur], {x: "E", y: "epc", r: 5, fill: "#000"}),
+      Plot.text([{x: 148, y: curve[148].base}], {x: "x", y: "y", text: () => "α + β", textAnchor: "end", dy: -8, fill: "#4D4D4D", fontSize: 13}),
+      Plot.text([{x: 148, y: curve[148].epc}], {x: "x", y: "y", text: () => "full cycle", textAnchor: "end", dy: -8, fill: "#E91C24", fontSize: 13})
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const c = ale1Model.cur;
+  const fmt = (x) => x.toFixed(2);
+  let verdict;
+  if (c.epc < 0.02) verdict = "Almost nothing etches: the ions cannot remove the modified layer.";
+  else if (c.f < 0.95 && c.beta === 0) verdict = "Below saturation: only part of the modified layer is removed. EPC depends on ion energy and dose, which is poor ALE.";
+  else if (c.S >= 90) verdict = "Inside the window: the EPC is set by the modified layer, and neither step etches much alone.";
+  else if (c.beta > 0 && c.beta >= c.alpha) verdict = "Above the sputter threshold: the ions now etch unmodified film too, and the EPC climbs with energy.";
+  else verdict = "Low synergy: the modification step etches by itself.";
+  return html`<div class="map-card"><div class="map-card-title">At ${c.E} eV</div><ul>
+    <li>EPC (full cycle): <b>${fmt(c.epc)} Å</b></li>
+    <li>Fraction of modified layer removed: <b>${(100 * c.f).toFixed(0)} %</b></li>
+    <li>α = ${fmt(c.alpha)} Å, β = ${fmt(c.beta)} Å</li>
+    <li>Synergy: <b>${isNaN(c.S) ? "–" : c.S.toFixed(0) + " %"}</b></li>
+    </ul><p style="margin:0.4rem 0 0">${verdict}</p></div>`;
+}
+```
+
+**Things to try.**
+
+- With the wide-window case, sweep the ion energy from 0 to 150 eV. The EPC rises, flattens at the modified-layer thickness and then climbs again once sputtering starts. The flat region is the ALE window.
+- Halve the ion dose. The EPC at the low-energy edge of the window drops, so the window narrows from below: at low energy the removal step needs more ions to finish. Inside the window, a longer removal step should not change the EPC. That is the saturation test of @sec-saturation-curve applied to the removal step.
+- Choose the narrow-window case. Raising the threshold for removing the modified layer, or lowering the sputter threshold of the film, squeezes the window until it disappears. This is the synergy argument of @Kanarik2017: you want a modified layer that comes off easily and a film that does not.
+- Choose the spontaneous-etching case. The synergy falls below 90 % everywhere, even though the EPC curve still has a flat region. A flat EPC is not proof of ALE; you also have to measure α and β.
+
+::: {.assumptions}
+**Assumptions.** A phenomenological model, not a sputtering calculation. The fraction of the modified layer removed rises as 1 − exp[−4*D*(√(*E*/*E*~mod~) − 1)] above the removal threshold *E*~mod~, where *D* is the relative ion dose. Sputtering of the unmodified film (β) rises as √(*E*/*E*~sp~) − 1 above its threshold *E*~sp~, scaled by the dose; this square-root form is the usual near-threshold shape of physical sputtering yields [@Berry2018]. β is assumed to add to the full-cycle EPC, which ignores the time the ions spend on the modified layer before reaching the film. α is constant. The thresholds and thicknesses in the presets are illustrative, not measured values for any material. The "window" is shaded where at least 95 % of the modified layer is removed and the synergy is at least 90 %.
+:::
+:::
+
+## Etching oxides {#sec-ale-oxides}
+
+### Al~2~O~3~ by HF and TMA {#sec-ale-alumina}
+
+Al~2~O~3~ was the first material etched by thermal ALE, first with HF and Sn(acac)~2~ [@Lee2015] and then with HF and TMA [@Lee2016TMA]. The TMA version is the clearest teaching example because it uses the same metal precursor as Al~2~O~3~ ALD; only the second reactant changes, from water to HF [@George2020].
+
+**Step A: fluorination.** HF converts the top of the oxide to AlF~3~:
+
+$$
+\text{Al}_2\text{O}_3 + 6\,\text{HF} \rightarrow 2\,\text{AlF}_3 + 3\,\text{H}_2\text{O}
+$$ {#eq-al2o3-fluorination}
+
+@Barry2022 describes the surface steps this way. HF probably coordinates through its proton to an oxo bridge between two aluminum centres. The bridge opens to give a hydroxyl and an electrophilic, under-coordinated aluminum, which immediately bonds to the fluoride. A second HF then protonates the new hydroxyl and releases the oxygen as water. Because the first step attacks oxo bridges, the surface does not need hydroxyl groups to start, so fluorination works on both hydroxylated and dehydroxylated alumina. Forming AlF~3~ beyond the top few Ångströms is not spontaneous at these temperatures, so the reaction stops by itself, and water is the stable by-product. The fluoride layer is about 3 Å thick under the conditions of @Lee2016TMA; as @sec-epc showed, it grows thicker at higher HF pressure [@Cano2019].
+
+**Step B: ligand exchange.** TMA swaps methyl groups for fluoride on the surface AlF~3~:
+
+$$
+\text{AlF}_3 + 2\,\text{Al(CH}_3)_3 \rightarrow 3\,\text{AlF(CH}_3)_2
+$$ {#eq-al2o3-exchange}
+
+so the overall reaction is
+
+$$
+\text{Al}_2\text{O}_3 + 4\,\text{Al(CH}_3)_3 + 6\,\text{HF} \rightarrow 6\,\text{AlF(CH}_3)_2 + 3\,\text{H}_2\text{O}
+$$ {#eq-al2o3-overall}
+
+<!-- Erratum check: Barry 2022 p. 97 names the volatile product "dichlorofluoroaluminum(III)". There is no chlorine in this process; the product is dimethylaluminum fluoride, AlF(CH3)2 (Lee 2016; Clancey 2020). -->
+
+The volatile product is dimethylaluminum fluoride. Mass spectrometry of the gas leaving the surface finds it mainly as dimers, with some trimers, rather than as the monomer [@Clancey2020]. The exchange is a **transmetalation**: aluminum from TMA accepts fluorine, and aluminum in the surface fluoride accepts methyl groups. It most likely happens in one step through a four-centre transition state in which a fluoride and a methyl group each bridge the two aluminum atoms (@fig-four-centre). Neither aluminum is more electronegative than the other, so there is no reason for either to lose a ligand first and react by a dissociative path [@Barry2022; @Lee2016Sel]. The removal step leaves a fresh oxide surface, ready to be fluorinated again. One component of the film leaves in each step: oxygen as water in step A, and aluminum as AlF(CH~3~)~2~ in step B [@Barry2022].
+
+::: {#fig-four-centre}
+```{=html}
+<svg viewBox="0 0 560 220" role="img" aria-label="Four-centre transition state for ligand exchange between TMA and surface AlF3" style="max-width:560px;width:100%;font-family:'Source Sans 3',sans-serif">
+  <rect x="20" y="175" width="520" height="24" fill="#EDEDED" stroke="#8C8C8C"/>
+  <text x="280" y="192" font-size="12.5" text-anchor="middle" fill="#4D4D4D">AlF₃ surface layer on Al₂O₃</text>
+  <g font-size="14" text-anchor="middle">
+    <!-- surface Al -->
+    <circle cx="200" cy="150" r="14" fill="#4D4D4D"/><text x="200" y="155" fill="white">Al</text>
+    <line x1="200" y1="164" x2="200" y2="175" stroke="#000" stroke-width="2"/>
+    <!-- incoming Al -->
+    <circle cx="360" cy="70" r="14" fill="#4D4D4D"/><text x="360" y="75" fill="white">Al</text>
+    <!-- bridging F -->
+    <circle cx="300" cy="150" r="12" fill="#E91C24"/><text x="300" y="155" fill="white">F</text>
+    <line x1="214" y1="150" x2="288" y2="150" stroke="#000" stroke-width="2"/>
+    <line x1="308" y1="140" x2="350" y2="82" stroke="#000" stroke-width="2" stroke-dasharray="5,4"/>
+    <!-- bridging CH3 -->
+    <text x="250" y="78">CH₃</text>
+    <line x1="347" y1="70" x2="272" y2="73" stroke="#000" stroke-width="2"/>
+    <line x1="245" y1="85" x2="207" y2="137" stroke="#000" stroke-width="2" stroke-dasharray="5,4"/>
+    <!-- other ligands on incoming Al -->
+    <text x="430" y="50">CH₃</text><line x1="373" y1="64" x2="415" y2="52" stroke="#000" stroke-width="2"/>
+    <text x="430" y="100">CH₃</text><line x1="373" y1="77" x2="415" y2="94" stroke="#000" stroke-width="2"/>
+    <!-- other F on surface Al -->
+    <text x="140" y="125">F</text><line x1="187" y1="143" x2="150" y2="128" stroke="#000" stroke-width="2"/>
+  </g>
+  <text x="20" y="22" font-size="13" fill="#4D4D4D">Dashed: bonds forming. Solid in the ring: bonds that will break.</text>
+</svg>
+```
+The four-centre transition state proposed for ligand exchange between TMA and surface AlF~3~. A methyl group moves from the incoming aluminum to the surface aluminum while a fluoride moves the other way; repeating the exchange makes AlF(CH~3~)~2~, which leaves. Schematic, after the mechanism discussed in @Lee2016Sel and @Barry2022.
+:::
+
+**The temperature switch between etching and deposition.** HF and TMA etch Al~2~O~3~ only above about 250 °C [@Lee2016Sel]. Below that temperature, HF species stay on the fluorinated surface and react with the next TMA pulse to make *more* AlF~3~. The same two reagents then deposit AlF~3~ by ALD instead of etching Al~2~O~3~ [@Lee2016TMA]. In a purgeless version of the process, AlF~3~ growth dominates at 250 °C, at about 0.33 Å per cycle, and etching takes over at higher temperatures [@Zywotko2018]. This is a good illustration of why the process window of thermal ALE needs as much care as an ALD window: the wrong temperature does not just slow the etch, it reverses it.
+
+**Sn(acac)~2~ as the metal reagent.** With Sn(acac)~2~, Al~2~O~3~ etches at lower temperatures, from 0.14 Å at 150 °C to 0.61 Å at 250 °C [@Lee2015]. Sn(acac)~2~ gives an acac ligand to the fluoride and takes back a fluorine, leaving as SnF(acac). Aluminum leaves as acac-containing complexes such as Al(acac)~3~ [@Lee2015; @George2020]. The same chemistry etches HfO~2~:
+
+$$
+\text{HfO}_2 + 4\,\text{Sn(acac)}_2 + 4\,\text{HF} \rightarrow \text{Hf(acac)}_4 + 4\,\text{SnF(acac)} + 2\,\text{H}_2\text{O}
+$$ {#eq-hfo2-snacac}
+
+but much more slowly, at about 0.1 Å per cycle at 200 °C [@LeeGeorge2015HfO2].
+
+### Selectivity comes from the ligand exchange {#sec-ale-selectivity}
+
+The fluorination and ligand-exchange mechanism generalizes to other oxides, including HfO~2~, ZrO~2~, ZnO, VO~2~ and Ga~2~O~3~ [@Barry2022; @George2020; @Colleran2025]. Which oxides etch, and how fast, depends far more on the ligand-exchange step than on fluorination. HF fluorinates Al~2~O~3~, HfO~2~ and ZrO~2~ readily, and all three fluorides are non-volatile. What differs is whether the metal reagent can turn each fluoride into a stable, volatile product [@Lee2016Sel].
+
+<!-- Erratum check: Barry 2022 p. 97 says the HF/TMA etch "can be generalized over several different oxides (VO2, ZnO, Ga2O3, ZrO2, HfO2)". TMA itself does not etch ZrO2 (Lee 2016 Chem. Mater. 28, 7657); the fluorination/ligand-exchange mechanism generalizes, but ZrO2 needs a different metal reagent, and ZnO etches by conversion. Text written to the corrected reading. -->
+
+| Film | Sn(acac)~2~, 200 °C | TMA, 300 °C | DMAC, 250 °C | SiCl~4~, 350 °C | TiCl~4~, 250 °C |
+|:---|:---|:---|:---|:---|:---|
+| Al~2~O~3~ | 0.23 | 0.45 | 0.32 | none | none |
+| HfO~2~ | 0.06 | 0.10 | 0.77 | 0.05 | 0.21 |
+| ZrO~2~ | 0.14 | none | 0.96 | 0.14 | 0.38 |
+| SiO~2~, Si~3~N~4~, TiN | none | none | none | none | none |
+
+: EPC (Å) of films etched with HF and five metal reagents, measured by spectroscopic ellipsometry. "None" means no measurable etch under the conditions of these studies; SiO~2~ does etch with TMA at higher pressures, by conversion (@sec-ale-conversion). DMAC is dimethylaluminum chloride, AlCl(CH~3~)~2~. Data from @Lee2016Sel; TiCl~4~ column from @LeeGeorge2018TiCl4. {#tbl-ale-selectivity}
+
+Three questions explain most of @tbl-ale-selectivity:
+
+1. **Does the target metal form a stable bond to the transferred ligand?** Acac forms stable, volatile complexes with Al, Hf and Zr, so Sn(acac)~2~ etches all three. A methyl group on zirconium is not stable, so TMA does not etch ZrO~2~. Hf–CH~3~ species are more stable than Zr–CH~3~ species, and TMA etches HfO~2~, though slowly [@Lee2016Sel].
+2. **Is the exchange itself downhill?** SiCl~4~ etches ZrO~2~ and HfO~2~ because swapping chloride for fluoride on Zr and Hf is favourable above about 200 °C (ΔG ≈ −10 kcal mol^−1^ at 350 °C). The same exchange on AlF~3~ is strongly uphill (ΔG ≈ +26 kcal mol^−1^), so SiCl~4~ cannot etch Al~2~O~3~ [@Lee2016Sel]. TiCl~4~ also fails on AlF~3~. Even on HfF~4~, complete exchange to HfCl~4~ and TiF~4~ is uphill (ΔG ≈ +34 kcal mol^−1^ at 250 °C), so the products are probably mixed fluoride–chloride species [@LeeGeorge2018TiCl4].
+3. **Is the product volatile?** Chloride ligands bridge well between metals and give volatile ZrCl~4~ and HfCl~4~. This is why DMAC, which can donate either a methyl or a chloride, etches ZrO~2~ and HfO~2~ fastest of all [@Lee2016Sel].
+
+The negative results matter just as much. SiO~2~ and Si~3~N~4~ are not etched by any of these reagents, because HF vapour does not convert them fully to a fluoride and the very strong Si–F bond gives a high barrier to exchange. TiN fluorinates to TiF~3~, but no Ti(III) product is both stable and volatile [@Lee2016Sel]. Because TiCl~4~ etches HfO~2~ and not Al~2~O~3~, an Al~2~O~3~ underlayer works as an **etch stop** for HfO~2~ ALE [@LeeGeorge2018TiCl4]. BCl~3~ is another chloride donor. It etches Al~2~O~3~ (0.03 Å at 230 °C rising to 0.92 Å at 290 °C), mainly by ligand exchange to AlCl~3~ and BFCl~2~, with some conversion of the surface to B~2~O~3~ [@Cano2022]. Selectivity of this kind is the main reason thermal ALE is attractive: the chemist chooses the ligand, and the ligand chooses the film.
+
+::: {.callout-note appearance="simple"}
+## Thermal ALE as precursor chemistry read backwards
+In ALD, you want a precursor that is volatile and that loses its ligands at the surface. In thermal ALE, you want a reagent that gives its ligands *to* the surface metal and produces a volatile, thermally stable complex of that metal. The questions of @sec-precursors (is it volatile, is it stable, does it react once and stop?) are asked of the *product*.
+:::
+
+### Will this ligand exchange give a volatile product? Simulation 5.2 {#sec-ale-predictor}
+
+Pick a film and a metal reagent, make a prediction, and then compare it with what is reported. HF is the fluorination reagent throughout. Some combinations have not been reported in the sources used for this chapter; for those, the card gives a reasoned prediction, marked as such, which you can treat as a hypothesis.
+
+::: {.sim-box}
+[Simulation 5.2: Will this ligand exchange give a volatile product?]{.sim-title}
+
+```{ojs}
+//| echo: false
+ale2Films = ({
+  "Al₂O₃": {metal: "Al", dH: -558.6, fl: ["y", "HF converts the surface to AlF₃, which is not volatile. The fluoride layer stops HF from going deeper (about 3 Å)."]},
+  "HfO₂":  {metal: "Hf", dH: -572.4, fl: ["y", "HF converts the surface to HfF₄, which is not volatile."]},
+  "ZrO₂":  {metal: "Zr", dH: -550.3, fl: ["y", "HF converts the surface to ZrF₄, which is not volatile."]},
+  "SiO₂":  {metal: "Si", dH: -455.4, fl: ["n", "HF vapour does not convert SiO₂ fully to a fluoride under these conditions, and spontaneous etching by HF alone is very slow."]},
+  "ZnO":   {metal: "Zn", dH: -350.5, fl: ["y", "HF converts the surface to ZnF₂, which is not volatile."]},
+  "WO₃":   {metal: "W",  dH: -281.0, fl: ["m", "HF alone does not remove WO₃ in these processes; the oxide has to be converted or chlorinated first."]},
+  "TiN":   {metal: "Ti", dH: null,   fl: ["m", "HF can make TiF₃ at the surface, but a TiOₓ skin can slow fluorination."]}
+})
+ale2Reagents = ({
+  "Sn(acac)₂": {lig: ["acac"], metal: "Sn", oxide: "SnO", dH: -280.7},
+  "TMA, Al(CH₃)₃": {lig: ["CH3"], metal: "Al", oxide: "Al₂O₃", dH: -558.6},
+  "DMAC, AlCl(CH₃)₂": {lig: ["CH3", "Cl"], metal: "Al", oxide: "Al₂O₃", dH: -558.6},
+  "SiCl₄": {lig: ["Cl"], metal: "Si", oxide: "SiO₂", dH: -455.4},
+  "TiCl₄": {lig: ["Cl"], metal: "Ti", oxide: "TiO₂", dH: -472.0},
+  "BCl₃": {lig: ["Cl"], metal: "B", oxide: "B₂O₃", dH: -424.5}
+})
+// Stability and volatility of a product of the film's metal with the transferred ligand
+ale2Lig = ({
+  Al: {acac: ["y", "Al(acac)₃ and AlF(acac)₂ are stable and volatile."], CH3: ["y", "AlF(CH₃)₂ is volatile; it leaves mainly as dimers."], Cl: ["y", "AlCl₃ is volatile."]},
+  Hf: {acac: ["y", "Hf(acac)₄ is stable and volatile."], CH3: ["m", "Hf–CH₃ species are only moderately stable."], Cl: ["y", "HfCl₄ is volatile (above 1 Torr at 200 °C)."]},
+  Zr: {acac: ["y", "Zr(acac)₄ is stable and volatile."], CH3: ["n", "Zr–CH₃ products are not stable."], Cl: ["y", "ZrCl₄ is volatile."]},
+  Si: {acac: ["n", "Si–F is too strong for the exchange to compete."], CH3: ["n", "Si–F is too strong for the exchange to compete."], Cl: ["n", "Si–F is too strong for the exchange to compete."]},
+  Zn: {acac: ["m", "Zn(acac)₂ can be sublimed but is oligomeric."], CH3: ["y", "Zn(CH₃)₂ is a volatile liquid (an ALD precursor)."], Cl: ["m", "ZnCl₂ is volatile only at high temperature."]},
+  W:  {acac: ["n", "No common volatile W(VI) β-diketonate."], CH3: ["n", "W(CH₃)₆ exists but decomposes easily."], Cl: ["y", "WOCl₄, WO₂Cl₂ and WCl₆ are volatile, and W stays +6."]},
+  Ti: {acac: ["n", "No stable, volatile Ti(III) product."], CH3: ["n", "No stable, volatile Ti(III) product."], Cl: ["n", "No stable, volatile Ti(III) product."]}
+})
+// Outcome per film/reagent: code E = etches by ligand exchange, C = etches after conversion, N = no etch
+// rep: true if reported in the sources cited; false = prediction
+ale2Cells = ({
+  "Al₂O₃": {
+    "Sn(acac)₂": {code: "E", rep: true, data: "0.23 Å at 200 °C; 0.14 Å at 150 °C to 0.61 Å at 250 °C.", note: "SnF(acac) and Al acac complexes leave. Etches from about 150 °C.", ref: "Lee 2015; Lee 2016 (selectivity)"},
+    "TMA, Al(CH₃)₃": {code: "E", rep: true, data: "0.45 Å at 300 °C; 0.14 Å at 250 °C to 0.75 Å at 325 °C.", note: "A four-centre methyl/fluoride swap gives AlF(CH₃)₂. Below about 250 °C the same reagents deposit AlF₃ instead.", ref: "Lee 2016 (TMA); Lee 2016 (selectivity)"},
+    "DMAC, AlCl(CH₃)₂": {code: "E", rep: true, data: "0.32 Å at 250 °C.", note: "Etches from about 225 °C.", ref: "Lee 2016 (selectivity)"},
+    "SiCl₄": {code: "N", rep: true, data: "No measurable etch up to 350 °C.", note: "The exchange AlF₃ + SiCl₄ is uphill (ΔG ≈ +26 kcal/mol): the volatile product exists, but the reaction to make it is not favourable.", ref: "Lee 2016 (selectivity)"},
+    "TiCl₄": {code: "N", rep: true, data: "No measurable etch.", note: "TiCl₄ cannot remove AlF₃, so Al₂O₃ is an etch stop for HfO₂ ALE with HF/TiCl₄.", ref: "Lee & George 2018 (TiCl₄)"},
+    "BCl₃": {code: "E", rep: true, data: "0.03 Å at 230 °C to 0.92 Å at 290 °C.", note: "Mainly ligand exchange: AlCl₃ and BFCl₂ leave. Some Al₂O₃ is also converted to B₂O₃, which HF removes as BF₃. Note that boron oxide is less stable than alumina per O atom; the chloride products make the difference.", ref: "Cano 2022"}
+  },
+  "HfO₂": {
+    "Sn(acac)₂": {code: "E", rep: true, data: "0.06 Å at 200 °C.", note: "Hf(acac)₄ and SnF(acac) leave.", ref: "Lee 2015 (HfO₂); Lee 2016 (selectivity)"},
+    "TMA, Al(CH₃)₃": {code: "E", rep: true, data: "0.10 Å at 300 °C (slow).", note: "Hf–CH₃ products are stable enough for slow etching.", ref: "Lee 2016 (selectivity)"},
+    "DMAC, AlCl(CH₃)₂": {code: "E", rep: true, data: "0.77 Å at 250 °C.", note: "Chloride gives volatile Hf chlorides; Al–Cl–Hf bridges help the exchange.", ref: "Lee 2016 (selectivity)"},
+    "SiCl₄": {code: "E", rep: true, data: "0.05 Å at 350 °C; measurable from 300 °C.", note: "The Cl-for-F exchange is downhill above about 200 °C.", ref: "Lee 2016 (selectivity)"},
+    "TiCl₄": {code: "E", rep: true, data: "0.11 Å at 200 °C to 0.59 Å at 300 °C.", note: "Full exchange to HfCl₄ + TiF₄ is uphill; mixed fluoride–chloride products are likely.", ref: "Lee & George 2018 (TiCl₄)"},
+    "BCl₃": {code: "E", rep: false, data: "Not reported in the sources used here.", note: "Prediction: chloride donors (DMAC, SiCl₄, TiCl₄) all etch HfO₂, and HfCl₄ is volatile, so exchange with BCl₃ to give BFCl₂ and Hf chlorides is plausible. B₂O₃ is much less stable than HfO₂, so no conversion.", ref: ""}
+  },
+  "ZrO₂": {
+    "Sn(acac)₂": {code: "E", rep: true, data: "0.14 Å at 200 °C.", note: "Zr(acac)₄ is stable and volatile.", ref: "Lee 2016 (selectivity)"},
+    "TMA, Al(CH₃)₃": {code: "N", rep: true, data: "About 0.01 Å at 300 °C (negligible).", note: "Methyl transfer to Zr would give an unstable Zr–CH₃ product, so the exchange does not proceed.", ref: "Lee 2016 (selectivity)"},
+    "DMAC, AlCl(CH₃)₂": {code: "E", rep: true, data: "0.96 Å at 250 °C (fastest in the series).", note: "DMAC donates chloride instead of methyl; ZrCl₄ is volatile.", ref: "Lee 2016 (selectivity)"},
+    "SiCl₄": {code: "E", rep: true, data: "0.14 Å at 350 °C.", note: "Cl-for-F exchange is downhill (ΔG ≈ −10 kcal/mol at 350 °C).", ref: "Lee 2016 (selectivity)"},
+    "TiCl₄": {code: "E", rep: true, data: "0.38 Å at 250 °C.", note: "Same chemistry as HfO₂ with TiCl₄.", ref: "Lee & George 2018 (TiCl₄)"},
+    "BCl₃": {code: "E", rep: false, data: "Not reported in the sources used here.", note: "Prediction: as for HfO₂. ZrCl₄ is volatile and chloride donors etch ZrO₂.", ref: ""}
+  },
+  "SiO₂": {
+    "Sn(acac)₂": {code: "N", rep: true, data: "No etch.", note: "Fluorination is incomplete and Si–F is too strong to exchange.", ref: "Lee 2016 (selectivity)"},
+    "TMA, Al(CH₃)₃": {code: "C", rep: true, data: "0.027 Å (0.1 Torr) to 0.31 Å (4 Torr) at 300 °C; 0.20 Å at 275 °C and 3 Torr. No etch at the low pressures of the selectivity study.", note: "TMA converts the SiO₂ surface to Al₂O₃ (and aluminosilicate), releasing Si(CH₃)₄. HF and TMA then etch the Al₂O₃. Conversion needs high TMA pressure.", ref: "DuMont 2017; Junige 2024; Lee 2016 (selectivity)"},
+    "DMAC, AlCl(CH₃)₂": {code: "N", rep: true, data: "No etch at the conditions of the selectivity study.", note: "Conversion to Al₂O₃ would be downhill, as for TMA, so etching at higher pressure is possible but not reported here.", ref: "Lee 2016 (selectivity)"},
+    "SiCl₄": {code: "N", rep: true, data: "No etch.", note: "No conversion (same metal) and no exchange.", ref: "Lee 2016 (selectivity)"},
+    "TiCl₄": {code: "N", rep: true, data: "No etch.", note: "TiO₂ is only slightly more stable than SiO₂ per O atom, and no exchange occurs.", ref: "Lee & George 2018 (TiCl₄)"},
+    "BCl₃": {code: "N", rep: false, data: "Not reported in the sources used here.", note: "Prediction: no etch. B₂O₃ is less stable than SiO₂ per O atom, so BCl₃ cannot convert the surface, and Si–F blocks exchange.", ref: ""}
+  },
+  "ZnO": {
+    "Sn(acac)₂": {code: "E", rep: false, data: "Not reported in the sources used here.", note: "Prediction: possible but messy. Hacac by itself etches ZnO continuously, and ZnO etches with HF and Hacac, so acac transfer to Zn is plausible; expect poor self-limitation.", ref: "related: Colleran 2025; Partridge 2024"},
+    "TMA, Al(CH₃)₃": {code: "C", rep: true, data: "2.11 Å at 265 °C; 0.01 Å at 205 °C to 2.19 Å at 295 °C.", note: "3 ZnO + 2 Al(CH₃)₃ → Al₂O₃ + 3 Zn(CH₃)₂, then HF/TMA etch the Al₂O₃. Conversion goes deeper than fluorination, so the EPC is large. Trimethylgallium etches ZnO from 30 to 300 °C without conversion (Nam 2025).", ref: "Zywotko 2017; Nam 2025"},
+    "DMAC, AlCl(CH₃)₂": {code: "C", rep: false, data: "Not reported in the sources used here.", note: "Prediction: conversion etch, as for TMA. Al₂O₃ is far more stable than ZnO, and DMAC can donate methyls to make Zn(CH₃)₂.", ref: ""},
+    "SiCl₄": {code: "N", rep: false, data: "Not reported in the sources used here.", note: "Prediction: conversion to SiO₂ is downhill, but SiO₂ is not etched by HF/SiCl₄, so the converted layer would passivate the surface and stop the etch.", ref: ""},
+    "TiCl₄": {code: "C", rep: false, data: "Not reported in the sources used here.", note: "Prediction: conversion to TiO₂ is downhill, and TiO₂ can be removed by HF as volatile TiF₄, so a conversion etch is plausible. Untested hypothesis.", ref: ""},
+    "BCl₃": {code: "C", rep: false, data: "Not reported in the sources used here.", note: "Prediction: conversion to B₂O₃ (downhill), which HF removes as BF₃, as in WO₃ ALE. ZnCl₂ is not very volatile, so the zinc product is the weak point.", ref: ""}
+  },
+  "WO₃": {
+    "Sn(acac)₂": {code: "N", rep: false, data: "Not reported in the sources used here.", note: "Prediction: no etch. Sn(II) is a reductant, and there is no common volatile W(VI) acac complex.", ref: ""},
+    "TMA, Al(CH₃)₃": {code: "N", rep: false, data: "Not reported in the sources used here.", note: "Prediction: conversion to Al₂O₃ is strongly downhill, but tungsten has no stable volatile methyl product to leave as, so it would be reduced and left behind. Conversion without a way out is not an etch.", ref: ""},
+    "DMAC, AlCl(CH₃)₂": {code: "C", rep: false, data: "Not reported in the sources used here.", note: "Prediction: possible. Conversion to Al₂O₃ is downhill, and chloride gives tungsten a volatile oxychloride exit, as with BCl₃. Competing methyl reduction of W could spoil it.", ref: ""},
+    "SiCl₄": {code: "N", rep: false, data: "Not reported in the sources used here.", note: "Prediction: tungsten could leave as an oxychloride, but the SiO₂ formed is not removed by HF, so the surface would passivate.", ref: ""},
+    "TiCl₄": {code: "C", rep: false, data: "Not reported in the sources used here.", note: "Prediction: conversion to TiO₂ with W leaving as an oxychloride, and HF removing TiO₂ as TiF₄. Plausible, untested.", ref: ""},
+    "BCl₃": {code: "C", rep: true, data: "WO₃ etches; W ALE by O₂/O₃–BCl₃–HF gives about 2.5 Å at 207 °C.", note: "Conversion–fluorination: BCl₃ turns WO₃ into B₂O₃ and volatile WOₓCl₆₋₂ₓ; HF removes B₂O₃ as BF₃ and H₂O. Metallic W is not etched (an etch stop).", ref: "Johnson & George 2017"}
+  },
+  "TiN": {
+    "Sn(acac)₂": {code: "N", rep: true, data: "No etch.", note: "No stable, volatile Ti(III) product.", ref: "Lee 2016 (selectivity)"},
+    "TMA, Al(CH₃)₃": {code: "N", rep: true, data: "No etch.", note: "No stable, volatile Ti(III) product.", ref: "Lee 2016 (selectivity)"},
+    "DMAC, AlCl(CH₃)₂": {code: "N", rep: true, data: "No etch.", note: "No stable, volatile Ti(III) product.", ref: "Lee 2016 (selectivity)"},
+    "SiCl₄": {code: "N", rep: true, data: "No etch.", note: "No stable, volatile Ti(III) product.", ref: "Lee 2016 (selectivity)"},
+    "TiCl₄": {code: "N", rep: true, data: "No etch.", note: "No stable, volatile Ti(III) product.", ref: "Lee & George 2018 (TiCl₄)"},
+    "BCl₃": {code: "N", rep: false, data: "Not reported in the sources used here.", note: "Prediction: no etch, for the same reason. TiN is etched instead by oxidizing it to TiO₂ with O₃ and then removing TiO₂ with HF as volatile TiF₄.", ref: "related: Lee & George 2017 (TiN)"}
+  }
+})
+ale2Outcome = ({E: "Etches by fluorination and ligand exchange", C: "Etches, but only after a conversion step", N: "Does not etch"})
+```
+
+```{ojs}
+//| echo: false
+viewof ale2Film = Inputs.select(Object.keys(ale2Films), {label: "Film", value: "ZrO₂"})
+viewof ale2Reagent = Inputs.select(Object.keys(ale2Reagents), {label: "Metal reagent (after HF)", value: "TMA, Al(CH₃)₃"})
+viewof ale2Guess = Inputs.radio(["(no prediction yet)", ...Object.values(ale2Outcome)], {label: "Your prediction", value: "(no prediction yet)"})
+```
+
+```{ojs}
+//| echo: false
+{
+  const f = ale2Films[ale2Film], r = ale2Reagents[ale2Reagent], cell = ale2Cells[ale2Film][ale2Reagent];
+  const icon = (s) => s === "y" ? "✓" : s === "n" ? "✗" : "~";
+  const col = (s) => s === "y" ? "#000" : s === "n" ? "#E91C24" : "#4D4D4D";
+  // ligand test: best of the reagent's ligands
+  const rank = {y: 2, m: 1, n: 0};
+  const ligs = r.lig.map(l => ale2Lig[f.metal][l]);
+  const lig = ligs.reduce((a, b) => rank[b[0]] > rank[a[0]] ? b : a);
+  // conversion test from oxide formation enthalpy per mol O
+  let conv;
+  if (f.dH === null) conv = ["m", "Not an oxide, so conversion does not apply directly."];
+  else if (r.metal === f.metal) conv = ["n", "Same metal: no conversion."];
+  else {
+    const dd = r.dH - f.dH;
+    if (dd < -40) conv = ["y", `${r.oxide} is more stable than the film per O atom by about ${Math.round(-dd)} kJ/mol, so ${ale2Reagent.split(",")[0]} could convert the surface.`];
+    else if (dd <= 40) conv = ["m", `${r.oxide} and the film oxide are about equally stable per O atom (difference ${String(Math.round(dd)).replace('-', '−')} kJ/mol).`];
+    else conv = ["n", `${r.oxide} is less stable than the film per O atom by about ${Math.round(dd)} kJ/mol, so oxide conversion alone is uphill.`];
+  }
+  const row = (t, s) => `<li><span style="color:${col(s[0])};font-weight:700;display:inline-block;width:1.2em">${icon(s[0])}</span><b>${t}</b> ${s[1]}</li>`;
+  const out = ale2Outcome[cell.code];
+  const g = ale2Guess;
+  let guessLine = "";
+  if (g !== "(no prediction yet)")
+    guessLine = g === out
+      ? `<p style="margin:0.3rem 0"><b>Your prediction agrees${cell.rep ? " with the reported result" : " with the reasoned prediction"}.</b></p>`
+      : `<p style="margin:0.3rem 0;color:#E91C24"><b>Your prediction differs${cell.rep ? " from the reported result" : " from the reasoned prediction"}.</b></p>`;
+  const verdict = g === "(no prediction yet)" ? `<p style="margin:0.3rem 0;color:#4D4D4D">Make a prediction to see the outcome.</p>` :
+    `${guessLine}<p style="margin:0.3rem 0"><b>${cell.rep ? "Reported" : "Prediction (not reported in the sources used here)"}:</b> ${out}.</p>
+     <p style="margin:0.3rem 0">${cell.data}</p><p style="margin:0.3rem 0">${cell.note}</p>
+     ${cell.ref ? `<p class="map-ref" style="margin:0.3rem 0">Source: ${cell.ref}</p>` : ""}`;
+  return html([`<div class="map-card${cell.rep ? "" : " map-card-empty"}"><div class="map-card-title">${ale2Film} with HF, then ${ale2Reagent}</div>
+    <ul style="list-style:none;padding-left:0">
+      ${row("Fluorination.", f.fl)}
+      ${row("Stable product with the transferred ligand.", lig)}
+      ${row("Conversion possible?", conv)}
+    </ul>${verdict}</div>`]);
+}
+```
+
+```{ojs}
+//| echo: false
+viewof ale2ShowAll = Inputs.toggle({label: "Show the whole map", value: false})
+```
+
+```{ojs}
+//| echo: false
+{
+  if (!ale2ShowAll) return html`<span></span>`;
+  const films = Object.keys(ale2Films), reags = Object.keys(ale2Reagents);
+  const sym = {E: "etch", C: "conv.", N: "—"};
+  const bg = (c) => !c.rep ? "#FFFFFF" : c.code === "N" ? "#EDEDED" : "#E91C24";
+  const fg = (c) => !c.rep ? "#4D4D4D" : c.code === "N" ? "#4D4D4D" : "#FFFFFF";
+  let h = `<table style="border-collapse:collapse;font-size:0.95rem;margin-top:0.5rem"><thead><tr><th></th>${reags.map(r => `<th style="padding:4px 6px;text-align:center">${r.split(",")[0]}</th>`).join("")}</tr></thead><tbody>`;
+  for (const f of films) {
+    h += `<tr><th style="padding:4px 6px;text-align:left">${f}</th>`;
+    for (const r of reags) {
+      const c = ale2Cells[f][r];
+      h += `<td style="padding:4px 6px;text-align:center;border:1px solid #8C8C8C;background:${bg(c)};color:${fg(c)}${c.rep ? "" : ";font-style:italic"}">${sym[c.code]}${c.rep ? "" : "?"}</td>`;
+    }
+    h += "</tr>";
+  }
+  h += `</tbody></table><p class="map-ref">Red: etches (reported). Grey: no etch (reported). White, italic with “?”: prediction only. “conv.”: etch needs conversion first.</p>`;
+  return html([h]);
+}
+```
+
+**Things to try.**
+
+- Start with ZrO~2~ and TMA. Then switch the reagent to DMAC. The only change is that DMAC can donate a chloride, and the EPC goes from nothing to the fastest in the series.
+- Compare Al~2~O~3~ with SiCl~4~ and with BCl~3~. Both are chloride donors. Why does one etch and the other not? (Look at the exchange thermochemistry in the card, and at the AlCl~3~ product.)
+- Look at SiO~2~ with TMA, then ZnO with TMA. Both are conversion etches, but the EPC differs by a factor of about ten. What sets the depth of the converted layer?
+- Find a case where the conversion test is ✓ but the film still should not etch. (Try ZnO with SiCl~4~, and WO~3~ with TMA.) Conversion helps only if the new surface can itself be etched, and if the original metal has a volatile way out.
+
+::: {.assumptions}
+**Assumptions.** Reported outcomes and EPC values are taken from the cited papers, each under its own conditions (temperature, pressures, HF source), so values from different rows are not strictly comparable. The ligand test is a qualitative summary of the stability and volatility of the likely product of the film's metal with the reagent's ligand; for DMAC, the better of its two ligands is shown. The conversion test compares standard enthalpies of formation of the two oxides at 298 K per mole of O atoms (Al₂O₃ −559, HfO₂ −572, ZrO₂ −550, TiO₂ −472, SiO₂ −455, B₂O₃ −425, ZnO −351, WO₃ −281, SnO −281 kJ/mol). It ignores the halide or alkyl by-products, entropy and kinetics, all of which matter. The Al₂O₃/BCl₃ case shows the test failing: conversion is uphill by this measure, yet some conversion is observed, because volatile AlCl₃ pulls the reaction along. Predictions for unreported cells are reasoned from these tests and are hypotheses, not results.
+:::
+:::
+
+### Conversion etch: SiO~2~ and ZnO {#sec-ale-conversion}
+
+When no reagent can remove the fluoride of a film directly, the surface can sometimes be **converted** into a material that *can* be etched. SiO~2~ is the standard example. TMA reacts with SiO~2~ to make a surface layer of Al~2~O~3~ and aluminosilicate, releasing volatile tetramethylsilane [@DuMont2017; @Barry2022]:
+
+$$
+3\,\text{SiO}_2 + 4\,\text{Al(CH}_3)_3 \rightarrow 2\,\text{Al}_2\text{O}_3 + 3\,\text{Si(CH}_3)_4
+$$ {#eq-sio2-conversion}
+
+HF then fluorinates the Al~2~O~3~ (@eq-al2o3-fluorination), and the next TMA pulse removes the fluoride (@eq-al2o3-exchange) and converts a fresh slice of SiO~2~. Each TMA pulse does two jobs. The driving force is the greater stability of Al–O bonds compared with Si–O bonds: per O atom, Al~2~O~3~ is about 100 kJ mol^−1^ more stable than SiO~2~. The converted layer is self-limiting because Al~2~O~3~ slows the diffusion of TMA into the SiO~2~ beneath it, so the EPC depends on TMA pressure: 0.027 Å at 0.1 Torr to 0.31 Å at 4 Torr, at 300 °C [@DuMont2017].
+
+ZnO etches the same way, with conversion by TMA [@Zywotko2017]:
+
+$$
+3\,\text{ZnO} + 2\,\text{Al(CH}_3)_3 \rightarrow \text{Al}_2\text{O}_3 + 3\,\text{Zn(CH}_3)_2
+$$ {#eq-zno-conversion}
+
+Dimethylzinc is volatile, and ZnO is much less stable than Al~2~O~3~, so conversion goes deep. The EPC is about 2.1 Å at 265 °C, about ten times the SiO~2~ value. In the QCM, the TMA pulse loses far more mass than removing a fluoride layer could explain, which is how the conversion step was recognized [@Zywotko2017]. Conversion is not the only route: trimethylgallium etches ZnO by fluorination and ligand exchange from 30 to 300 °C, with neither conversion nor the competing fluoride deposition that limits TMA below about 205 °C [@Nam2025].
+
+The general lesson is that a conversion etch has two requirements. The reagent's metal must form a more stable oxide than the film's metal, and the film's metal must have a volatile way out (Si(CH~3~)~4~, Zn(CH~3~)~2~). Simulation 5.2 has examples where the first requirement is met and the second is not.
+
+## Etching metals and other non-oxides {#sec-ale-metals}
+
+A metal surface has no ligands to exchange and nothing to fluorinate into a convenient layer. Direct fluorination of many metals is too exothermic, or gives a fluoride too thick to be self-limiting [@Johnson2017]. The most common strategy is therefore to **oxidize the metal first** and then etch the oxide with one of the methods of @sec-ale-oxides [@Barry2022; @George2020].
+
+### Tungsten by oxidation, BCl~3~ and HF {#sec-ale-tungsten}
+
+Tungsten is etched in three steps (an ABC cycle) [@Johnson2017; @Barry2022].
+
+**A: oxidation.** O~2~ or O~3~ oxidizes the surface:
+
+$$
+\|\!-\!\text{W} + \text{O}_3 \rightarrow \|\!-\!\text{WO}_3
+$$ {#eq-w-oxidation}
+
+This step is **not truly self-limiting**. The longer the exposure, the deeper the oxide grows, until diffusion of the oxidant through the oxide slows it down [@Barry2022]. The limit is kinetic, not chemical.
+
+**B: conversion.** BCl~3~ converts the oxide to B~2~O~3~ and volatile tungsten oxychlorides. No single reaction dominates. Instead, a family of oxychlorides WO~x~Cl~6−2x~ forms (WCl~6~, WOCl~4~ and WO~2~Cl~2~ for *x* = 0, 1, 2). Tungsten stays at +6 throughout, picking up oxygen and chloride until it is neutral, and the products then desorb [@Barry2022]. For example:
+
+$$
+3\,\text{WO}_3 + 4\,\text{BCl}_3 \rightarrow 2\,\text{B}_2\text{O}_3 + 3\,\text{WOCl}_4
+$$ {#eq-wo3-bcl3}
+
+Boron is more oxophilic than tungsten: per O atom, B~2~O~3~ is about 140 kJ mol^−1^ more stable than WO~3~.
+
+**C: fluorination.** HF removes the B~2~O~3~ as BF~3~ and water, exposing the WO~3~ that was not converted [@Johnson2017; @Barry2022]:
+
+$$
+\text{B}_2\text{O}_3 + 6\,\text{HF} \rightarrow 2\,\text{BF}_3 + 3\,\text{H}_2\text{O}
+$$ {#eq-b2o3-hf}
+
+Steps B and C together etch WO~3~ ("conversion–fluorination"), and both are self-limiting. They stop at metallic tungsten, which BCl~3~ and HF do not etch [@Johnson2017]. The full ABC cycle etches tungsten at about 2.5 Å per cycle at 207 °C, and about 20 Å of oxide stays on the surface during etching; it can be removed at the end with BCl~3~ and HF alone [@Johnson2017].
+
+The weak point is step A. Because oxidation is limited only by diffusion, the oxide thickness, and so the amount of metal consumed each cycle, depends on oxidant, dose and temperature. Without the oxidation step the etch cannot proceed, but with it the EPC is only as reproducible as the oxidation [@Barry2022]. Simulation 5.3 explores when this matters.
+
+### Direct etching with WCl~6~ {#sec-ale-wcl6}
+
+With O~2~ as the oxidant, the oxide stays thin, and BCl~3~ is not needed. The oxide can be removed directly by WCl~6~, which turns it into oxychlorides [@Barry2022]:
+
+$$
+\|\!-\!\text{WO}_3 + \text{WCl}_6 \rightarrow \|\, + \text{WO}_2\text{Cl}_2 + \text{WOCl}_4
+$$ {#eq-wo3-wcl6}
+
+This is a **redistribution** reaction: oxygen and chlorine are shared between two W(VI) centres, and no new element enters the film. With O~2~ and WCl~6~, the EPC is about 7.3–8.2 Å between 205 and 235 °C, both steps saturate, and the first cycle etches more than later ones [@XieParsons2020]. WF~6~ works in the same way, giving volatile WO~2~F~2~, but only above about 275 °C, because WO~2~F~2~ is less volatile; the EPC is about 6.3 Å at 300 °C [@Xie2018]. In both cases O~3~ oxidizes faster than O~2~, but O~2~ gives better control [@Xie2018; @XieParsons2020]. Each cycle here removes several layers of tungsten, which is far more than the HF/TMA etch of Al~2~O~3~ removes. Self-limiting is not the same as sub-monolayer.
+
+::: {.callout-note appearance="simple"}
+## Why the oxidation depth matters: Cu and Hhfac
+Copper is etched by oxidizing it and then exposing it to hexafluoroacetylacetone (Hhfac), which removes the oxide as volatile Cu(hfac)~2~ and water:
+
+$$
+\|\!-\!\text{CuO} + 2\,\text{Hhfac} \rightarrow \|\, + \text{Cu(hfac)}_2 + \text{H}_2\text{O}
+$$
+
+With O~2~, a weak oxidant, the oxide is a self-limited layer of Cu~2~O about 3 Å thick, and only about 0.9 Å of copper is removed per cycle. Cu(I) is the wrong oxidation state for the product, so Cu(hfac) intermediates disproportionate (2 Cu(hfac) → Cu + Cu(hfac)~2~), which gives some copper back to the surface (see @sec-mechanisms). With O~3~, the oxide is about 15 nm of CuO, and Hhfac then removes 8.4 nm of copper per cycle [@Mohimi2018]. The removal step is the same in both cases; only the oxidation depth changed, by a factor of about 90 in the EPC. Cobalt behaves similarly [@Barry2022].
+:::
+
+### Simulation 5.3: when does the oxidation step set the EPC? {#sec-ale-oxidation-sim}
+
+The simulation follows a metal through repeated cycles of oxidation and oxide removal. The oxidation step makes a thin oxide quickly and then thickens it slowly by diffusion (parabolic growth). The removal step either removes all of the oxide (like Hhfac on copper oxide) or removes a fixed slice of it each cycle (like one BCl~3~/HF sequence on WO~3~).
+
+::: {.sim-box}
+[Simulation 5.3: Oxidation-based metal ALE]{.sim-title}
+
+```{ojs}
+//| echo: false
+ale3Metals = [
+  {name: "W → WO₃", pbr: 3.4},
+  {name: "Cu → Cu₂O", pbr: 1.7},
+  {name: "Co → CoO", pbr: 1.8}
+]
+ale3Oxidants = [
+  {name: "O₂ (weak)", xs: 3, kp: 0.05},
+  {name: "O₃ (strong)", xs: 5, kp: 20},
+  {name: "O₂ plasma (very strong)", xs: 8, kp: 60}
+]
+viewof ale3Metal = Inputs.select(ale3Metals, {label: "Metal and oxide", format: d => d.name, value: ale3Metals[0]})
+viewof ale3Ox = Inputs.select(ale3Oxidants, {label: "Oxidant", format: d => d.name, value: ale3Oxidants[1]})
+viewof ale3T = Inputs.range([1, 120], {step: 1, value: 10, label: "Oxidation time per cycle (s)"})
+viewof ale3Mode = Inputs.radio(["Removes all of the oxide", "Removes a fixed oxide slice"], {label: "Removal step", value: "Removes all of the oxide"})
+viewof ale3Slice = Inputs.range([1, 20], {step: 0.5, value: 6, label: "Oxide slice per cycle (Å)"})
+```
+
+```{ojs}
+//| echo: false
+ale3Run = {
+  const run = (t, mode) => {
+    const {xs, kp} = ale3Ox, pbr = ale3Metal.pbr, rows = [];
+    let x0 = 0;
+    for (let c = 1; c <= 40; c++) {
+      const start = Math.max(x0, xs);                 // fast initial oxide
+      const x1 = Math.sqrt(start * start + kp * t);    // parabolic thickening
+      const metal = (x1 - x0) / pbr;                   // metal consumed this cycle (Å)
+      const after = mode === "Removes all of the oxide" ? 0 : Math.max(0, x1 - ale3Slice);
+      rows.push({cycle: c, epc: metal, oxide: x1, left: after});
+      x0 = after;
+    }
+    return rows;
+  };
+  const rows = run(ale3T, ale3Mode);
+  const times = d3.range(1, 121, 1);
+  const sweep = [];
+  for (const m of ["Removes all of the oxide", "Removes a fixed oxide slice"])
+    for (const t of times) sweep.push({t, mode: m, epc: run(t, m)[39].epc});
+  return {rows, sweep};
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const r = ale3Run.rows;
+  const ymax = d3.max(r, d => Math.max(d.epc, d.oxide)) * 1.1;
+  return Plot.plot({
+    width: 680, height: 260, marginLeft: 55, marginBottom: 45,
+    x: {label: "Cycle", domain: [0, 40], labelAnchor: "center", labelOffset: 38},
+    y: {label: "Thickness (Å)", domain: [0, ymax], grid: true},
+    color: {domain: ["Metal etched per cycle (EPC)", "Oxide thickness after oxidation"], range: ["#E91C24", "#8C8C8C"], legend: true},
+    marks: [
+      Plot.line(r, {x: "cycle", y: "oxide", stroke: () => "Oxide thickness after oxidation", strokeWidth: 2, strokeDasharray: "5,4"}),
+      Plot.line(r, {x: "cycle", y: "epc", stroke: () => "Metal etched per cycle (EPC)", strokeWidth: 2.5})
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const s = ale3Run.sweep;
+  const cur = s.filter(d => d.mode === ale3Mode && d.t === ale3T);
+  return Plot.plot({
+    width: 680, height: 260, marginLeft: 55, marginBottom: 45,
+    x: {label: "Oxidation time per cycle (s)", domain: [0, 120], labelAnchor: "center", labelOffset: 38},
+    y: {label: "Steady-state EPC (Å)", grid: true, zero: true},
+    color: {domain: ["Removes all of the oxide", "Removes a fixed oxide slice"], range: ["#E91C24", "#000000"], legend: true},
+    marks: [
+      Plot.line(s, {x: "t", y: "epc", stroke: "mode", strokeWidth: 2.5}),
+      Plot.dot(cur, {x: "t", y: "epc", r: 5, fill: "#000"})
+    ]
+  });
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const last = ale3Run.rows[39];
+  return html`<div class="map-card"><div class="map-card-title">After 40 cycles</div><ul>
+    <li>EPC: <b>${last.epc.toFixed(2)} Å</b> of metal</li>
+    <li>Oxide grown in each oxidation step: <b>${last.oxide.toFixed(1)} Å</b></li>
+    <li>Oxide left after the removal step: <b>${last.left.toFixed(1)} Å</b></li></ul></div>`;
+}
+```
+
+**Things to try.**
+
+- With "removes all of the oxide", switch from O~2~ to O~3~ and then lengthen the oxidation time. The EPC follows the oxidation, so every change in oxidant, dose or temperature changes the etch depth. This is the copper case in the callout above.
+- Switch to "removes a fixed oxide slice" with O~3~. After a few cycles, an oxide layer builds up and the EPC settles at the slice thickness divided by the Pilling–Bedworth ratio (the oxide-to-metal volume ratio), whatever the oxidation time. The self-limiting step now sets the EPC, and the oxide left on the surface acts as a buffer. Compare the roughly 20 Å of oxide left during W ALE [@Johnson2017].
+- Keep the fixed slice but choose O~2~. Now the oxidation cannot regrow a full slice in each cycle, and the EPC depends on oxidation time again. A self-limiting removal step only controls the EPC if the oxidation step can keep up with it.
+
+::: {.assumptions}
+**Assumptions.** A cartoon of oxidation kinetics. Each oxidation step first brings the oxide up to a fast-forming thickness *x*~s~ (if it is thinner), and then thickens it parabolically, *x*^2^ = *x*~start~^2^ + *k*~p~*t*. The oxidant parameters (*x*~s~ = 3, 5 and 8 Å; *k*~p~ = 0.05, 20 and 60 Å^2^ s^−1^) are illustrative, not measured, and ignore temperature. The metal consumed is the oxide grown divided by the Pilling–Bedworth ratio (about 3.4 for WO~3~ on W, 1.7 for Cu~2~O on Cu and 1.8 for CoO on Co). The removal step is perfectly self-limiting and never etches metal. Disproportionation (as for Cu), the change in oxide stoichiometry near the metal, and roughening are ignored.
+:::
+:::
+
+### Silicon and silicon nitride {#sec-ale-silicon}
+
+Silicon and silicon nitride are not metals, but they are etched by the same oxidize-then-etch strategy [@Barry2022]. Silicon forms a thin, passivating oxide by itself: 5–10 Å at room temperature over about a week, depending on doping and humidity. Heating, O~3~ or an oxygen plasma make this much faster:
+
+$$
+\|\!-\!\text{Si} + 2\,\text{O}^{\bullet} \rightarrow \|\!-\!\text{SiO}_2
+$$ {#eq-si-oxidation}
+
+Two different routes then remove the oxide.
+
+**A salt that decomposes on heating.** A remote NH~3~/NF~3~ plasma supplies ammonium fluoride species that convert the oxide into solid ammonium hexafluorosilicate [@Barry2022]:
+
+$$
+\text{SiO}_2 + 6\,\text{NH}_4\text{F} \rightarrow (\text{NH}_4)_2\text{SiF}_6 + 2\,\text{H}_2\text{O} + 4\,\text{NH}_3
+$$ {#eq-ahfs}
+
+<!-- Erratum check: Barry 2022 p. 99 writes the salt as (NH3)2SiF6; it is ammonium hexafluorosilicate, (NH4)2SiF6. The book also gives the plasma step as SiO2 + 10 H· + 2 N· + 6 F· (a stoichiometric shorthand); the NH4F form above is the usual summary. -->
+
+Written this way, the equation hides a complicated plasma–surface chemistry that settles on the thermodynamically stable salt [@Barry2022]. The salt is a stable solid at the process temperature, so this step stops by itself once the oxide is used up. A brief heating step then decomposes the salt, at about 150 °C, to NH~3~, HF and SiF~4~:
+
+$$
+(\text{NH}_4)_2\text{SiF}_6 \rightarrow 2\,\text{NH}_3 + 2\,\text{HF} + \text{SiF}_4
+$$ {#eq-ahfs-decomp}
+
+The removal step here is driven by *temperature*, not by a second reactant. This is a **temperature-modulation** form of ALE [@George2020]. It depends on keeping the substrate below the decomposition temperature during the plasma step: above about 150 °C, the salt would decompose as fast as it formed, and the process would become a continuous, CVD-like etch [@Barry2022]. The same plasma chemistry also attacks silicon nitride, which is why this method is used to remove thin oxides and nitrides in device fabrication.
+
+**Oxidation, conversion, fluorination and ligand exchange.** Silicon can also be etched by a purely thermal sequence built from the reactions of @sec-ale-oxides: O~2~ oxidizes the silicon, TMA converts the SiO~2~ to Al~2~O~3~ (@eq-sio2-conversion), HF fluorinates the Al~2~O~3~, and TMA removes the fluoride. With O~2~, HF and TMA at 290 °C, the EPC is 0.4 Å and the oxide on the surface is 10–11 Å thick [@Abdulagatov2018]. Silicon nitride etches the same way, at 0.25 Å per cycle with O~2~ and 0.47 Å per cycle with O~3~ at 290 °C [@Abdulagatov2020]. Once again, the stronger oxidant gives the larger EPC.
+
+### Halogenation and organic ligands: iron {#sec-ale-iron}
+
+A metal can also be activated by a halogen instead of oxygen, and then removed by the conjugate acid of a chelating ligand [@Barry2022]. Iron is etched by Cl~2~ and then acetylacetone (Hacac). Cl~2~ chlorinates the metal surface, which is formally an oxidative addition of Cl~2~ to surface iron (@sec-reductive-elimination). Hacac then removes the chlorinated iron as volatile complexes. Hacac does not etch clean, unchlorinated iron, so the chlorination step sets how much is removed [@Konh2021].
+
+The products are harder to pin down. Iron can be Fe(II) or Fe(III), and the surface offers two ligands, chloride and acac, so many volatile products are possible. Modelling discussed in @Barry2022 points to a heteroleptic Fe(II) complex, FeCl(acac), as the most likely product, with the Hacac proton leaving as HCl with a surface chloride or as H~2~. Temperature-programmed desorption studies find a mixture of Fe(acac)~x~Cl~y~ species with both oxidation states, including Fe(acac)~3~, with FeCl(acac) as a minor component [@Konh2021]. This lack of a single reaction path is common in surface mechanism studies. Without data such as mass spectra of the products, it is hard to guess the surface chemistry.
+
+## Check your understanding
+
+::: {.quiz}
+A plasma ALE process etches 1.0 Å per cycle. Running the modification step alone for many cycles etches 0.05 Å per cycle, and running the ion step alone etches 0.15 Å per cycle. What is the synergy?
+
+- [ ] 95 %
+- [x] 80 %
+- [ ] 85 %
+- [ ] 20 %
+
+::: {.explanation}
+S = (1.0 − 0.05 − 0.15)/1.0 × 100 % = 80 % (@eq-synergy). A high-synergy process is usually above about 90 %.
+:::
+:::
+
+::: {.quiz}
+HF and TMA etch Al~2~O~3~ at 300 °C but barely etch ZrO~2~. Why?
+
+- [ ] HF does not fluorinate ZrO~2~.
+- [ ] ZrF~4~ is volatile and leaves during the HF step.
+- [x] Ligand exchange would have to put methyl groups on zirconium, and Zr–CH~3~ products are not stable, so the exchange does not proceed.
+- [ ] ZrO~2~ is too hard to be etched chemically.
+
+::: {.explanation}
+HF fluorinates all three oxides, and all three fluorides are non-volatile. The selectivity comes from the ligand-exchange step (@sec-ale-selectivity). DMAC, which can donate chloride, etches ZrO~2~ at 0.96 Å per cycle.
+:::
+:::
+
+::: {.quiz}
+In HF/TMA ALE of Al~2~O~3~, the QCM shows a mass change per cycle of −15.9 ng cm^−2^. Taking the film density as 3.1 g cm^−3^, what is the EPC?
+
+- [ ] 5.1 Å
+- [ ] 0.05 Å
+- [x] 0.51 Å
+- [ ] 1.6 Å
+
+::: {.explanation}
+EPC = 15.9 × 10^−9^ g cm^−2^ / 3.1 g cm^−3^ = 5.1 × 10^−9^ cm = 0.51 Å (@eq-epc-qcm). This matches the value reported at 300 °C [@George2016].
+:::
+:::
+
+::: {.quiz}
+A process engineer runs HF and TMA on an Al~2~O~3~ film at 200 °C and finds that the film gets *thicker*. What is the most likely explanation?
+
+- [ ] The QCM is drifting.
+- [x] Below about 250 °C, HF stays on the fluorinated surface and reacts with TMA to deposit AlF~3~, so the reagents grow AlF~3~ by ALD instead of etching.
+- [ ] TMA is decomposing to aluminum metal.
+- [ ] HF is etching the substrate under the film.
+
+::: {.explanation}
+The same pair of reagents can deposit or etch, and the temperature decides which (@sec-ale-alumina).
+:::
+:::
+
+::: {.quiz}
+Why can TMA convert the surface of SiO~2~ to Al~2~O~3~, but not the surface of HfO~2~?
+
+- [ ] Si(CH~3~)~4~ is volatile and Hf(CH~3~)~4~ is not, and that is the only factor.
+- [x] Per O atom, Al~2~O~3~ is about 100 kJ mol^−1^ more stable than SiO~2~, but slightly *less* stable than HfO~2~, so conversion is downhill for SiO~2~ and not for HfO~2~.
+- [ ] HfO~2~ is crystalline and SiO~2~ is amorphous.
+- [ ] TMA cannot reach the HfO~2~ surface.
+
+::: {.explanation}
+Conversion needs a reagent metal that forms a more stable oxide than the film's metal, and a volatile exit for the film's metal (@sec-ale-conversion). Simulation 5.2 uses this test.
+:::
+:::
+
+::: {.quiz}
+Copper is etched by an oxidation step followed by Hhfac. With O~2~, about 0.9 Å is removed per cycle; with O~3~, about 84 Å. What does this show?
+
+- [ ] Hhfac reacts faster after O~3~.
+- [ ] O~3~ makes the copper more volatile.
+- [x] The removal step takes away whatever oxide is there, so the EPC is set by how deep the oxidation goes, and oxidation by a strong oxidant is not self-limiting.
+- [ ] The two oxidants give different copper(II) products.
+
+::: {.explanation}
+Oxidation is limited by diffusion, not by a chemical stop, so its depth changes with oxidant, dose and temperature (@sec-ale-tungsten, Simulation 5.3).
+:::
+:::
+
+::: {.quiz}
+In the NH~3~/NF~3~ plasma route for removing SiO~2~, why must the substrate stay below about 150 °C during the plasma step?
+
+- [ ] Above 150 °C, the plasma cannot form NH~4~F.
+- [x] Above about 150 °C, the (NH~4~)~2~SiF~6~ salt decomposes as fast as it forms, so the etch becomes continuous and loses its self-limiting step.
+- [ ] Above 150 °C, the oxide becomes too thick.
+- [ ] SiF~4~ is not volatile below 150 °C.
+
+::: {.explanation}
+The removal step is a deliberate heating step. Separating formation and decomposition of the salt in temperature is what makes the process cyclic (@sec-ale-silicon).
+:::
+:::
+
+::: {.quiz}
+In Simulation 5.3, with a removal step that takes a fixed slice of oxide each cycle and a strong oxidant, why does the EPC stop depending on the oxidation time?
+
+- [ ] The oxide becomes impermeable after one cycle.
+- [x] An oxide buffer builds up until the oxidation in each cycle exactly replaces the slice removed, so the EPC is set by the self-limiting removal step.
+- [ ] The metal is used up.
+- [ ] The simulation fixes the EPC.
+
+::: {.explanation}
+At steady state, the oxide grown per cycle equals the slice removed, so the metal etched per cycle is the slice divided by the oxide-to-metal volume ratio. With a weak oxidant that cannot regrow a full slice, the EPC depends on oxidation time again.
+:::
+:::
+
+## Further reading
+
+- @Kanarik2015: the definitions of ALE and synergy, with silicon as the case study.
+- @Kanarik2018: a short perspective on ALE as the "art of etch", including smoothing.
+- @George2020: an overview of the mechanisms of thermal ALE: fluorination and ligand exchange, conversion, oxidation, and temperature modulation.
+- @Fischer2021: a broad review of thermal ALE, written jointly by academic and industrial authors.
+- @Lee2016Sel: how the choice of metal reagent decides which oxides etch.
+- @Johnson2017: W and WO~3~ ALE by oxidation, conversion and fluorination.
+- Chapter 9 of @Barry2022: the surface chemistry of the processes in this chapter, in more depth.

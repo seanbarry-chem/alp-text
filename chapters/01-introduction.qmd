@@ -24,7 +24,7 @@ This book covers four processes that apply that logic in different ways:
 |:---|:---|:---|:---|
 | **Atomic layer deposition (ALD)** | Adds a fraction of a monolayer of an inorganic film | Growth per cycle (GPC), in Å | Chapter 3 |
 | **Molecular layer deposition (MLD)** | Adds a molecular fragment, giving an organic or hybrid film | GPC, in Å | Chapter 4 |
-| **Atomic layer etching (ALE)** | Removes a thin, chemically modified layer | Etch per cycle (EPC), in Å | (in preparation) |
+| **Atomic layer etching (ALE)** | Removes a thin, chemically modified layer | Etch per cycle (EPC), in Å | Chapter 5 |
 | **Area-selective deposition (ASD)** | Adds film on one part of a patterned surface but not another | GPC on each surface, and selectivity | (in preparation) |
 
 : The four atomic layer processes covered in this book. {#tbl-four-processes}
